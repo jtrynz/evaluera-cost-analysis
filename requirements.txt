@@ -1,0 +1,15 @@
+streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+openpyxl
+rapidfuzz
+beautifulsoup4
+lxml
+requests
+python-dotenv
+openai
+Pillow
+PyMuPDF
+tradingeconomics
