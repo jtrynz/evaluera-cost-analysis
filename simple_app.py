@@ -1218,10 +1218,28 @@ if not cad_only_mode:
                 target = res.get("target")
                 delta = res.get("delta")
 
+                # Sanity Check: Warnung bei unrealistisch hohen Kosten
+                sanity_warning = False
+                if target and avg:
+                    # Wenn GPT-Schätzung >500% vom historischen Preis abweicht
+                    if target > avg * 5:
+                        sanity_warning = True
+                        st.warning(f"""
+                        ⚠️ **ACHTUNG:** GPT-Kostenschätzung ({target:,.4f} €) ist **{(target/avg-1)*100:.0f}% höher** als historischer Durchschnitt ({avg:,.4f} €).
+
+                        Dies deutet auf einen Schätzfehler hin. Mögliche Ursachen:
+                        - Falsche Dimensionen oder Masse geschätzt
+                        - Losgröße-Effekte nicht berücksichtigt
+                        - Komplexität überschätzt
+
+                        **Empfehlung:** Nutzen Sie den historischen Durchschnitt ({avg:,.4f} €) für Verhandlungen!
+                        """)
+
                 cA.metric("💎 Material €/Stk", f"{material_eur:,.4f} €" if material_eur is not None else "N/A")
                 cB.metric("⚙️ Fertigung €/Stk", f"{fab_eur:,.4f} €" if fab_eur is not None else "N/A")
-                cC.metric("🎯 Soll-Kosten €/Stk", f"{target:,.4f} €" if target is not None else "N/A",
-                         help="Geschätzte Gesamtkosten (Material + Fertigung)")
+                cC.metric("🎯 Soll-Kosten €/Stk",
+                         f"{target:,.4f} €" if target is not None else "N/A",
+                         help="Geschätzte Gesamtkosten (Material + Fertigung)" + (" - UNREALISTISCH HOCH!" if sanity_warning else ""))
 
                 delta_color = "🟢" if delta and delta > 0 else "🔴" if delta and delta < 0 else "⚪"
                 cD.metric(
@@ -1233,49 +1251,71 @@ if not cad_only_mode:
 
                 st.markdown("</div>", unsafe_allow_html=True)
 
-                # ==================== MÖGLICHE ERSPARNISSE (GPT-Schätzung) ====================
-                if avg and target and avg > target:  # Nur wenn historischer Preis höher als GPT-Zielpreis
-                    savings_per_unit = avg - target
-                    savings_total = savings_per_unit * lot_size
-                    savings_pct = (savings_per_unit / avg * 100) if avg > 0 else 0
+                # ==================== MÖGLICHE ERSPARNISSE / WARNUNG (GPT-Schätzung) ====================
+                if avg and target:
+                    price_difference = avg - target
+                    price_diff_pct = abs(price_difference / avg * 100) if avg > 0 else 0
 
-                    st.markdown("---")
-                    st.markdown("""
-                    <div style='background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                                padding: 1.5rem; border-radius: 10px; color: white; margin: 1rem 0;'>
-                        <h4 style='margin: 0; color: white;'>💰 Mögliche Ersparnisse</h4>
-                        <p style='margin: 0.5rem 0 0 0; opacity: 0.9;'>
-                            Durch optimierte Fertigung und Verhandlung
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    # FALL 1: Einsparungspotenzial (avg > target)
+                    if avg > target:
+                        savings_per_unit = price_difference
+                        savings_total = savings_per_unit * lot_size
+                        savings_pct = price_diff_pct
 
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric(
-                        "💵 Ersparnis pro Stück",
-                        f"{savings_per_unit:,.4f} €",
-                        delta=f"-{savings_pct:.1f}%",
-                        help="Differenz zwischen historischem Ø-Preis und GPT-Zielkosten"
-                    )
-                    col2.metric(
-                        "📊 Losgröße",
-                        f"{lot_size:,} Stück",
-                        help="Eingegebene Losgröße"
-                    )
-                    col3.metric(
-                        "🎯 Gesamtersparnis",
-                        f"{savings_total:,.2f} €",
-                        help=f"{savings_per_unit:,.4f} € × {lot_size:,} Stück"
-                    )
+                        st.markdown("---")
+                        st.markdown("""
+                        <div style='background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                                    padding: 1.5rem; border-radius: 10px; color: white; margin: 1rem 0;'>
+                            <h4 style='margin: 0; color: white;'>💰 Mögliche Ersparnisse</h4>
+                            <p style='margin: 0.5rem 0 0 0; opacity: 0.9;'>
+                                Durch optimierte Fertigung und Verhandlung
+                            </p>
+                        </div>
+                        """, unsafe_allow_html=True)
 
-                    st.info(f"""
-                    💡 **Interpretation:**
-                    - **Historischer Durchschnitt:** {avg:,.4f} €/Stk (was Sie aktuell zahlen)
-                    - **GPT-Zielkosten:** {target:,.4f} €/Stk (was Sie zahlen sollten)
-                    - **Einsparungspotenzial:** {savings_total:,.2f} € bei {lot_size:,} Stück ({savings_pct:.1f}%)
+                        col1, col2, col3 = st.columns(3)
+                        col1.metric(
+                            "💵 Ersparnis pro Stück",
+                            f"{savings_per_unit:,.4f} €",
+                            delta=f"{-savings_pct:.1f}%",  # Negativ = gut (Kosten runter)
+                            help="Differenz zwischen historischem Ø-Preis und GPT-Zielkosten"
+                        )
+                        col2.metric(
+                            "📊 Losgröße",
+                            f"{lot_size:,} Stück",
+                            help="Eingegebene Losgröße"
+                        )
+                        col3.metric(
+                            "🎯 Gesamtersparnis",
+                            f"{savings_total:,.2f} €",
+                            help=f"{savings_per_unit:,.4f} € × {lot_size:,} Stück"
+                        )
 
-                    ✅ Nutzen Sie diese Zahlen in Verhandlungen!
-                    """)
+                        st.info(f"""
+                        💡 **Interpretation:**
+                        - **Historischer Durchschnitt:** {avg:,.4f} €/Stk (was Sie aktuell zahlen)
+                        - **GPT-Zielkosten:** {target:,.4f} €/Stk (was Sie zahlen sollten)
+                        - **Einsparungspotenzial:** {savings_total:,.2f} € bei {lot_size:,} Stück ({savings_pct:.1f}%)
+
+                        ✅ Nutzen Sie diese Zahlen in Verhandlungen!
+                        """)
+                    # FALL 2: Warnung - GPT-Schätzung höher als historisch (target > avg)
+                    else:
+                        extra_cost = target - avg
+                        extra_cost_pct = price_diff_pct
+
+                        st.markdown("---")
+                        st.warning(f"""
+                        ⚠️ **Hinweis:** GPT-Zielkosten ({target:,.4f} €) liegen **{extra_cost_pct:.1f}% über** dem historischen Durchschnitt ({avg:,.4f} €).
+
+                        **Mögliche Gründe:**
+                        - Ihre aktuellen Einkaufspreise sind bereits sehr gut verhandelt
+                        - Lieferant hat Skaleneffekte die in der Schätzung nicht berücksichtigt sind
+                        - Spezielle Konditionen oder Rahmenverträge
+                        - GPT-Schätzung zu konservativ (worst-case Szenario)
+
+                        **Empfehlung:** Behalten Sie Ihren aktuellen Lieferanten bei, die Preise sind bereits kompetitiv!
+                        """)
 
                 # ==================== LIEFERANTEN-KOMPETENZEN ANZEIGE ====================
                 supplier_competencies = res.get('supplier_competencies')
@@ -1378,7 +1418,7 @@ if not cad_only_mode:
                     col1.metric(
                         "💵 Ersparnis pro Stück",
                         f"{savings_per_unit:,.4f} €",
-                        delta=f"-{savings_pct:.1f}%",
+                        delta=f"{-savings_pct:.1f}%",  # Negativ = gut (Kosten runter)
                         help="Differenz zwischen höchstem und niedrigstem Preis"
                     )
                     col2.metric(
@@ -1389,7 +1429,7 @@ if not cad_only_mode:
                     col3.metric(
                         "💰 Total-Ersparnis",
                         f"{savings_total:,.2f} €",
-                        delta=f"-{savings_pct:.1f}%",
+                        delta=f"{-savings_pct:.1f}%",  # Negativ = gut (Kosten runter)
                         help="Potenzielle Gesamtersparnis bei Min-Preis für gesamte Losgröße"
                     )
 
@@ -1661,11 +1701,26 @@ if not cad_only_mode:
                             'article_name': sel  # Für spätere Analyse
                         })
 
+                    # EU-Länder Liste für CBAM-Check
+                    EU_COUNTRIES = ['deutschland', 'germany', 'frankreich', 'france', 'italien', 'italy',
+                                   'spanien', 'spain', 'polen', 'poland', 'niederlande', 'netherlands',
+                                   'belgien', 'belgium', 'österreich', 'austria', 'schweden', 'sweden',
+                                   'tschechien', 'czech', 'portugal', 'griechenland', 'greece', 'ungarn',
+                                   'hungary', 'rumänien', 'romania', 'dänemark', 'denmark', 'finnland',
+                                   'finland', 'slowakei', 'slovakia', 'irland', 'ireland', 'kroatien',
+                                   'croatia', 'litauen', 'lithuania', 'slowenien', 'slovenia', 'lettland',
+                                   'latvia', 'estland', 'estonia', 'zypern', 'cyprus', 'luxemburg',
+                                   'luxembourg', 'malta', 'bulgarien', 'bulgaria']
+
                     # === NEUE ANZEIGE: Lieferanten mit Analyse-Button ===
                     for idx, r in enumerate(ratings):
                         supplier_name = r['supplier']
                         country = r.get('country', '?')
                         rating_result = r.get('rating_result')
+
+                        # CBAM-Check
+                        is_eu = any(eu.lower() in str(country).lower() for eu in EU_COUNTRIES) if country else False
+                        cbam_indicator = "" if is_eu else " ⚠️ Nicht-EU (CBAM)"
 
                         # Titel je nach Analyse-Status
                         if rating_result:
@@ -1674,12 +1729,25 @@ if not cad_only_mode:
                             risk_level = rating_result.get('risk_level', 'medium')
                             risk_colors = {'low': '🟢', 'medium': '🟡', 'high': '🟠', 'critical': '🔴'}
                             risk_emoji = risk_colors.get(risk_level, '⚪')
-                            title = f"{supplier_name} ({country}) – {rating_value}/10 {risk_emoji}"
+                            title = f"{supplier_name} ({country}){cbam_indicator} – {rating_value}/10 {risk_emoji}"
                         else:
                             # Noch nicht analysiert
-                            title = f"{supplier_name} ({country}) – ⏸️ Noch nicht analysiert"
+                            title = f"{supplier_name} ({country}){cbam_indicator} – ⏸️ Noch nicht analysiert"
 
                         with st.expander(title, expanded=False):
+                            # CBAM-Warnung bei Nicht-EU
+                            if not is_eu and country and country != '?':
+                                st.warning(f"""
+                                ⚠️ **CBAM-Hinweis:** Lieferant aus **{country}** (Nicht-EU)
+
+                                **Ab 2026** gilt der **Carbon Border Adjustment Mechanism (CBAM)**:
+                                - Zusätzliche CO₂-Kosten für Importe (ca. 80-100 €/t CO₂)
+                                - Betrifft: Stahl, Aluminium, Zement, Düngemittel, Strom
+                                - Geschätzte Mehrkosten: ~0,01-0,05 € pro Schraube (je nach Material)
+
+                                **Empfehlung:** Prüfen Sie EU-Alternativen oder fordern Sie CO₂-Nachweise an!
+                                """)
+
                             # Zeige Basisdaten
                             c1, c2, c3 = st.columns(3)
                             c1.metric("Bestellungen", int(r['total_orders']) if r['total_orders'] else 0)
