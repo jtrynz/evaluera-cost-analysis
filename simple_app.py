@@ -71,16 +71,19 @@ def get_api_key(key_name, default=None):
     # 3. Default zurückgeben
     return default
 
-# Set OpenAI API key in environment for libraries that use os.getenv
-openai_key = get_api_key("OPENAI_API_KEY")
-if openai_key:
-    os.environ["OPENAI_API_KEY"] = openai_key
-
 st.set_page_config(
     page_title="EVALUERA – Bestellanalyse & Kostenschätzung",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
+
+# Set OpenAI API key in environment for libraries that use os.getenv
+openai_key = get_api_key("OPENAI_API_KEY")
+if openai_key:
+    os.environ["OPENAI_API_KEY"] = openai_key
+else:
+    # Warning: No API key found
+    st.error("🚨 **OpenAI API Key nicht gefunden!** Bitte konfigurieren Sie den Key in Streamlit Cloud Secrets. Siehe STREAMLIT_SETUP.md für Anleitung.")
 
 # ==================== HIDE STREAMLIT ELEMENTS ====================
 hide_streamlit_style = """
@@ -1984,59 +1987,62 @@ if not cad_only_mode:
             st.markdown("---")
             st.markdown("### 📊 Lieferanten-Übersicht")
 
-            # Preisserie berechnen (nur wenn display_df existiert)
-            if 'display_df' in locals() and not display_df.empty:
-                price_series = get_price_series_per_unit(display_df, qty_col)
-                if price_series is not None:
-                    display_df = display_df.assign(_unit_price=price_series)
+            # Preisserie berechnen (nur wenn display_df existiert und nicht leer)
+            try:
+                if display_df is not None and not display_df.empty:
+                    price_series = get_price_series_per_unit(display_df, qty_col)
+                    if price_series is not None:
+                        display_df = display_df.assign(_unit_price=price_series)
 
-                # Aggregation
-                agg_cols = {}
-                if qty_col is not None and qty_col in display_df.columns:
-                    agg_cols[qty_col] = "sum"
-                if "_unit_price" in display_df.columns:
-                    agg_cols["_unit_price"] = "mean"
-
-                grp = None
-                if agg_cols:
-                    group_by_cols = [c for c in [supplier_col, country_col] if c is not None]
-                    if group_by_cols:
-                        grp = display_df.groupby(group_by_cols, dropna=False).agg(agg_cols).reset_index()
-
-                if grp is not None:
-                    rename_map = {}
-                    if supplier_col is not None:
-                        rename_map[supplier_col] = "Lieferant"
-                    if country_col is not None:
-                        rename_map[country_col] = "Land"
-                    if qty_col is not None and qty_col in agg_cols:
-                        rename_map[qty_col] = "Menge"
-                    if "_unit_price" in agg_cols:
-                        rename_map["_unit_price"] = "Ø Preis"
-
-                    grp = grp.rename(columns=rename_map)
-                    st.dataframe(grp, use_container_width=True)
-                else:
-                    base_cols = [c for c in [supplier_col, country_col, qty_col] if c is not None and c in display_df.columns]
+                    # Aggregation
+                    agg_cols = {}
+                    if qty_col is not None and qty_col in display_df.columns:
+                        agg_cols[qty_col] = "sum"
                     if "_unit_price" in display_df.columns:
-                        base_cols += ["_unit_price"]
+                        agg_cols["_unit_price"] = "mean"
 
-                    if base_cols:
-                        tbl = display_df[base_cols].copy()
+                    grp = None
+                    if agg_cols:
+                        group_by_cols = [c for c in [supplier_col, country_col] if c is not None]
+                        if group_by_cols:
+                            grp = display_df.groupby(group_by_cols, dropna=False).agg(agg_cols).reset_index()
+
+                    if grp is not None:
                         rename_map = {}
-                        if supplier_col in base_cols:
+                        if supplier_col is not None:
                             rename_map[supplier_col] = "Lieferant"
-                        if country_col in base_cols:
+                        if country_col is not None:
                             rename_map[country_col] = "Land"
-                        if qty_col in base_cols:
+                        if qty_col is not None and qty_col in agg_cols:
                             rename_map[qty_col] = "Menge"
-                        if "_unit_price" in base_cols:
-                            rename_map["_unit_price"] = "Preis"
+                        if "_unit_price" in agg_cols:
+                            rename_map["_unit_price"] = "Ø Preis"
 
-                        tbl = tbl.rename(columns=rename_map)
-                        st.dataframe(tbl, use_container_width=True)
+                        grp = grp.rename(columns=rename_map)
+                        st.dataframe(grp, use_container_width=True)
                     else:
-                        st.info("Keine anzeigbaren Lieferanteninformationen gefunden.")
-            else:
+                        base_cols = [c for c in [supplier_col, country_col, qty_col] if c is not None and c in display_df.columns]
+                        if "_unit_price" in display_df.columns:
+                            base_cols += ["_unit_price"]
+
+                        if base_cols:
+                            tbl = display_df[base_cols].copy()
+                            rename_map = {}
+                            if supplier_col in base_cols:
+                                rename_map[supplier_col] = "Lieferant"
+                            if country_col in base_cols:
+                                rename_map[country_col] = "Land"
+                            if qty_col in base_cols:
+                                rename_map[qty_col] = "Menge"
+                            if "_unit_price" in base_cols:
+                                rename_map["_unit_price"] = "Preis"
+
+                            tbl = tbl.rename(columns=rename_map)
+                            st.dataframe(tbl, use_container_width=True)
+                        else:
+                            st.info("Keine anzeigbaren Lieferanteninformationen gefunden.")
+                else:
+                    st.info("Bitte wähle zuerst einen Artikel aus, um Lieferanten zu sehen.")
+            except NameError:
                 st.info("Bitte wähle zuerst einen Artikel aus, um Lieferanten zu sehen.")
 
