@@ -163,6 +163,9 @@ Regeln:
 3. Berücksichtige technische Synonyme
    - "Schraube" = "Bolt" = "Verbindungselement"
 4. Finde ALLE relevanten Artikel, nicht nur exakte Matches
+5. **WICHTIG**: Sei GROSSZÜGIG - wenn ein Artikel die wichtigsten Suchbegriffe enthält, inkludiere ihn!
+   - Partielle Matches sind OK
+   - Verschiedene Längen/Dimensionen des gleichen Grundtyps sind OK
 
 Antworte NUR als JSON-Array mit den Indizes der passenden Artikel: [0, 3, 5, ...]
 Wenn nichts passt: []"""
@@ -172,12 +175,13 @@ Wenn nichts passt: []"""
 Verfügbare Artikel:
 {chr(10).join([f"{i}: {item}" for i, item in enumerate(sample_items)])}
 
-Welche Artikel passen zur Suchanfrage? Gib NUR die Indizes als JSON-Array zurück."""
+Welche Artikel passen zur Suchanfrage? Gib NUR die Indizes als JSON-Array zurück.
+WICHTIG: Finde ALLE Varianten, auch mit unterschiedlichen Längen/Größen!"""
 
     try:
         r = client.chat.completions.create(
             model="gpt-4o-mini",
-            temperature=0,
+            temperature=0.3,  # Leicht erhöht für mehr Flexibilität (war 0)
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}

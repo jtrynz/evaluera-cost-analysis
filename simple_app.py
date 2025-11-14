@@ -939,24 +939,44 @@ if not cad_only_mode:
                 help="Sucht in ALLEN Artikelbezeichnungen aller Lieferanten. Findet z.B. 'DIN 933 M8' bei verschiedenen Lieferanten."
             )
 
-            # Suche in ALLEN Zeilen mit GPT-basierter intelligenter Suche
+            # Suche in ALLEN Zeilen mit HYBRID-Ansatz (KI + String-Suche kombiniert)
             if query and query.strip():
                 with st.spinner("🤖 KI analysiert Suchanfrage..."):
                     # Hole alle unique Artikel
                     all_items = df[item_col].unique().tolist()
 
-                    # GPT-basierte intelligente Suche
+                    # 1. GPT-basierte intelligente Suche (semantisch)
                     matched_indices = gpt_intelligent_article_search(query, all_items)
 
                     if matched_indices:
                         # Konvertiere Indizes zu Artikelnamen
-                        matched_items = [all_items[i] for i in matched_indices]
-
-                        # Filtere DataFrame
-                        idf = df[df[item_col].isin(matched_items)].copy()
+                        gpt_matched_items = set([all_items[i] for i in matched_indices])
                     else:
-                        # Fallback: Einfache String-Suche
-                        st.info("💡 KI-Suche lieferte keine Ergebnisse, nutze einfache Textsuche als Fallback...")
+                        gpt_matched_items = set()
+
+                    # 2. String-basierte Suche (für offensichtliche Matches die GPT verpasst hat)
+                    query_tokens = query.lower().split()
+                    string_matched_items = set()
+
+                    for item in all_items:
+                        item_lower = str(item).lower()
+                        # Match wenn ALLE Tokens im Artikel vorkommen (flexible Reihenfolge)
+                        if all(token in item_lower for token in query_tokens):
+                            string_matched_items.add(item)
+
+                    # 3. HYBRID: Kombiniere beide Ergebnisse
+                    all_matched_items = gpt_matched_items | string_matched_items  # Union (Vereinigungsmenge)
+
+                    if all_matched_items:
+                        # Filtere DataFrame mit kombinierten Ergebnissen
+                        idf = df[df[item_col].isin(all_matched_items)].copy()
+
+                        # Debug-Info für User
+                        if len(string_matched_items) > len(gpt_matched_items):
+                            st.info(f"💡 Hybrid-Suche: KI fand {len(gpt_matched_items)} Treffer, String-Suche fand {len(string_matched_items) - len(gpt_matched_items)} zusätzliche Treffer")
+                    else:
+                        # Letzter Fallback: Einfache Contains-Suche
+                        st.warning("⚠️ Keine exakten Treffer, versuche unscharfe Suche...")
                         search_mask = df[item_col].astype(str).str.lower().str.contains(query.lower(), na=False)
                         idf = df[search_mask].copy()
 
