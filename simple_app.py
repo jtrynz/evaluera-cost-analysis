@@ -47,7 +47,34 @@ from ui_components import (
     show_empty_state
 )
 
+# Load environment variables (for local development)
 load_dotenv()
+
+# ==================== SECURE API KEY LOADING ====================
+def get_api_key(key_name, default=None):
+    """
+    Sicher API Keys laden - Streamlit Secrets haben Priorität (Production)
+    Falls nicht verfügbar, wird .env verwendet (lokale Entwicklung)
+    """
+    try:
+        # 1. Versuche Streamlit Secrets (Production auf Streamlit Cloud)
+        if hasattr(st, 'secrets') and key_name in st.secrets:
+            return st.secrets[key_name]
+    except (FileNotFoundError, KeyError):
+        pass
+
+    # 2. Fallback zu Environment Variable (lokale Entwicklung mit .env)
+    value = os.getenv(key_name)
+    if value:
+        return value
+
+    # 3. Default zurückgeben
+    return default
+
+# Set OpenAI API key in environment for libraries that use os.getenv
+openai_key = get_api_key("OPENAI_API_KEY")
+if openai_key:
+    os.environ["OPENAI_API_KEY"] = openai_key
 
 st.set_page_config(
     page_title="EVALUERA – Bestellanalyse & Kostenschätzung",
