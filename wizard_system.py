@@ -127,13 +127,50 @@ class WizardManager:
         step_info = self.STEPS[step_number]
 
         # Render step indicator (clickable)
-        st.markdown(wizard_step(
-            step_number,
-            step_info['title'],
-            step_info['desc'],
-            is_active,
-            is_completed
-        ), unsafe_allow_html=True)
+        from ui_theme import COLORS, RADIUS, SPACING
+
+        if is_completed:
+            bg = COLORS['success']
+            text_color = "#ffffff"
+            icon = "✓"
+        elif is_active:
+            bg = COLORS['primary']
+            text_color = "#ffffff"
+            icon = str(step_number)
+        else:
+            bg = COLORS['gray_200']
+            text_color = COLORS['gray_500']
+            icon = str(step_number)
+
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; gap: 1rem; padding: {SPACING['md']}; margin-bottom: {SPACING['sm']};
+                    background: {COLORS['surface']}; border-radius: {RADIUS['md']};
+                    border: 2px solid {bg if is_active else COLORS['gray_200']};
+                    opacity: {1 if (is_active or is_completed) else 0.6};">
+            <div style="
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: {bg};
+                color: {text_color};
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 1rem;
+            ">
+                {icon}
+            </div>
+            <div style="flex: 1;">
+                <div style="font-weight: 600; color: {COLORS['gray_900']}; font-size: 1rem;">
+                    {step_info['title']}
+                </div>
+                <div style="font-size: 0.875rem; color: {COLORS['gray_500']};">
+                    {step_info['desc']}
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
         # Only show content if active
         if is_active:
@@ -210,16 +247,47 @@ def create_compact_kpi_row(kpis):
     Args:
         kpis: List of dicts with keys: label, value, icon, help, trend
     """
+    from ui_theme import COLORS, SPACING, RADIUS, SHADOWS
+
     num_kpis = len(kpis)
     cols = st.columns(num_kpis)
 
     for i, kpi in enumerate(kpis):
         with cols[i]:
-            from ui_theme import kpi_card
-            kpi_card(
-                label=kpi.get('label', ''),
-                value=kpi.get('value', ''),
-                icon=kpi.get('icon'),
-                help_text=kpi.get('help'),
-                trend=kpi.get('trend')
-            )
+            label = kpi.get('label', '')
+            value = kpi.get('value', '')
+            icon = kpi.get('icon', '')
+            help_text = kpi.get('help', '')
+            trend = kpi.get('trend')
+
+            icon_html = f"<span style='font-size: 1.5rem; margin-right: 0.75rem;'>{icon}</span>" if icon else ""
+            help_html = f"<div style='font-size: 0.75rem; color: {COLORS['gray_400']}; margin-top: 0.25rem;'>{help_text}</div>" if help_text else ""
+
+            trend_html = ""
+            if trend == "positive":
+                trend_html = f"<span style='color: {COLORS['success']}; font-size: 0.875rem; margin-left: 0.5rem;'>↑</span>"
+            elif trend == "negative":
+                trend_html = f"<span style='color: {COLORS['error']}; font-size: 0.875rem; margin-left: 0.5rem;'>↓</span>"
+
+            st.markdown(f"""
+            <div style="
+                background: {COLORS['surface']};
+                border: 1px solid {COLORS['gray_200']};
+                border-radius: {RADIUS['md']};
+                padding: {SPACING['md']};
+                box-shadow: {SHADOWS['sm']};
+            ">
+                <div style="display: flex; align-items: center;">
+                    {icon_html}
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.75rem; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                            {label}
+                        </div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">
+                            {value} {trend_html}
+                        </div>
+                        {help_html}
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)

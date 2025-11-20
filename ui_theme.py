@@ -179,8 +179,7 @@ def card(content, padding="md", hover=False, border=True):
         hover: Enable hover effect
         border: Show border
     """
-    hover_style = "transition: transform 0.2s ease, box-shadow 0.2s ease;" if hover else ""
-    hover_class = "transform: translateY(-2px); box-shadow: " + SHADOWS['lg'] if hover else ""
+    import streamlit as st
     border_style = f"border: 1px solid {COLORS['gray_200']};" if border else ""
 
     st.markdown(f"""
@@ -190,9 +189,7 @@ def card(content, padding="md", hover=False, border=True):
         border-radius: {RADIUS['md']};
         padding: {SPACING[padding]};
         box-shadow: {SHADOWS['sm']};
-        {hover_style}
-    " onmouseover="this.style.cssText=this.style.cssText.replace('box-shadow: {SHADOWS['sm']}', 'box-shadow: {SHADOWS['md']}')"
-       onmouseout="this.style.cssText=this.style.cssText.replace('box-shadow: {SHADOWS['md']}', 'box-shadow: {SHADOWS['sm']}')">
+    ">
         {content}
     </div>
     """, unsafe_allow_html=True)
@@ -251,7 +248,8 @@ def button(label, variant="primary", icon=None, disabled=False):
 
 def kpi_card(label, value, icon=None, help_text=None, trend=None):
     """
-    Compact KPI card for metrics
+    Compact KPI card for metrics - DEPRECATED
+    Use create_compact_kpi_row from wizard_system instead
 
     Args:
         label: Metric name
@@ -260,32 +258,38 @@ def kpi_card(label, value, icon=None, help_text=None, trend=None):
         help_text: Optional tooltip
         trend: Optional trend (positive/negative/neutral)
     """
+    import streamlit as st
     icon_html = f"<span style='font-size: 1.5rem; margin-right: 0.75rem;'>{icon}</span>" if icon else ""
     help_html = f"<div style='font-size: {TYPOGRAPHY['tiny']}; color: {COLORS['gray_400']}; margin-top: 0.25rem;'>{help_text}</div>" if help_text else ""
 
     trend_html = ""
-    if trend:
-        if trend == "positive":
-            trend_html = f"<span style='color: {COLORS['success']}; font-size: {TYPOGRAPHY['small']};'>↑</span>"
-        elif trend == "negative":
-            trend_html = f"<span style='color: {COLORS['error']}; font-size: {TYPOGRAPHY['small']};'>↓</span>"
+    if trend == "positive":
+        trend_html = f"<span style='color: {COLORS['success']}; font-size: {TYPOGRAPHY['small']};'>↑</span>"
+    elif trend == "negative":
+        trend_html = f"<span style='color: {COLORS['error']}; font-size: {TYPOGRAPHY['small']};'>↓</span>"
 
-    content = f"""
-    <div style="display: flex; align-items: center;">
-        {icon_html}
-        <div style="flex: 1;">
-            <div style="font-size: {TYPOGRAPHY['tiny']}; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-                {label}
+    st.markdown(f"""
+    <div style="
+        background: {COLORS['surface']};
+        border: 1px solid {COLORS['gray_200']};
+        border-radius: {RADIUS['md']};
+        padding: {SPACING['md']};
+        box-shadow: {SHADOWS['sm']};
+    ">
+        <div style="display: flex; align-items: center;">
+            {icon_html}
+            <div style="flex: 1;">
+                <div style="font-size: {TYPOGRAPHY['tiny']}; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                    {label}
+                </div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">
+                    {value} {trend_html}
+                </div>
+                {help_html}
             </div>
-            <div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">
-                {value} {trend_html}
-            </div>
-            {help_html}
         </div>
     </div>
-    """
-
-    card(content, padding="md")
+    """, unsafe_allow_html=True)
 
 
 def wizard_step(step_number, title, description, is_active, is_completed):

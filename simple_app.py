@@ -220,7 +220,7 @@ def step2_article_search():
                 selected = st.selectbox(
                     "Artikel wählen",
                     unique_items,
-                    key="selected_article"
+                    key="article_selector"  # Changed key to avoid conflict
                 )
             else:
                 selected = unique_items[0]
