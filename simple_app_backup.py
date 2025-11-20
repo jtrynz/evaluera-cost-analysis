@@ -46,22 +46,6 @@ from ui_components import (
     show_gpt_success
 )
 
-# ==================== NEW UI SYSTEM ====================
-from ui_theme import (
-    apply_global_styles,
-    card,
-    button,
-    kpi_card,
-    wizard_step,
-    status_badge,
-    section_header,
-    divider as ui_divider,
-    COLORS,
-    SPACING,
-    RADIUS
-)
-from wizard_system import WizardManager, create_data_table, create_compact_kpi_row
-
 # ==================== OPTIMIERUNGS-MODULE ====================
 from excel_helpers import (
     read_and_normalize_excel,
@@ -103,14 +87,8 @@ def get_api_key(key_name, default=None):
 st.set_page_config(
     page_title="EVALUERA – Bestellanalyse & Kostenschätzung",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
-
-# Apply modern theme
-apply_global_styles()
-
-# Initialize Wizard
-wizard = WizardManager()
 
 # Set OpenAI API key in environment for libraries that use os.getenv
 openai_key = get_api_key("OPENAI_API_KEY")
@@ -120,7 +98,38 @@ else:
     # Warning: No API key found
     st.error("🚨 **OpenAI API Key nicht gefunden!** Bitte konfigurieren Sie den Key in Streamlit Cloud Secrets. Siehe STREAMLIT_SETUP.md für Anleitung.")
 
-# Custom styles now handled by ui_theme.py via apply_global_styles()
+# ==================== HIDE STREAMLIT ELEMENTS ====================
+hide_streamlit_style = """
+<style>
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
+.css-1dp5vir {padding: 0 !important;}
+
+/* ========== BASE FONT & SMOOTHING ========== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;650;700;800;900&display=swap');
+
+html {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: clamp(16px, 1.05vw + 14px, 19px);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.main {
+    padding: clamp(16px, 2.4vw, 32px) !important;
+    margin: 0 auto !important;
+}
+
+.block-container {
+    max-width: min(1280px, 92vw) !important;
+    margin: 0 auto !important;
+    padding: clamp(16px, 2.2vw, 28px) !important;
+}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
 
 def _read_file(up):
