@@ -489,3 +489,142 @@ def show_empty_state(icon, title, description, button_text=None, button_action=N
         {button_html}
     </div>
     """, unsafe_allow_html=True)
+
+
+class GPTLoadingAnimation:
+    """
+    Context-Manager für professionelle GPT-Ladeanimationen.
+
+    Verwendung:
+        with GPTLoadingAnimation("Analysiere Material..."):
+            result = gpt_function()
+    """
+
+    def __init__(self, message="KI analysiert...", icon="🤖"):
+        self.message = message
+        self.icon = icon
+        self.container = None
+
+    def __enter__(self):
+        """Startet die Ladeanimation"""
+        self.container = st.empty()
+
+        # Zeige professionelle Ladeanimation
+        self.container.markdown(f"""
+        <div style="
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--apple-radius);
+            padding: 2rem;
+            margin: 1.5rem 0;
+            box-shadow: var(--apple-shadow-lg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        ">
+            <div style="
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            ">
+                <div style="
+                    font-size: 2rem;
+                    animation: rotate 2s linear infinite;
+                ">{self.icon}</div>
+                <div>
+                    <div style="
+                        color: white;
+                        font-weight: 600;
+                        font-size: 1.1rem;
+                        margin-bottom: 0.25rem;
+                    ">{self.message}</div>
+                    <div style="
+                        color: rgba(255, 255, 255, 0.8);
+                        font-size: 0.9rem;
+                    ">Bitte warten Sie einen Moment...</div>
+                </div>
+            </div>
+
+            <!-- Animated Progress Bar -->
+            <div style="
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 100px;
+                height: 4px;
+                overflow: hidden;
+                position: relative;
+            ">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    height: 100%;
+                    width: 40%;
+                    background: linear-gradient(90deg, transparent, white, transparent);
+                    animation: shimmer 1.5s infinite;
+                "></div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes rotate {{
+                from {{ transform: rotate(0deg); }}
+                to {{ transform: rotate(360deg); }}
+            }}
+
+            @keyframes shimmer {{
+                0% {{ transform: translateX(-100%); }}
+                100% {{ transform: translateX(400%); }}
+            }}
+        </style>
+        """, unsafe_allow_html=True)
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Beendet die Ladeanimation"""
+        if self.container:
+            self.container.empty()
+        return False
+
+
+def show_gpt_success(message, icon="✅"):
+    """
+    Zeigt eine Erfolgsmeldung nach GPT-Analyse.
+
+    Args:
+        message: Erfolgsnachricht
+        icon: Icon (Standard: ✅)
+    """
+    st.markdown(f"""
+    <div style="
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        border-radius: var(--apple-radius-sm);
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        box-shadow: var(--apple-shadow-sm);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        animation: slideIn 0.3s ease-out;
+    ">
+        <div style="font-size: 1.5rem;">{icon}</div>
+        <div style="
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        ">{message}</div>
+    </div>
+
+    <style>
+        @keyframes slideIn {{
+            from {{
+                opacity: 0;
+                transform: translateY(-10px);
+            }}
+            to {{
+                opacity: 1;
+                transform: translateY(0);
+            }}
+        }}
+    </style>
+    """, unsafe_allow_html=True)
