@@ -494,7 +494,7 @@ def step6_sustainability():
                 co2_result = calculate_co2_footprint(
                     material=material,
                     mass_kg=mass_kg,
-                    country="CN"
+                    supplier_country="CN"
                 )
 
                 if co2_result:
@@ -517,7 +517,7 @@ def step6_sustainability():
                 try:
                     tips = gpt_negotiation_prep(
                         article_name=article,
-                        current_price=avg_price,
+                        avg_price=avg_price,
                         supplier_name=supplier
                     )
 
