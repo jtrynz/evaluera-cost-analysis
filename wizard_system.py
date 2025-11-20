@@ -175,10 +175,9 @@ class WizardManager:
 
         # Only show content if active
         if is_active:
-            with st.container():
-                st.markdown(f"<div style='padding: {SPACING['lg']} 0;'>", unsafe_allow_html=True)
-                content_func()
-                st.markdown("</div>", unsafe_allow_html=True)
+            # Add some spacing
+            st.markdown(f"<div style='margin-top: {SPACING['md']};'></div>", unsafe_allow_html=True)
+            content_func()
 
     def render_all_steps_sidebar(self):
         """Render all steps in sidebar for overview"""
