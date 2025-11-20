@@ -44,7 +44,7 @@ from wizard_system import (
     create_data_table,
     create_compact_kpi_row,
 )
-from ui_components import GPTLoadingAnimation
+from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -120,11 +120,12 @@ def step1_upload():
         st.success(f"✅ Datei: {uploaded_file.name}")
 
         try:
-            # Read file
-            if uploaded_file.name.endswith('.csv'):
-                df = pd.read_csv(uploaded_file, sep=None, engine="python")
-            else:
-                df = pd.read_excel(uploaded_file)
+            # Read file with loading animation
+            with ExcelLoadingAnimation(f"📂 Analysiere {uploaded_file.name}", icon="📊"):
+                if uploaded_file.name.endswith('.csv'):
+                    df = pd.read_csv(uploaded_file, sep=None, engine="python")
+                else:
+                    df = pd.read_excel(uploaded_file)
 
             st.session_state.df = df
             st.session_state.uploaded_file_name = uploaded_file.name
