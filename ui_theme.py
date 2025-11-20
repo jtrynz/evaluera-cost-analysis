@@ -6,12 +6,12 @@ Apple-inspired minimal design with consistent components
 
 import streamlit as st
 
-# ==================== DESIGN TOKENS ====================
+# ==================== DESIGN TOKENS - EVALUERA BRANDING ====================
 COLORS = {
-    # Primary
-    "primary": "#7c3aed",  # Lila
-    "primary_light": "#a78bfa",
-    "primary_dark": "#5b21b6",
+    # Primary - EVALUERA Mint/Türkis
+    "primary": "#7BA5A0",  # EVALUERA Türkis (dunkler)
+    "primary_light": "#B8D4D1",  # EVALUERA Mint (Original Hintergrund)
+    "primary_dark": "#5A8680",  # Dunkler Türkis
 
     # Neutrals
     "gray_50": "#fafafa",
@@ -23,18 +23,19 @@ COLORS = {
     "gray_600": "#52525b",
     "gray_700": "#3f3f46",
     "gray_800": "#27272a",
-    "gray_900": "#18181b",
+    "gray_900": "#1a1a1a",  # EVALUERA Schwarz
 
     # Status
     "success": "#22c55e",
     "warning": "#eab308",
     "error": "#ef4444",
-    "info": "#3b82f6",
+    "info": "#7BA5A0",  # EVALUERA Türkis für Info
 
     # Backgrounds
     "bg_primary": "#ffffff",
-    "bg_secondary": "#fafafa",
+    "bg_secondary": "#f8fafa",  # Sehr helles Grau-Grün
     "surface": "#ffffff",
+    "brand_bg": "#B8D4D1",  # EVALUERA Mint für Highlights
 }
 
 SPACING = {

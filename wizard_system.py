@@ -71,13 +71,14 @@ class WizardManager:
             padding: {SPACING['md']};
             margin-bottom: {SPACING['xl']};
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid {COLORS['primary']};
         ">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: {SPACING['md']};">
                 <div>
                     <h3 style="margin: 0; color: {COLORS['gray_900']};">
                         Schritt {current} von 6
                     </h3>
-                    <p style="margin: 0; color: {COLORS['gray_500']}; font-size: 0.875rem;">
+                    <p style="margin: 0; color: {COLORS['gray_600']}; font-size: 0.875rem;">
                         {self.STEPS[current]['title']}
                     </p>
                 </div>
@@ -86,7 +87,7 @@ class WizardManager:
                 </div>
             </div>
 
-            <!-- Progress Bar -->
+            <!-- Progress Bar - EVALUERA Style -->
             <div style="
                 height: 8px;
                 background: {COLORS['gray_200']};
@@ -96,7 +97,7 @@ class WizardManager:
                 <div style="
                     width: {(current / 6) * 100}%;
                     height: 100%;
-                    background: linear-gradient(90deg, {COLORS['primary']}, {COLORS['primary_light']});
+                    background: {COLORS['primary']};
                     transition: width 0.3s ease;
                     border-radius: {RADIUS['full']};
                 "></div>

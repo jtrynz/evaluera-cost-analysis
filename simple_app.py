@@ -37,6 +37,7 @@ from ui_theme import (
     COLORS,
     SPACING,
     RADIUS,
+    SHADOWS,
 )
 from wizard_system import (
     WizardManager,
@@ -92,19 +93,35 @@ def find_col(df, possible_names):
     return None
 
 
-# ==================== HEADER ====================
+# ==================== HEADER - EVALUERA BRANDING ====================
 st.markdown(f"""
 <div style="
-    background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['primary_dark']} 100%);
-    padding: {SPACING['xl']};
+    background: {COLORS['brand_bg']};
+    padding: {SPACING['xl']} {SPACING['xxl']};
     border-radius: {RADIUS['lg']};
     margin-bottom: {SPACING['xl']};
-    color: white;
+    color: {COLORS['gray_900']};
+    box-shadow: {SHADOWS['sm']};
 ">
-    <h1 style="margin: 0; color: white; font-size: 2.5rem; font-weight: 700;">
+    <div style="margin-bottom: {SPACING['md']};">
+        <h3 style="margin: 0; font-weight: 400; font-size: 1rem; color: {COLORS['gray_900']};">
+            Wer wir sind
+        </h3>
+    </div>
+    <h1 style="
+        margin: 0;
+        color: {COLORS['gray_900']};
+        font-size: 3rem;
+        font-weight: 300;
+        letter-spacing: 0.1em;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    ">
         EVALUERA
     </h1>
-    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1.1rem;">
+    <p style="margin: {SPACING['md']} 0 0 0; font-size: 1rem; color: {COLORS['gray_800']}; max-width: 700px; line-height: 1.6;">
+        <strong>Projektpartner für den technischen Einkauf</strong> – neutral, unabhängig und spezialisiert auf Industrieunternehmen.
+    </p>
+    <p style="margin: {SPACING['sm']} 0 0 0; font-size: 0.9rem; color: {COLORS['gray_700']}; max-width: 700px; line-height: 1.5;">
         KI-gestützte Bestellanalyse & Kostenschätzung
     </p>
 </div>
