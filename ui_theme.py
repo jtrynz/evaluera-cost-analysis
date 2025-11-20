@@ -183,17 +183,7 @@ def card(content, padding="md", hover=False, border=True):
     import streamlit as st
     border_style = f"border: 1px solid {COLORS['gray_200']};" if border else ""
 
-    st.markdown(f"""
-    <div style="
-        background: {COLORS['surface']};
-        {border_style}
-        border-radius: {RADIUS['md']};
-        padding: {SPACING[padding]};
-        box-shadow: {SHADOWS['sm']};
-    ">
-        {content}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div style="background: {COLORS['surface']}; {border_style} border-radius: {RADIUS['md']}; padding: {SPACING[padding]}; box-shadow: {SHADOWS['sm']};">{content}</div>""", unsafe_allow_html=True)
 
 
 def button(label, variant="primary", icon=None, disabled=False):
@@ -269,28 +259,7 @@ def kpi_card(label, value, icon=None, help_text=None, trend=None):
     elif trend == "negative":
         trend_html = f"<span style='color: {COLORS['error']}; font-size: {TYPOGRAPHY['small']};'>↓</span>"
 
-    st.markdown(f"""
-    <div style="
-        background: {COLORS['surface']};
-        border: 1px solid {COLORS['gray_200']};
-        border-radius: {RADIUS['md']};
-        padding: {SPACING['md']};
-        box-shadow: {SHADOWS['sm']};
-    ">
-        <div style="display: flex; align-items: center;">
-            {icon_html}
-            <div style="flex: 1;">
-                <div style="font-size: {TYPOGRAPHY['tiny']}; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-                    {label}
-                </div>
-                <div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">
-                    {value} {trend_html}
-                </div>
-                {help_html}
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div style="background: {COLORS['surface']}; border: 1px solid {COLORS['gray_200']}; border-radius: {RADIUS['md']}; padding: {SPACING['md']}; box-shadow: {SHADOWS['sm']};"><div style="display: flex; align-items: center;">{icon_html}<div style="flex: 1;"><div style="font-size: {TYPOGRAPHY['tiny']}; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">{label}</div><div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">{value} {trend_html}</div>{help_html}</div></div></div>""", unsafe_allow_html=True)
 
 
 def wizard_step(step_number, title, description, is_active, is_completed):
@@ -383,23 +352,12 @@ def section_header(title, subtitle=None):
     """Section header with optional subtitle"""
     subtitle_html = f"<p style='color: {COLORS['gray_500']}; margin-top: 0.5rem; font-size: {TYPOGRAPHY['body']};'>{subtitle}</p>" if subtitle else ""
 
-    st.markdown(f"""
-    <div style="margin-bottom: {SPACING['lg']};">
-        <h2 style="color: {COLORS['gray_900']}; font-weight: 700; margin: 0;">{title}</h2>
-        {subtitle_html}
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div style="margin-bottom: {SPACING['lg']};"><h2 style="color: {COLORS['gray_900']}; font-weight: 700; margin: 0;">{title}</h2>{subtitle_html}</div>""", unsafe_allow_html=True)
 
 
 def divider():
     """Minimal divider"""
-    st.markdown(f"""
-    <div style="
-        height: 1px;
-        background: {COLORS['gray_200']};
-        margin: {SPACING['xl']} 0;
-    "></div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div style="height: 1px; background: {COLORS['gray_200']}; margin: {SPACING['xl']} 0;"></div>""", unsafe_allow_html=True)
 
 
 def loading_spinner(text="Lädt..."):

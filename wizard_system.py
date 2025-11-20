@@ -118,35 +118,7 @@ class WizardManager:
             text_color = COLORS['gray_500']
             icon = str(step_number)
 
-        st.markdown(f"""
-        <div style="display: flex; align-items: center; gap: 1rem; padding: {SPACING['md']}; margin-bottom: {SPACING['sm']};
-                    background: {COLORS['surface']}; border-radius: {RADIUS['md']};
-                    border: 2px solid {bg if is_active else COLORS['gray_200']};
-                    opacity: {1 if (is_active or is_completed) else 0.6};">
-            <div style="
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: {bg};
-                color: {text_color};
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: 700;
-                font-size: 1rem;
-            ">
-                {icon}
-            </div>
-            <div style="flex: 1;">
-                <div style="font-weight: 600; color: {COLORS['gray_900']}; font-size: 1rem;">
-                    {step_info['title']}
-                </div>
-                <div style="font-size: 0.875rem; color: {COLORS['gray_500']};">
-                    {step_info['desc']}
-                </div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""<div style="display: flex; align-items: center; gap: 1rem; padding: {SPACING['md']}; margin-bottom: {SPACING['sm']}; background: {COLORS['surface']}; border-radius: {RADIUS['md']}; border: 2px solid {bg if is_active else COLORS['gray_200']}; opacity: {1 if (is_active or is_completed) else 0.6};"><div style="width: 40px; height: 40px; border-radius: 50%; background: {bg}; color: {text_color}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem;">{icon}</div><div style="flex: 1;"><div style="font-weight: 600; color: {COLORS['gray_900']}; font-size: 1rem;">{step_info['title']}</div><div style="font-size: 0.875rem; color: {COLORS['gray_500']};">{step_info['desc']}</div></div></div>""", unsafe_allow_html=True)
 
         # Only show content if active
         if is_active:
@@ -157,13 +129,7 @@ class WizardManager:
     def render_all_steps_sidebar(self):
         """Render all steps in sidebar for overview"""
         with st.sidebar:
-            st.markdown(f"""
-            <div style="margin-bottom: {SPACING['lg']};">
-                <h3 style="color: {COLORS['gray_900']}; margin-bottom: {SPACING['md']};">
-                    Workflow
-                </h3>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div style="margin-bottom: {SPACING['lg']};"><h3 style="color: {COLORS['gray_900']}; margin-bottom: {SPACING['md']};">Workflow</h3></div>""", unsafe_allow_html=True)
 
             for step_num in range(1, 7):
                 step_info = self.STEPS[step_num]
@@ -181,16 +147,7 @@ class WizardManager:
                         self.set_step(step_num)
                         st.rerun()
                 else:
-                    st.markdown(f"""
-                    <div style="
-                        padding: 0.5rem 1rem;
-                        color: {COLORS['gray_400']};
-                        font-size: 0.875rem;
-                        margin-bottom: 0.5rem;
-                    ">
-                        {step_num}. {step_info['title']}
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.markdown(f"""<div style="padding: 0.5rem 1rem; color: {COLORS['gray_400']}; font-size: 0.875rem; margin-bottom: 0.5rem;">{step_num}. {step_info['title']}</div>""", unsafe_allow_html=True)
 
 
 def create_data_table(df, columns_config=None, max_height=400):
@@ -244,25 +201,4 @@ def create_compact_kpi_row(kpis):
             elif trend == "negative":
                 trend_html = f"<span style='color: {COLORS['error']}; font-size: 0.875rem; margin-left: 0.5rem;'>↓</span>"
 
-            st.markdown(f"""
-            <div style="
-                background: {COLORS['surface']};
-                border: 1px solid {COLORS['gray_200']};
-                border-radius: {RADIUS['md']};
-                padding: {SPACING['md']};
-                box-shadow: {SHADOWS['sm']};
-            ">
-                <div style="display: flex; align-items: center;">
-                    {icon_html}
-                    <div style="flex: 1;">
-                        <div style="font-size: 0.75rem; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-                            {label}
-                        </div>
-                        <div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">
-                            {value} {trend_html}
-                        </div>
-                        {help_html}
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"""<div style="background: {COLORS['surface']}; border: 1px solid {COLORS['gray_200']}; border-radius: {RADIUS['md']}; padding: {SPACING['md']}; box-shadow: {SHADOWS['sm']};"><div style="display: flex; align-items: center;">{icon_html}<div style="flex: 1;"><div style="font-size: 0.75rem; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">{label}</div><div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['gray_900']};">{value} {trend_html}</div>{help_html}</div></div></div>""", unsafe_allow_html=True)
