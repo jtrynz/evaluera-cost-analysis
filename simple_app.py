@@ -108,16 +108,41 @@ st.markdown(f"""
             Wer wir sind
         </h3>
     </div>
-    <h1 style="
-        margin: 0;
-        color: {COLORS['gray_900']};
-        font-size: 3rem;
-        font-weight: 300;
-        letter-spacing: 0.1em;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    ">
-        EVALUERA
-    </h1>
+    <svg width="600" height="100" viewBox="0 0 600 100" style="max-width: 100%; height: auto;">
+        <!-- E with lines -->
+        <g transform="translate(0, 35)">
+            <rect x="0" y="0" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="20" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="40" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="0" width="4" height="44" fill="{COLORS['gray_900']}"/>
+        </g>
+
+        <!-- V -->
+        <text x="60" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">V</text>
+
+        <!-- A -->
+        <text x="110" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">A</text>
+
+        <!-- L -->
+        <text x="160" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">L</text>
+
+        <!-- U -->
+        <text x="200" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">U</text>
+
+        <!-- E with lines -->
+        <g transform="translate(260, 35)">
+            <rect x="0" y="0" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="20" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="40" width="40" height="4" fill="{COLORS['gray_900']}"/>
+            <rect x="0" y="0" width="4" height="44" fill="{COLORS['gray_900']}"/>
+        </g>
+
+        <!-- R -->
+        <text x="320" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">R</text>
+
+        <!-- A -->
+        <text x="370" y="70" font-family="Arial, sans-serif" font-size="48" font-weight="300" fill="{COLORS['gray_900']}">A</text>
+    </svg>
     <p style="margin: {SPACING['md']} 0 0 0; font-size: 1rem; color: {COLORS['gray_800']}; max-width: 700px; line-height: 1.6;">
         <strong>Projektpartner für den technischen Einkauf</strong> – neutral, unabhängig und spezialisiert auf Industrieunternehmen.
     </p>
