@@ -62,45 +62,20 @@ class WizardManager:
     def render_progress(self):
         """Render wizard progress indicators"""
         current = self.get_current_step()
+        progress_pct = int((current / 6) * 100)
 
-        # Show compact progress bar at top
+        # Use Streamlit native components instead of HTML
         st.markdown(f"""
-        <div style="
-            background: {COLORS['surface']};
-            border-radius: {RADIUS['md']};
-            padding: {SPACING['md']};
-            margin-bottom: {SPACING['xl']};
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid {COLORS['primary']};
-        ">
+        <div style="background: {COLORS['surface']}; border-radius: {RADIUS['md']}; padding: {SPACING['md']}; margin-bottom: {SPACING['xl']}; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border-left: 4px solid {COLORS['primary']};">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: {SPACING['md']};">
                 <div>
-                    <h3 style="margin: 0; color: {COLORS['gray_900']};">
-                        Schritt {current} von 6
-                    </h3>
-                    <p style="margin: 0; color: {COLORS['gray_600']}; font-size: 0.875rem;">
-                        {self.STEPS[current]['title']}
-                    </p>
+                    <h3 style="margin: 0; color: {COLORS['gray_900']};">Schritt {current} von 6</h3>
+                    <p style="margin: 0; color: {COLORS['gray_600']}; font-size: 0.875rem;">{self.STEPS[current]['title']}</p>
                 </div>
-                <div style="color: {COLORS['primary']}; font-weight: 600;">
-                    {int((current / 6) * 100)}% abgeschlossen
-                </div>
+                <div style="color: {COLORS['primary']}; font-weight: 600;">{progress_pct}% abgeschlossen</div>
             </div>
-
-            <!-- Progress Bar - EVALUERA Style -->
-            <div style="
-                height: 8px;
-                background: {COLORS['gray_200']};
-                border-radius: {RADIUS['full']};
-                overflow: hidden;
-            ">
-                <div style="
-                    width: {(current / 6) * 100}%;
-                    height: 100%;
-                    background: {COLORS['primary']};
-                    transition: width 0.3s ease;
-                    border-radius: {RADIUS['full']};
-                "></div>
+            <div style="height: 8px; background: {COLORS['gray_200']}; border-radius: {RADIUS['full']}; overflow: hidden;">
+                <div style="width: {progress_pct}%; height: 100%; background: {COLORS['primary']}; transition: width 0.3s ease; border-radius: {RADIUS['full']};"></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
