@@ -52,7 +52,7 @@ def get_light_theme_css():
             --success-bg: #D1E7DD;
             --warning: #664D03;
             --warning-bg: #FFF3CD;
-            --error: #842029;
+            --error: #472B2E;
             --error-bg: #F8D7DA;
             --info: #055160;
             --info-bg: #CFF4FC;
@@ -409,7 +409,7 @@ def get_dark_theme_css():
             --success-bg: #1A3E2A;
             --warning: #FFD43B;
             --warning-bg: #3E3416;
-            --error: #FF6B6B;
+            --error: #472B2E;
             --error-bg: #3E1C1C;
             --info: #74C0FC;
             --info-bg: #1A2E3E;
