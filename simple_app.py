@@ -113,7 +113,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     import os
 
     # Load local Lottie JSON → Base64 encoding
-    lottie_path = os.path.join(os.path.dirname(__file__), "dark gradient.json")
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
     with open(lottie_path, "rb") as f:
         anim_data = base64.b64encode(f.read()).decode("utf-8")
     lottie_data_url = f"data:application/json;base64,{anim_data}"
