@@ -106,6 +106,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ==================== RENDER ANIMATED BACKGROUND (ALWAYS) ====================
+# Render animation FIRST, before any login checks, so it's always visible
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    st.markdown("""
+    <div class="fullscreen-animated-bg"></div>
+    <div class="animated-gradient-overlay"></div>
+    <div class="dark-overlay-layer"></div>
+    <div class="animated-spinner"></div>
+    <div class="shimmer-container-fixed">
+        <div class="shimmer-bar"></div>
+    </div>
+    <div class="bounce-dots-fixed">
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
 if "logged_in" not in st.session_state:

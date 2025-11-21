@@ -54,24 +54,8 @@ def logout():
 def render_login_screen():
     """
     Render premium login screen with permanent animated background
+    NOTE: Background animation HTML is rendered in simple_app.py before this function
     """
-
-    # ==================== RENDER ANIMATED BACKGROUND FIRST ====================
-    # This MUST be rendered before everything else to stay in background
-    st.markdown("""
-    <div class="fullscreen-animated-bg"></div>
-    <div class="animated-gradient-overlay"></div>
-    <div class="dark-overlay-layer"></div>
-    <div class="animated-spinner"></div>
-    <div class="shimmer-container-fixed">
-        <div class="shimmer-bar"></div>
-    </div>
-    <div class="bounce-dots-fixed">
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-    </div>
-    """, unsafe_allow_html=True)
 
     # ==================== PERMANENT ANIMATED BACKGROUND STYLES ====================
     st.markdown("""
