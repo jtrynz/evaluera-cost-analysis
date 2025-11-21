@@ -49,7 +49,7 @@ html, body {{
 </html>
 """
 
-    st.components.v1.html(html, height=600, width=1000, scrolling=False, key="lottie-bg")
+    st.components.v1.html(html, height=600, width=1000, scrolling=False)
 
     st.markdown("""
     <style>
