@@ -107,67 +107,8 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-if not st.session_state.get("logged_in"):
-    # Animated gradient background (CSS-only, no JavaScript needed)
-    st.markdown("""
-    <style>
-        /* Animated gradient background */
-        .animated-gradient-bg {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9999 !important;
-            pointer-events: none !important;
-            background: linear-gradient(
-                -45deg,
-                #1a2332,
-                #2a3f54,
-                #1e3a52,
-                #0f1419
-            );
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Force Streamlit transparent background */
-        html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {
-            background: transparent !important;
-            overflow: hidden !important;
-        }
-
-        .main {
-            background: transparent !important;
-        }
-
-        .block-container {
-            background: transparent !important;
-            padding-top: 0 !important;
-        }
-
-        /* Hide Streamlit UI during login */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
-    </style>
-
-    <div class="animated-gradient-bg"></div>
-    """, unsafe_allow_html=True)
+from inject_lottie_login_background import inject_lottie_background
+inject_lottie_background()
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
