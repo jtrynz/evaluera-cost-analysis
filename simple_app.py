@@ -110,97 +110,97 @@ st.markdown("""
 if not st.session_state.get("logged_in"):
     import base64
 
-    # Load Lottie JSON as Base64
-    encoded_json = base64.b64encode(open(os.path.join(os.path.dirname(__file__), "dark_gradient.json"), "rb").read()).decode()
+    # Load Lottie JSON and Player as Base64
+    lottie_json_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.js")
 
-    # Inject fullscreen Lottie background with guaranteed loading
-    st.markdown(f"""
-    <div id="lottie-container"></div>
+    with open(lottie_json_path, "rb") as f:
+        lottie_data = base64.b64encode(f.read()).decode()
 
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    with open(player_js_path, "r", encoding="utf-8") as f:
+        player_script = f.read()
 
-    <script>
-    // Wait for DOM and lottie-player to be ready
-    function initLottie() {{
-        const container = document.getElementById('lottie-container');
-        if (!container) {{
-            setTimeout(initLottie, 100);
-            return;
-        }}
-
-        // Remove existing player if any
-        const existing = document.getElementById('lottie-bg');
-        if (existing) existing.remove();
-
-        // Create lottie player
-        const player = document.createElement('lottie-player');
-        player.id = 'lottie-bg';
-        player.setAttribute('autoplay', '');
-        player.setAttribute('loop', '');
-        player.setAttribute('mode', 'normal');
-        player.setAttribute('speed', '1');
-        player.setAttribute('src', 'data:application/json;base64,{encoded_json}');
-
-        container.appendChild(player);
-    }}
-
-    // Initialize when script loads
-    if (document.readyState === 'loading') {{
-        document.addEventListener('DOMContentLoaded', initLottie);
-    }} else {{
-        initLottie();
-    }}
-    </script>
-
+    # Create fullscreen iframe with embedded lottie player
+    iframe_html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
     <style>
-    /* Container for lottie player */
-    #lottie-container {{
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        z-index: -9999 !important;
-        pointer-events: none !important;
-        overflow: hidden !important;
-    }}
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        html, body {{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: transparent;
+        }}
+        #lottie-bg {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }}
+    </style>
+</head>
+<body>
+    <script>{player_script}</script>
+    <lottie-player
+        id="lottie-bg"
+        autoplay
+        loop
+        mode="normal"
+        speed="1"
+        src="data:application/json;base64,{lottie_data}">
+    </lottie-player>
+</body>
+</html>
+"""
 
-    /* Lottie player styling */
-    #lottie-bg {{
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-    }}
+    # Render as iframe component (CSP-safe for Streamlit Cloud)
+    st.components.v1.html(iframe_html, height=0, scrolling=False)
 
-    /* ensure no Streamlit layout shrinks or clips the player */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {{
-        height: 100% !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-        background: transparent !important;
-    }}
+    # CSS for Streamlit transparency and UI hiding
+    st.markdown("""
+    <style>
+        /* Force Streamlit transparent background */
+        html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {
+            background: transparent !important;
+            overflow: hidden !important;
+        }
 
-    /* Hide Streamlit UI during login */
-    #MainMenu {{visibility: hidden !important;}}
-    footer {{visibility: hidden !important;}}
-    header {{visibility: hidden !important;}}
-    [data-testid="stSidebar"] {{display: none !important;}}
-    [data-testid="stToolbar"] {{display: none !important;}}
+        .main {
+            background: transparent !important;
+        }
 
-    /* Force transparency */
-    .main {{
-        background: transparent !important;
-    }}
+        .block-container {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
 
-    .block-container {{
-        background: transparent !important;
-        padding-top: 0 !important;
-    }}
+        /* Hide Streamlit UI during login */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
+
+        /* Position iframe in background */
+        iframe[title="st.components.v1.html"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -9999 !important;
+            border: none !important;
+            pointer-events: none !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
