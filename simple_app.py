@@ -134,13 +134,13 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
                 overflow:hidden !important;
             }}
             #lottie-bg {{
-                position:fixed;
-                top:0;
-                left:0;
-                width:100vw;
-                height:100vh;
-                z-index:-9999;
-                pointer-events:none;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: -9999 !important;
+                pointer-events: none !important;
             }}
         </style>
     </head>
@@ -154,6 +154,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             loop
             autoplay
             renderer="canvas"
+            style="width:100vw !important; height:100vh !important; position:fixed !important; top:0 !important; left:0 !important; object-fit:cover !important;"
         ></lottie-player>
     </body>
     </html>
@@ -182,15 +183,6 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             [data-testid="stDecoration"],
             [data-testid="stSidebar"] {
                 display: none !important;
-            }
-
-            iframe {
-                position: fixed !important;
-                inset: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                z-index: -9999 !important;
-                border: none !important;
             }
         </style>
     """, unsafe_allow_html=True)
