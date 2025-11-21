@@ -1,7 +1,7 @@
 """
 🔐 EVALUERA - Premium Login Screen
 ====================================
-Fullscreen animated background with frosted glass login panel
+Permanent animated background without flickering
 """
 
 import streamlit as st
@@ -50,187 +50,63 @@ def logout():
     st.rerun()
 
 
-# ==================== FULLSCREEN ANIMATED BACKGROUND ====================
-def render_animated_background():
-    """Render EVALUERA loading animation as fullscreen background"""
+# ==================== LOGIN SCREEN ====================
+def render_login_screen():
+    """
+    Render premium login screen with permanent animated background
+    """
+
+    # ==================== PERMANENT ANIMATED BACKGROUND ====================
+    # CSS-only animation that doesn't reload on rerun
     st.markdown("""
-    <div class="fullscreen-animated-bg">
-        <!-- Animated gradient background -->
-        <div class="animated-gradient"></div>
-
-        <!-- Radial gradient overlay -->
-        <div class="radial-overlay"></div>
-
-        <!-- Animated spinner -->
-        <div class="spinner-container">
-            <div class="spinner-circle"></div>
-            <div class="spinner-ring"></div>
-        </div>
-
-        <!-- Shimmer bar -->
-        <div class="shimmer-container">
-            <div class="shimmer-bar"></div>
-        </div>
-
-        <!-- Bounce dots -->
-        <div class="bounce-dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-    </div>
-
     <style>
+        /* ========== HIDE STREAMLIT UI ========== */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+
+        /* ========== TRANSPARENT MAIN ========== */
+        .main {
+            background: transparent !important;
+        }
+
+        body {
+            background: transparent !important;
+        }
+
         /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
-        .fullscreen-animated-bg {
+        body::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             z-index: -2;
-            overflow: hidden;
             background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
         }
 
-        .animated-gradient {
-            position: absolute;
+        /* ========== ANIMATED GRADIENT OVERLAY ========== */
+        body::after {
+            content: '';
+            position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%);
-            animation: moveGradient 3s ease-in-out infinite;
+            width: 100vw;
+            height: 100vh;
+            z-index: -2;
+            background:
+                radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 70% 80%, rgba(123, 165, 160, 0.3) 0%, transparent 60%);
+            animation: moveGradient 8s ease-in-out infinite;
         }
 
-        .radial-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(
-                circle at center,
-                transparent 0%,
-                rgba(47, 74, 86, 0.3) 100%
-            );
-        }
-
-        /* Centered spinner */
-        .spinner-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .spinner-circle {
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .spinner-ring {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 140px;
-            height: 140px;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-        }
-
-        /* Shimmer bar */
-        .shimmer-container {
-            position: absolute;
-            bottom: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 300px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 100px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .shimmer-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 50%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-
-        /* Bounce dots */
-        .bounce-dots {
-            position: absolute;
-            bottom: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .dot:nth-child(1) { animation: bounce 1.4s ease-in-out infinite; }
-        .dot:nth-child(2) { animation: bounce 1.4s ease-in-out 0.2s infinite; }
-        .dot:nth-child(3) { animation: bounce 1.4s ease-in-out 0.4s infinite; }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-        }
-
-        @keyframes moveGradient {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, -30px); }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-
-# ==================== DARK OVERLAY ====================
-def render_dark_overlay():
-    """Render dark overlay with blur over animated background"""
-    st.markdown("""
-    <div class="dark-overlay"></div>
-
-    <style>
-        .dark-overlay {
+        /* ========== DARK OVERLAY ========== */
+        .main::before {
+            content: '';
             position: fixed;
             top: 0;
             left: 0;
@@ -241,38 +117,45 @@ def render_dark_overlay():
             -webkit-backdrop-filter: blur(20px);
             z-index: -1;
         }
-    </style>
-    """, unsafe_allow_html=True)
 
-
-# ==================== LOGIN SCREEN ====================
-def render_login_screen():
-    """
-    Render premium login screen with fullscreen animated background
-    """
-
-    # Render fullscreen animated background
-    render_animated_background()
-
-    # Render dark overlay
-    render_dark_overlay()
-
-    # ==================== STYLING ====================
-    st.markdown("""
-    <style>
-        /* ========== HIDE STREAMLIT UI ========== */
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
-        [data-testid="stSidebar"] {display: none !important;}
-
-        /* ========== TRANSPARENT MAIN ========== */
-        .main {
-            background: transparent !important;
+        /* ========== ANIMATED ELEMENTS LAYER ========== */
+        .animated-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
         }
 
-        body {
-            background: transparent !important;
+        /* Spinner in center */
+        .animated-elements::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            border-top-color: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        /* Pulse circle */
+        .animated-elements::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
         }
 
         /* ========== CENTER LOGIN PANEL ========== */
@@ -299,18 +182,9 @@ def render_login_screen():
             box-shadow:
                 0 10px 40px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+            position: relative;
+            z-index: 1;
         }
 
         /* ========== BRANDING ========== */
@@ -410,12 +284,6 @@ def render_login_screen():
             animation: shake 0.5s ease;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
-            20%, 40%, 60%, 80% { transform: translateX(6px); }
-        }
-
         /* ========== HELPER TEXT ========== */
         .login-helper {
             text-align: center;
@@ -451,6 +319,61 @@ def render_login_screen():
             margin: 24px 0 16px 0;
         }
 
+        /* ========== ANIMATIONS ========== */
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        @keyframes moveGradient {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+            66% {
+                transform: translate(-20px, 20px) scale(0.95);
+            }
+        }
+
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.15);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             .main .block-container {
@@ -467,6 +390,9 @@ def render_login_screen():
         }
     </style>
     """, unsafe_allow_html=True)
+
+    # Add animated elements layer (permanent, CSS-only)
+    st.markdown('<div class="animated-elements"></div>', unsafe_allow_html=True)
 
     # ==================== LOGIN PANEL ====================
     with st.container():
