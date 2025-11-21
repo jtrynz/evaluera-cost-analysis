@@ -119,10 +119,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         anim_data = base64.b64encode(f.read()).decode("utf-8")
     lottie_data_url = f"data:application/json;base64,{anim_data}"
 
-    # Load local lottie-player.js
-    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.min.js")
-    with open(player_js_path, "r") as f:
-        lottie_js = f.read()
+    # Use CDN for lottie-player.js
+    lottie_js = "<script src='https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js'></script>"
 
     # Build fullscreen Lottie player HTML
     player_html = f"""
@@ -152,7 +150,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         </style>
     </head>
     <body>
-        <script>{lottie_js}</script>
+        {lottie_js}
         <lottie-player
             id="lottie-bg"
             src="{lottie_data_url}"
