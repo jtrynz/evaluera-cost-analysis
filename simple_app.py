@@ -108,66 +108,41 @@ st.markdown("""
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 if not st.session_state.get("logged_in"):
-    import base64
-
-    # Load Lottie JSON and Player as Base64
-    lottie_json_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.js")
-
-    with open(lottie_json_path, "rb") as f:
-        lottie_data = base64.b64encode(f.read()).decode()
-
-    with open(player_js_path, "r", encoding="utf-8") as f:
-        player_script = f.read()
-
-    # Create fullscreen iframe with embedded lottie player
-    iframe_html = f"""
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-        html, body {{
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: transparent;
-        }}
-        #lottie-bg {{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-        }}
-    </style>
-</head>
-<body>
-    <script>{player_script}</script>
-    <lottie-player
-        id="lottie-bg"
-        autoplay
-        loop
-        mode="normal"
-        speed="1"
-        src="data:application/json;base64,{lottie_data}">
-    </lottie-player>
-</body>
-</html>
-"""
-
-    # Render as iframe component (CSP-safe for Streamlit Cloud)
-    st.components.v1.html(iframe_html, height=0, scrolling=False)
-
-    # CSS for Streamlit transparency and UI hiding
+    # Animated gradient background (CSS-only, no JavaScript needed)
     st.markdown("""
     <style>
+        /* Animated gradient background */
+        .animated-gradient-bg {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -9999 !important;
+            pointer-events: none !important;
+            background: linear-gradient(
+                -45deg,
+                #1a2332,
+                #2a3f54,
+                #1e3a52,
+                #0f1419
+            );
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         /* Force Streamlit transparent background */
         html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {
             background: transparent !important;
@@ -189,19 +164,9 @@ if not st.session_state.get("logged_in"):
         header {visibility: hidden !important;}
         [data-testid="stSidebar"] {display: none !important;}
         [data-testid="stToolbar"] {display: none !important;}
-
-        /* Position iframe in background */
-        iframe[title="st.components.v1.html"] {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9999 !important;
-            border: none !important;
-            pointer-events: none !important;
-        }
     </style>
+
+    <div class="animated-gradient-bg"></div>
     """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
