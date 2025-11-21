@@ -109,43 +109,39 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-# Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    import os
 
-    # Load local Lottie JSON → Base64 encoding
+    # 1️⃣ Lottie JSON korrekt laden
     lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
     with open(lottie_path, "rb") as f:
         anim_data = base64.b64encode(f.read()).decode("utf-8")
-    lottie_data_url = f"data:application/json;base64,{anim_data}"
 
-    # Use CDN for lottie-player.js
-    lottie_js = "<script src='https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js'></script>"
+    # 2️⃣ Lottie Player via CDN
+    lottie_js = """
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    """
 
-    # Build fullscreen Lottie player HTML
-    player_html = f"""
-    <!DOCTYPE html>
+    # 3️⃣ HTML + Fullscreen Iframe fix
+    html_code = f"""
     <html>
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-            html, body {{
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                overflow: hidden !important;
-                background: transparent !important;
+            body,html {{
+                margin:0;
+                padding:0;
+                width:100%;
+                height:100%;
+                background:transparent;
+                overflow:hidden;
             }}
             #lottie-bg {{
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                z-index: 9999 !important;
-                pointer-events: none !important;
+                position:fixed;
+                top:0;
+                left:0;
+                width:100vw;
+                height:100vh;
+                z-index:-9999;
+                pointer-events:none;
             }}
         </style>
     </head>
@@ -153,73 +149,45 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         {lottie_js}
         <lottie-player
             id="lottie-bg"
-            src="{lottie_data_url}"
+            src="data:application/json;base64,{anim_data}"
             background="transparent"
             speed="1"
             loop
             autoplay
             renderer="canvas"
-            style="width:100%; height:100%;"
         ></lottie-player>
     </body>
     </html>
     """
 
-    # Inject via components.html (iframe-based)
     st.components.v1.html(
-        player_html,
-        width=0,
-        height=0,
+        html_code,
+        height=800,
+        width=None,
         scrolling=False
     )
 
-    # CSS Fix: Make iframe fullscreen background + transparent Streamlit
+    # 4️⃣ Streamlit vollständig transparent machen
     st.markdown("""
     <style>
-        /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
-        iframe[title="st.components.v1.html"] {
+        body, html, .stApp, .main, .block-container {
+            background: transparent !important;
+        }
+
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stSidebar"] {
+            display: none !important;
+        }
+
+        iframe {
             position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
+            inset: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             z-index: -9999 !important;
-            pointer-events: none !important;
             border: none !important;
-        }
-
-        /* ========== FORCE STREAMLIT TRANSPARENT ========== */
-        html, body, #root, .main, .block-container,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stApp"],
-        .stApp,
-        section.main,
-        div.main,
-        [data-testid="stHeader"],
-        [data-testid="stDecoration"],
-        [data-testid="stToolbar"],
-        .appview-container {
-            background: transparent !important;
-            background-color: transparent !important;
-        }
-
-        /* Ensure no white flash */
-        * {
-            transition: background-color 0s !important;
-        }
-
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .main {
-            background: transparent !important;
-        }
-
-        .block-container {
-            background: transparent !important;
-            padding-top: 0 !important;
         }
     </style>
     """, unsafe_allow_html=True)
