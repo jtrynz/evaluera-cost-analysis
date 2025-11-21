@@ -107,11 +107,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
-if not check_login():
-    render_login_screen()
-    st.stop()
+# Initialize login state if not exists
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
 
-# ==================== MAIN APP ====================
+# Show login screen if not logged in
+if not st.session_state.logged_in:
+    render_login_screen()
+    st.stop()  # Stop execution here - don't render the app
+
+# ==================== MAIN APP (nur wenn eingeloggt) ====================
 apply_global_styles()
 apply_liquid_glass_styles()
 create_scroll_behavior()

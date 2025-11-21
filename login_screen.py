@@ -53,40 +53,50 @@ def logout():
 def render_login_screen():
     """Render premium glassmorphism login screen"""
 
-    # Apply liquid glass styles
+    # Apply liquid glass styles first
     apply_liquid_glass_styles()
 
     # Render animated background
     render_liquid_background()
 
-    # Hide Streamlit elements
+    # Debug output to ensure function is called
+    # st.write("🔍 DEBUG: Login screen is rendering...")
+
+    # Hide Streamlit elements and style login screen
     st.markdown("""
     <style>
         /* Hide Streamlit elements during login */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
-        [data-testid="stSidebar"] {display: none;}
+        [data-testid="stSidebar"] {display: none !important;}
 
-        /* Center login container */
-        .login-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem;
+        /* Force main content to be visible and centered */
+        .main .block-container {
+            padding-top: 5rem !important;
+            padding-bottom: 5rem !important;
+            max-width: 500px !important;
+            margin: 0 auto !important;
         }
 
-        /* Login Card */
-        .login-card {
+        /* Ensure body is visible */
+        body {
+            background: transparent !important;
+        }
+
+        /* Ensure main content is visible */
+        .main {
+            background: transparent !important;
+        }
+
+        /* Login Card Wrapper */
+        .stContainer > div {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(35px) saturate(180%);
             -webkit-backdrop-filter: blur(35px) saturate(180%);
             border-radius: 28px;
             border: 1px solid rgba(255, 255, 255, 0.5);
             padding: 3rem 2.5rem;
-            max-width: 440px;
-            width: 100%;
             box-shadow:
                 0 20px 60px 0 rgba(31, 38, 135, 0.2),
                 inset 0 0 0 1px rgba(255, 255, 255, 0.4);
@@ -115,45 +125,43 @@ def render_login_screen():
         }
 
         /* Input Styling */
-        .login-card input {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.6);
+        .stTextInput input {
+            background: rgba(255, 255, 255, 0.6) !important;
             backdrop-filter: blur(15px);
-            border: 1px solid rgba(123, 165, 160, 0.3);
-            border-radius: 14px;
-            padding: 1rem 1.25rem;
-            font-size: 1rem;
-            color: #1a1a1a;
+            border: 1px solid rgba(123, 165, 160, 0.3) !important;
+            border-radius: 14px !important;
+            padding: 1rem 1.25rem !important;
+            font-size: 1rem !important;
+            color: #1a1a1a !important;
             transition: all 0.3s ease;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        .login-card input:focus {
+        .stTextInput input:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.8);
-            border-color: #7BA5A0;
-            box-shadow: 0 0 0 4px rgba(123, 165, 160, 0.12);
+            background: rgba(255, 255, 255, 0.8) !important;
+            border-color: #7BA5A0 !important;
+            box-shadow: 0 0 0 4px rgba(123, 165, 160, 0.12) !important;
         }
 
         /* Button Styling */
-        .login-card button[kind="primary"] {
+        .stButton > button {
             width: 100%;
-            background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            padding: 1rem;
-            font-size: 1.05rem;
-            font-weight: 600;
+            background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 14px !important;
+            padding: 1rem !important;
+            font-size: 1.05rem !important;
+            font-weight: 600 !important;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 6px 20px rgba(47, 74, 86, 0.3);
             margin-top: 1rem;
         }
 
-        .login-card button[kind="primary"]:hover {
+        .stButton > button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(47, 74, 86, 0.4);
+            box-shadow: 0 10px 30px rgba(47, 74, 86, 0.4) !important;
         }
 
         /* Divider */
@@ -196,25 +204,21 @@ def render_login_screen():
             75% { transform: translateX(10px); }
         }
 
-        /* Password Toggle */
-        .password-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-            font-size: 0.9rem;
-            color: rgba(26, 26, 26, 0.6);
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
     </style>
     """, unsafe_allow_html=True)
 
-    # Main container
-    st.markdown('<div class="login-container">', unsafe_allow_html=True)
-
-    # Login Card
+    # Login Card in native Streamlit container
     with st.container():
-        st.markdown('<div class="login-card">', unsafe_allow_html=True)
-
         # Logo
         st.markdown("""
         <div class="login-logo">
@@ -269,7 +273,7 @@ def render_login_screen():
         st.markdown('<div class="login-divider"></div>', unsafe_allow_html=True)
 
         # Login button
-        if st.button("🔐 Anmelden", type="primary", use_container_width=True):
+        if st.button("🔐 Anmelden", type="primary", use_container_width=True, key="login_btn"):
             if username and password:
                 if login(username, password):
                     st.session_state.login_error = False
@@ -289,10 +293,6 @@ def render_login_screen():
             Benutzer: <code>demo</code> | Passwort: <code>demo123</code>
         </div>
         """, unsafe_allow_html=True)
-
-        st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 def render_logout_button():
