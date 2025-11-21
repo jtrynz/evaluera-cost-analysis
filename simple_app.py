@@ -147,11 +147,15 @@ body,html {{
 /* Bring login UI above background */
 .block-container {{
     position: relative !important;
-    z-index: 99999 !important;
+    z-index: 999999 !important;
 }}
 .login-container, .glass-panel {{
     position: relative !important;
-    z-index: 99999 !important;
+    z-index: 999999 !important;
+}}
+.login-root {{
+    position: relative !important;
+    z-index: 1000000 !important;
 }}
         </style>
     </head>
@@ -253,7 +257,9 @@ if "logged_in" not in st.session_state:
 
 # Show login screen if not logged in
 if not st.session_state.logged_in:
+    st.markdown('<div class="login-root">', unsafe_allow_html=True)
     render_login_screen()
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()  # Stop execution here - don't render the app
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
