@@ -165,6 +165,18 @@ body,html {{
     object-fit: cover !important;
 "
         ></lottie-player>
+        <script>
+document.addEventListener("DOMContentLoaded", function() {{
+    const player = document.getElementById("lottie-bg");
+    if (player) {{
+        player.addEventListener("load", () => {{
+            try {{
+                player.playbackRate = 2.0;
+            }} catch(e) {{}}
+        }});
+    }}
+}});
+</script>
     </body>
     </html>
     """
