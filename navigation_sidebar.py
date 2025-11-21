@@ -12,38 +12,35 @@ class NavigationSidebar:
     """Apple-ähnliche Navigation Sidebar mit Accordion-Struktur"""
 
     SECTIONS = {
-        "produktdaten": {
-            "title": "Produktdaten",
-            "icon": "📦",
+        "upload": {
+            "title": "Upload",
+            "icon": "📤",
             "subsections": []
         },
-        "co2_analyse": {
-            "title": "CO₂-Analyse",
-            "icon": "🌍",
+        "artikel": {
+            "title": "Artikel-Erkennung",
+            "icon": "🔍",
             "subsections": []
         },
-        "kostenuebersicht": {
-            "title": "Kostenübersicht",
+        "preis": {
+            "title": "Preisübersicht",
             "icon": "💰",
             "subsections": []
         },
+        "lieferanten": {
+            "title": "Lieferantenanalyse",
+            "icon": "🏭",
+            "subsections": []
+        },
+        "kosten": {
+            "title": "Kosten-Schätzung",
+            "icon": "🚀",
+            "subsections": []
+        },
         "nachhaltigkeit": {
-            "title": "Nachhaltigkeit",
+            "title": "Nachhaltigkeit & Verhandlung",
             "icon": "♻️",
             "subsections": []
-        },
-        "debug": {
-            "title": "Debug / Technische Details",
-            "icon": "⚙️",
-            "subsections": []
-        },
-        "erweitert": {
-            "title": "Erweiterte Funktionen",
-            "icon": "✨",
-            "subsections": [
-                {"id": "zeichnung", "title": "Technische Zeichnung", "icon": "📐"},
-                {"id": "modell3d", "title": "3D-Modell", "icon": "🎲"}
-            ]
         }
     }
 
@@ -52,7 +49,7 @@ class NavigationSidebar:
         if "nav_expanded_sections" not in st.session_state:
             st.session_state.nav_expanded_sections = set()
         if "nav_active_section" not in st.session_state:
-            st.session_state.nav_active_section = "produktdaten"
+            st.session_state.nav_active_section = "upload"
 
     def toggle_section(self, section_id: str):
         """Toggle accordion section"""
@@ -192,11 +189,6 @@ class NavigationSidebar:
 
         # Main item
         active_class = "active" if is_active else ""
-        badge_html = ""
-
-        # Badge for extended features
-        if section_id == "erweitert":
-            badge_html = '<span class="nav-badge">NEU</span>'
 
         if st.button(
             f"{section['icon']}  {section['title']}",
