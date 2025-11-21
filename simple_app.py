@@ -125,38 +125,37 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     <html>
     <head>
         <style>
-body,html {{
-    margin:0;
-    padding:0;
-    width:100vw !important;
-    height:100vh !important;
-    background:transparent;
-    overflow:hidden !important;
-}}
+html, body, .stApp, .main, .block-container {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
 
-#lottie-bg {{
+#lottie-bg {
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: cover !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: -1 !important;
+    z-index: 0 !important;
     pointer-events: none !important;
-    object-fit: cover !important;
-}}
+}
 /* Bring login UI above background */
-.block-container {{
+.block-container {
+    z-index: 999999 !important;
+    position: relative !important;
+}
+.login-container {
     position: relative !important;
     z-index: 999999 !important;
-}}
-.login-container, .glass-panel {{
-    position: relative !important;
-    z-index: 999999 !important;
-}}
-.login-root {{
+}
+.login-root {
     position: relative !important;
     z-index: 1000000 !important;
-}}
+}
         </style>
     </head>
     <body>
@@ -169,14 +168,7 @@ body,html {{
             loop
             autoplay
             renderer="canvas"
-            style="
-    width: 100vw !important;
-    height: 100vh !important;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    object-fit: cover !important;
-"
+            style="width:100vw !important;height:100vh !important;object-fit:cover !important;position:fixed !important;top:0 !important;left:0 !important;z-index:0 !important;"
         ></lottie-player>
         <script>
 document.addEventListener("DOMContentLoaded", function() {{
@@ -231,6 +223,8 @@ document.addEventListener("DOMContentLoaded", function() {{
                 align-items: center !important;
                 height: 100vh !important;
                 padding-top: 0 !important;
+                z-index: 999999 !important;
+                position: relative !important;
             }
 
             /* Prevent scrolling */
@@ -238,14 +232,10 @@ document.addEventListener("DOMContentLoaded", function() {{
                 overflow: hidden !important;
                 height: 100vh !important;
             }
-            /* Ensure login container and glass panel are above background */
-            .block-container {
+            /* Ensure login container is above background */
+            .login-container {
                 position: relative !important;
-                z-index: 99999 !important;
-            }
-            .login-container, .glass-panel {
-                position: relative !important;
-                z-index: 99999 !important;
+                z-index: 999999 !important;
             }
         </style>
     """, unsafe_allow_html=True)
