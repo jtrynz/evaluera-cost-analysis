@@ -125,36 +125,27 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 <html>
 <head>
 <style>
-html, body, .stApp, .main, .block-container {{
-    background: transparent !important;
+html, body, .stApp {{
     margin: 0 !important;
     padding: 0 !important;
     height: 100vh !important;
     overflow: hidden !important;
+    background: transparent !important;
 }}
 
 #lottie-bg {{
     width: 100vw !important;
     height: 100vh !important;
-    object-fit: cover !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     z-index: 0 !important;
-    pointer-events: none !important;
+    object-fit: cover !important;
 }}
-/* Bring login UI above background */
-.block-container {{
-    z-index: 999999 !important;
-    position: relative !important;
-}}
-.login-container {{
+
+.login-root, .block-container {{
     position: relative !important;
     z-index: 999999 !important;
-}}
-.login-root {{
-    position: relative !important;
-    z-index: 1000000 !important;
 }}
 </style>
 </head>
@@ -196,46 +187,18 @@ document.addEventListener("DOMContentLoaded", function() {{
     # 4️⃣ Streamlit vollständig transparent machen
     st.markdown("""
         <style>
-            html, body, .stApp, .main, .block-container {
+            html, body, .stApp {
                 margin:0 !important;
                 padding:0 !important;
                 height:100vh !important;
                 overflow:hidden !important;
                 background:transparent !important;
             }
-
             [data-testid="stHeader"],
             [data-testid="stToolbar"],
             [data-testid="stDecoration"],
             [data-testid="stSidebar"] {
                 display: none !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("""
-        <style>
-            /* Center the entire login content vertically + horizontally */
-            .block-container {
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                height: 100vh !important;
-                padding-top: 0 !important;
-                z-index: 999999 !important;
-                position: relative !important;
-            }
-
-            /* Prevent scrolling */
-            html, body {
-                overflow: hidden !important;
-                height: 100vh !important;
-            }
-            /* Ensure login container is above background */
-            .login-container {
-                position: relative !important;
-                z-index: 999999 !important;
             }
         </style>
     """, unsafe_allow_html=True)
