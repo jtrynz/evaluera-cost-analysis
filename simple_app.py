@@ -115,12 +115,6 @@ if "logged_in" not in st.session_state:
 
 # Show login screen if not logged in
 if not st.session_state.logged_in:
-    st.markdown('<div class="login-root">', unsafe_allow_html=True)
-    render_login_screen()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.stop()  # Stop execution here - don't render the app
-if not st.session_state.logged_in:
-
     lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
     with open(lottie_path, "rb") as f:
         anim_data = base64.b64encode(f.read()).decode("utf-8")
@@ -135,13 +129,6 @@ if not st.session_state.logged_in:
                 background: transparent !important;
                 overflow: hidden !important;
             }
-
-            /* Stelle sicher, dass Streamlit nicht verdeckt wird */
-            .stApp {
-                z-index: 1 !important;
-                position: relative !important;
-            }
-
             #bg-lottie {
                 position: fixed !important;
                 top: 0 !important;
@@ -151,6 +138,10 @@ if not st.session_state.logged_in:
                 object-fit: cover !important;
                 z-index: 0 !important;
                 pointer-events: none !important;
+            }
+            .login-root {
+                position: relative !important;
+                z-index: 5 !important;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -167,8 +158,9 @@ if not st.session_state.logged_in:
         ></lottie-player>
     """, unsafe_allow_html=True)
 
-    # Jetzt Login Oberfläche anzeigen
+    st.markdown('<div class="login-root">', unsafe_allow_html=True)
     render_login_screen()
+    st.markdown('</div>', unsafe_allow_html=True)
     st.stop()
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
