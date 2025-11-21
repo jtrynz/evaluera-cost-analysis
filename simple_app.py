@@ -123,45 +123,67 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     with open(player_js_path, "r") as f:
         lottie_js = f.read()
 
-    # Build fullscreen Lottie player HTML
+    # Build fullscreen Lottie player HTML with object-fit: cover
     player_html = f"""
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <style>
-            html, body {{
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                overflow: hidden !important;
-                background: transparent !important;
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }}
-            #lottie-bg {{
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                z-index: 9999 !important;
-                pointer-events: none !important;
+            html, body {{
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+                background: transparent;
+                position: fixed;
+                inset: 0;
+            }}
+            #lottie-container {{
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                overflow: hidden;
+                pointer-events: none;
+            }}
+            lottie-player {{
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                min-width: 100%;
+                min-height: 100%;
+                width: 100vw;
+                height: 100vh;
+                object-fit: cover;
+                pointer-events: none;
+            }}
+            lottie-player canvas {{
+                object-fit: cover !important;
+                width: 100% !important;
+                height: 100% !important;
             }}
         </style>
     </head>
     <body>
         <script>{lottie_js}</script>
-        <lottie-player
-            id="lottie-bg"
-            src="{lottie_data_url}"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-            renderer="canvas"
-            style="width:100%; height:100%;"
-        ></lottie-player>
+        <div id="lottie-container">
+            <lottie-player
+                src="{lottie_data_url}"
+                background="transparent"
+                speed="1"
+                loop
+                autoplay
+                renderer="canvas"
+            ></lottie-player>
+        </div>
     </body>
     </html>
     """
@@ -172,17 +194,26 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     # CSS Fix: Make iframe fullscreen background + transparent Streamlit
     st.markdown("""
     <style>
+        /* ========== PREVENT SCROLLBARS ========== */
+        html, body {{
+            overflow: hidden !important;
+            position: fixed !important;
+            width: 100vw !important;
+            height: 100vh !important;
+        }}
+
         /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
-        iframe[title="st.components.v1.html"] {
+        iframe[title="st.components.v1.html"] {{
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            z-index: -9999 !important;
+            z-index: -99999 !important;
             pointer-events: none !important;
             border: none !important;
-        }
+            overflow: hidden !important;
+        }}
 
         /* ========== FORCE STREAMLIT TRANSPARENT ========== */
         html, body, #root, .main, .block-container,
@@ -194,36 +225,39 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         [data-testid="stHeader"],
         [data-testid="stDecoration"],
         [data-testid="stToolbar"],
-        .appview-container {
+        .appview-container {{
             background: transparent !important;
             background-color: transparent !important;
-        }
+        }}
 
         /* Ensure no white flash */
-        * {
+        * {{
             transition: background-color 0s !important;
-        }
+        }}
 
-        body {
+        body {{
             margin: 0 !important;
             padding: 0 !important;
-        }
+            overflow: hidden !important;
+        }}
 
-        .main {
+        .main {{
             background: transparent !important;
-        }
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }}
 
-        .block-container {
+        .block-container {{
             background: transparent !important;
             padding-top: 0 !important;
-        }
+        }}
 
         /* Hide Streamlit UI during login */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
+        #MainMenu {{visibility: hidden !important;}}
+        footer {{visibility: hidden !important;}}
+        header {{visibility: hidden !important;}}
+        [data-testid="stSidebar"] {{display: none !important;}}
+        [data-testid="stToolbar"] {{display: none !important;}}
     </style>
     """, unsafe_allow_html=True)
 
