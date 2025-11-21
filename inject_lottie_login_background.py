@@ -35,7 +35,7 @@ def inject_lottie_login_background():
         <style>
         body { background: #BFDCDC !important; }
         .stApp { background: transparent !important; }
-        iframe[title="lottie-player"] {
+        iframe[title="st.components.v1.html"] {
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;

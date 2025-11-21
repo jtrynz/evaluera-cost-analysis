@@ -170,8 +170,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     # Inject via components.html (iframe-based)
     st.components.v1.html(
         player_html,
-        width=1920,
-        height=1080,
+        width=0,
+        height=0,
         scrolling=False
     )
 
@@ -179,7 +179,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.markdown("""
     <style>
         /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
-        iframe {
+        iframe[title="st.components.v1.html"] {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
@@ -223,13 +223,6 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             background: transparent !important;
             padding-top: 0 !important;
         }
-
-        /* Hide Streamlit UI during login */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
     </style>
     """, unsafe_allow_html=True)
 
@@ -240,8 +233,6 @@ if "logged_in" not in st.session_state:
 
 # Show login screen if not logged in
 if not st.session_state.logged_in:
-    inject_lottie_login_background()
-
     render_login_screen()
     st.stop()  # Stop execution here - don't render the app
 
