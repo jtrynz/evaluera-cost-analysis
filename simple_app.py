@@ -117,23 +117,23 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 
     # 2️⃣ Lottie Player via CDN
     lottie_js = """
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    """
+<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+"""
 
     # 3️⃣ HTML + Fullscreen Iframe fix
     html_code = f"""
-    <html>
-    <head>
-        <style>
-html, body, .stApp, .main, .block-container {
+<html>
+<head>
+<style>
+html, body, .stApp, .main, .block-container {{
     background: transparent !important;
     margin: 0 !important;
     padding: 0 !important;
     height: 100vh !important;
     overflow: hidden !important;
-}
+}}
 
-#lottie-bg {
+#lottie-bg {{
     width: 100vw !important;
     height: 100vh !important;
     object-fit: cover !important;
@@ -142,35 +142,35 @@ html, body, .stApp, .main, .block-container {
     left: 0 !important;
     z-index: 0 !important;
     pointer-events: none !important;
-}
+}}
 /* Bring login UI above background */
-.block-container {
+.block-container {{
     z-index: 999999 !important;
     position: relative !important;
-}
-.login-container {
+}}
+.login-container {{
     position: relative !important;
     z-index: 999999 !important;
-}
-.login-root {
+}}
+.login-root {{
     position: relative !important;
     z-index: 1000000 !important;
-}
-        </style>
-    </head>
-    <body>
-        {lottie_js}
-        <lottie-player
-            id="lottie-bg"
-            src="data:application/json;base64,{anim_data}"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-            renderer="canvas"
-            style="width:100vw !important;height:100vh !important;object-fit:cover !important;position:fixed !important;top:0 !important;left:0 !important;z-index:0 !important;"
-        ></lottie-player>
-        <script>
+}}
+</style>
+</head>
+<body>
+    {lottie_js}
+    <lottie-player
+        id="lottie-bg"
+        src="data:application/json;base64,{anim_data}"
+        background="transparent"
+        speed="1"
+        loop
+        autoplay
+        renderer="canvas"
+        style="width:100vw !important;height:100vh !important;object-fit:cover !important;position:fixed !important;top:0 !important;left:0 !important;z-index:0 !important;"
+    ></lottie-player>
+    <script>
 document.addEventListener("DOMContentLoaded", function() {{
     const player = document.getElementById("lottie-bg");
     if (player) {{
@@ -182,8 +182,8 @@ document.addEventListener("DOMContentLoaded", function() {{
     }}
 }});
 </script>
-    </body>
-    </html>
+</body>
+</html>
     """
 
     st.components.v1.html(
