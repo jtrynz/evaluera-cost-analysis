@@ -132,7 +132,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
                 width:100%;
                 height:100%;
                 background:transparent;
-                overflow:hidden;
+                overflow:hidden !important;
             }}
             #lottie-bg {{
                 position:fixed;
@@ -169,27 +169,31 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 
     # 4️⃣ Streamlit vollständig transparent machen
     st.markdown("""
-    <style>
-        body, html, .stApp, .main, .block-container {
-            background: transparent !important;
-        }
+        <style>
+            html, body, .stApp, .main, .block-container {
+                margin:0 !important;
+                padding:0 !important;
+                height:100vh !important;
+                overflow:hidden !important;
+                background:transparent !important;
+            }
 
-        [data-testid="stHeader"],
-        [data-testid="stToolbar"],
-        [data-testid="stDecoration"],
-        [data-testid="stSidebar"] {
-            display: none !important;
-        }
+            [data-testid="stHeader"],
+            [data-testid="stToolbar"],
+            [data-testid="stDecoration"],
+            [data-testid="stSidebar"] {
+                display: none !important;
+            }
 
-        iframe {
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9999 !important;
-            border: none !important;
-        }
-    </style>
+            iframe {
+                position: fixed !important;
+                inset: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: -9999 !important;
+                border: none !important;
+            }
+        </style>
     """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
