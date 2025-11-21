@@ -71,16 +71,10 @@ def render_login_screen():
         }
 
         .glass-panel {
-            background: rgba(255, 255, 255, 0.18) !important;
-            backdrop-filter: blur(25px) saturate(150%) !important;
-            -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 24px !important;
-            padding: 48px 40px !important;
-            box-shadow:
-                0 8px 32px rgba(31, 38, 135, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
-            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
 
         @keyframes fadeInScale {
