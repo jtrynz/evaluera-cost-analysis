@@ -125,27 +125,23 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 <html>
 <head>
 <style>
-html, body, .stApp {{
+html, body, .stApp, .block-container {{
     margin: 0 !important;
     padding: 0 !important;
     height: 100vh !important;
-    overflow: hidden !important;
+    width: 100vw !important;
     background: transparent !important;
+    overflow: hidden !important;
 }}
 
 #lottie-bg {{
-    width: 100vw !important;
-    height: 100vh !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    z-index: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
     object-fit: cover !important;
-}}
-
-.login-root, .block-container {{
-    position: relative !important;
-    z-index: 999999 !important;
+    z-index: -1 !important;
 }}
 </style>
 </head>
@@ -187,13 +183,10 @@ document.addEventListener("DOMContentLoaded", function() {{
     # 4️⃣ Streamlit vollständig transparent machen
     st.markdown("""
         <style>
-            html, body, .stApp {
-                margin:0 !important;
-                padding:0 !important;
-                height:100vh !important;
-                overflow:hidden !important;
-                background:transparent !important;
+            html, body, .stApp, .block-container {
+                background: transparent !important;
             }
+
             [data-testid="stHeader"],
             [data-testid="stToolbar"],
             [data-testid="stDecoration"],
