@@ -49,6 +49,7 @@ from wizard_system import (
 from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
 from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from login_screen import check_login, render_login_screen, render_logout_button
+from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -107,6 +108,123 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
+# Render ONCE, outside any logic, so it persists through reruns
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    import os
+
+    # Load local Lottie JSON → Base64 encoding
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark gradient.json")
+    with open(lottie_path, "rb") as f:
+        anim_data = base64.b64encode(f.read()).decode("utf-8")
+    lottie_data_url = f"data:application/json;base64,{anim_data}"
+
+    # Load local lottie-player.js
+    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.min.js")
+    with open(player_js_path, "r") as f:
+        lottie_js = f.read()
+
+    # Build fullscreen Lottie player HTML
+    player_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            html, body {{
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                overflow: hidden !important;
+                background: transparent !important;
+            }}
+            #lottie-bg {{
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: 9999 !important;
+                pointer-events: none !important;
+            }}
+        </style>
+    </head>
+    <body>
+        <script>{lottie_js}</script>
+        <lottie-player
+            id="lottie-bg"
+            src="{lottie_data_url}"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+            renderer="canvas"
+            style="width:100%; height:100%;"
+        ></lottie-player>
+    </body>
+    </html>
+    """
+
+    # Inject via components.html (iframe-based)
+    st.components.v1.html(
+        player_html,
+        width=0,
+        height=0,
+        scrolling=False
+    )
+
+    # CSS Fix: Make iframe fullscreen background + transparent Streamlit
+    st.markdown("""
+    <style>
+        /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
+        iframe[title="st.components.v1.html"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -9999 !important;
+            pointer-events: none !important;
+            border: none !important;
+        }
+
+        /* ========== FORCE STREAMLIT TRANSPARENT ========== */
+        html, body, #root, .main, .block-container,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stApp"],
+        .stApp,
+        section.main,
+        div.main,
+        [data-testid="stHeader"],
+        [data-testid="stDecoration"],
+        [data-testid="stToolbar"],
+        .appview-container {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Ensure no white flash */
+        * {
+            transition: background-color 0s !important;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .main {
+            background: transparent !important;
+        }
+
+        .block-container {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
@@ -115,52 +233,8 @@ if "logged_in" not in st.session_state:
 
 # Show login screen if not logged in
 if not st.session_state.logged_in:
-    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    with open(lottie_path, "rb") as f:
-        anim_data = base64.b64encode(f.read()).decode("utf-8")
-
-    st.markdown("""
-        <style>
-            html, body, .stApp {
-                margin: 0 !important;
-                height: 100% !important;
-                width: 100% !important;
-                background: transparent !important;
-                overflow: hidden !important;
-            }
-            #bg-lottie {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                object-fit: cover !important;
-                z-index: 0 !important;
-                pointer-events: none !important;
-            }
-            .login-root {
-                position: relative !important;
-                z-index: 5 !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown(f"""
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        <lottie-player
-            id="bg-lottie"
-            src="data:application/json;base64,{anim_data}"
-            background="transparent"
-            speed="1"
-            loop
-            autoplay
-        ></lottie-player>
-    """, unsafe_allow_html=True)
-
-    st.markdown('<div class="login-root">', unsafe_allow_html=True)
     render_login_screen()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.stop()
+    st.stop()  # Stop execution here - don't render the app
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
 # Render animated waves background
@@ -228,6 +302,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 apply_global_styles()
+apply_liquid_glass_styles()
 create_scroll_behavior()
 wizard = WizardManager()
 nav = NavigationSidebar()
@@ -267,6 +342,11 @@ def find_col(df, possible_names):
     return None
 
 
+# ==================== HEADER - LIQUID GLASS BRANDING ====================
+liquid_header(
+    "EVALUERA",
+    "KI-gestützte Bestellanalyse & Kostenschätzung"
+)
 
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()

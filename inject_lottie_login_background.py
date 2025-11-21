@@ -18,24 +18,13 @@ def inject_lottie_login_background():
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
     <lottie-player
-        id="lottie-bg"
         src="{data_url}"
         background="transparent"
         speed="1"
         loop
         autoplay
-        renderer="svg"
-        style="
-            position:fixed !important;
-            top:0 !important;
-            left:0 !important;
-            width:100vw !important;
-            height:100vh !important;
-            object-fit:cover !important;
-            margin:0 !important;
-            padding:0 !important;
-            z-index:-1 !important;
-        "
+        renderer="canvas"
+        style="position: fixed; inset: 0; width: 100vw; height: 100vh; z-index:-9999;"
     ></lottie-player>
     """
 
@@ -44,34 +33,17 @@ def inject_lottie_login_background():
     st.markdown(
         """
         <style>
-            html, body, .stApp {
-                margin:0 !important;
-                padding:0 !important;
-                width:100vw !important;
-                height:100vh !important;
-                overflow:hidden !important;
-                background:transparent !important;
-            }
-
-            iframe[title="st.components.v1.html"] {
-                position: fixed !important;
-                top:0 !important;
-                left:0 !important;
-                width:100vw !important;
-                height:100vh !important;
-                border:none !important;
-                z-index:-1 !important;
-                pointer-events:none !important;
-                -webkit-transform: translateZ(0) !important;
-                transform: translateZ(0) !important;
-                will-change: transform !important;
-            }
-
-            #lottie-bg {
-                -webkit-transform: translateZ(0) !important;
-                transform: translateZ(0) !important;
-                will-change: transform !important;
-            }
+        body { background: #BFDCDC !important; }
+        .stApp { background: transparent !important; }
+        iframe[title="st.components.v1.html"] {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            border: none !important;
+            z-index: -9999 !important;
+            pointer-events: none !important;
+        }
         </style>
         """,
         unsafe_allow_html=True,
