@@ -123,7 +123,6 @@ if not st.session_state.logged_in:
         <style>
             html, body, .stApp {
                 margin: 0 !important;
-                padding: 0 !important;
                 height: 100% !important;
                 width: 100% !important;
                 background: transparent !important;
