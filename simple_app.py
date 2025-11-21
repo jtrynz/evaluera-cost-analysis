@@ -125,23 +125,25 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     <html>
     <head>
         <style>
-            body,html {{
-                margin:0;
-                padding:0;
-                width:100vw !important;
-                height:100vh !important;
-                background:transparent;
-                overflow:hidden !important;
-            }}
-            #lottie-bg {{
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                z-index: -9999 !important;
-                pointer-events: none !important;
-            }}
+body,html {{
+    margin:0;
+    padding:0;
+    width:100vw !important;
+    height:100vh !important;
+    background:transparent;
+    overflow:hidden !important;
+}}
+
+#lottie-bg {{
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: -9999 !important;
+    pointer-events: none !important;
+    object-fit: cover !important;
+}}
         </style>
     </head>
     <body>
@@ -155,18 +157,13 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             autoplay
             renderer="canvas"
             style="
-                width: 100vw !important;
-                height: 100vh !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                object-fit: fill !important;
-                overflow: hidden !important;
-            "
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    object-fit: cover !important;
+"
         ></lottie-player>
     </body>
     </html>
