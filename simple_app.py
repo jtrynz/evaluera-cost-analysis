@@ -123,69 +123,63 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     with open(player_js_path, "r") as f:
         lottie_js = f.read()
 
-    # Build fullscreen Lottie player HTML with object-fit: cover
+    # Build fullscreen Lottie player HTML
     player_html = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <style>
-            * {{
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }}
-            html, body {{
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
-                background: transparent;
-                position: fixed;
-                inset: 0;
-            }}
-            #lottie-container {{
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
-                pointer-events: none;
-            }}
-            lottie-player {{
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                min-width: 100%;
-                min-height: 100%;
-                width: 100vw;
-                height: 100vh;
-                object-fit: cover;
-                pointer-events: none;
-            }}
-            lottie-player canvas {{
-                object-fit: cover !important;
-                width: 100% !important;
-                height: 100% !important;
-            }}
-        </style>
-    </head>
-    <body>
-        <script>{lottie_js}</script>
-        <div id="lottie-container">
-            <lottie-player
-                src="{lottie_data_url}"
-                background="transparent"
-                speed="1"
-                loop
-                autoplay
-                renderer="canvas"
-            ></lottie-player>
-        </div>
-    </body>
-    </html>
+    <script>{lottie_js}</script>
+
+    <style>
+        html, body {{
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            background: transparent !important;
+        }}
+
+        #bg-container {{
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -10 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }}
+
+        #bg-container lottie-player {{
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }}
+
+        iframe[title="st.components.v1.html"] {{
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            border: none !important;
+            background: transparent !important;
+            z-index: -10 !important;
+        }}
+
+        [data-testid="stAppViewContainer"],
+        .main, .stApp, .block-container {{
+            background: transparent !important;
+        }}
+    </style>
+
+    <div id="bg-container">
+        <lottie-player
+            src="{lottie_data_url}"
+            speed="1"
+            loop
+            autoplay
+            background="transparent"
+        ></lottie-player>
+    </div>
     """
 
     # Inject via components.html (iframe-based)
@@ -209,7 +203,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            z-index: -99999 !important;
+            z-index: -10 !important;
             pointer-events: none !important;
             border: none !important;
             overflow: hidden !important;
