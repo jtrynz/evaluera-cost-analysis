@@ -107,94 +107,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-if "logged_in" not in st.session_state or not st.session_state.logged_in:
-
-    # 1️⃣ Lottie JSON korrekt laden
-    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    with open(lottie_path, "rb") as f:
-        anim_data = base64.b64encode(f.read()).decode("utf-8")
-
-    # 2️⃣ Lottie Player via CDN
-    lottie_js = """
-<script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-"""
-
-    # 3️⃣ HTML + Fullscreen Iframe fix
-    html_code = f"""
-<html>
-<head>
-<style>
-html, body, .stApp, .block-container {{
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 100vh !important;
-    width: 100vw !important;
-    background: transparent !important;
-    overflow: hidden !important;
-}}
-
-#lottie-bg {{
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    object-fit: cover !important;
-    z-index: -1 !important;
-}}
-</style>
-</head>
-<body>
-    {lottie_js}
-    <lottie-player
-        id="lottie-bg"
-        src="data:application/json;base64,{anim_data}"
-        background="transparent"
-        speed="1"
-        loop
-        autoplay
-        renderer="canvas"
-        style="width:100vw !important;height:100vh !important;object-fit:cover !important;position:fixed !important;top:0 !important;left:0 !important;z-index:0 !important;"
-    ></lottie-player>
-    <script>
-document.addEventListener("DOMContentLoaded", function() {{
-    const player = document.getElementById("lottie-bg");
-    if (player) {{
-        player.addEventListener("load", () => {{
-            try {{
-                player.playbackRate = 2.0;
-            }} catch(e) {{}}
-        }});
-    }}
-}});
-</script>
-</body>
-</html>
-    """
-
-    st.components.v1.html(
-        html_code,
-        height=2000,
-        width=None,
-        scrolling=False
-    )
-
-    # 4️⃣ Streamlit vollständig transparent machen
-    st.markdown("""
-        <style>
-            html, body, .stApp, .block-container {
-                background: transparent !important;
-            }
-
-            [data-testid="stHeader"],
-            [data-testid="stToolbar"],
-            [data-testid="stDecoration"],
-            [data-testid="stSidebar"] {
-                display: none !important;
-            }
-        </style>
-    """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
@@ -207,6 +119,57 @@ if not st.session_state.logged_in:
     render_login_screen()
     st.markdown('</div>', unsafe_allow_html=True)
     st.stop()  # Stop execution here - don't render the app
+if not st.session_state.logged_in:
+
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+    with open(lottie_path, "rb") as f:
+        anim_data = base64.b64encode(f.read()).decode("utf-8")
+
+    st.markdown("""
+        <style>
+            html, body, .stApp {
+                margin: 0 !important;
+                padding: 0 !important;
+                height: 100% !important;
+                width: 100% !important;
+                background: transparent !important;
+                overflow: hidden !important;
+            }
+
+            /* Stelle sicher, dass Streamlit nicht verdeckt wird */
+            .stApp {
+                z-index: 1 !important;
+                position: relative !important;
+            }
+
+            #bg-lottie {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                object-fit: cover !important;
+                z-index: 0 !important;
+                pointer-events: none !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown(f"""
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+        <lottie-player
+            id="bg-lottie"
+            src="data:application/json;base64,{anim_data}"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+        ></lottie-player>
+    """, unsafe_allow_html=True)
+
+    # Jetzt Login Oberfläche anzeigen
+    render_login_screen()
+    st.stop()
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
 # Render animated waves background
