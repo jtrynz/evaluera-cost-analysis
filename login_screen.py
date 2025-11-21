@@ -117,32 +117,36 @@ def render_login_screen():
         }
 
         /* ========== INPUT FIELDS ========== */
-        .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.25) !important;
+        .login-container .stTextInput > div > div > input {
+            background: rgba(255, 255, 255, 0.9) !important;
             backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border: 1px solid rgba(184, 212, 209, 0.9) !important; /* Evaluera mint border */
             border-radius: 14px !important;
             padding: 16px 18px !important;
             font-size: 15px !important;
-            color: #2F4A56 !important;
+            color: #2F4A56 !important; /* Evaluera dark blue/gray text */
             transition: all 0.3s ease !important;
         }
 
-        .stTextInput > div > div > input::placeholder {
-            color: rgba(47, 74, 86, 0.5) !important;
+        .login-container .stTextInput > div > div > input::placeholder {
+            color: rgba(47, 74, 86, 0.45) !important;
         }
 
-        .stTextInput > div > div > input:focus {
-            background: rgba(255, 255, 255, 0.35) !important;
-            border-color: rgba(123, 165, 160, 0.6) !important;
-            box-shadow: 0 0 0 3px rgba(123, 165, 160, 0.15) !important;
+        .login-container .stTextInput > div > div > input:focus {
+            background: rgba(255, 255, 255, 1) !important;
+            border-color: rgba(123, 165, 160, 0.9) !important; /* darker mint on focus */
+            box-shadow: 0 0 0 3px rgba(123, 165, 160, 0.18) !important;
             outline: none !important;
         }
 
         /* ========== CHECKBOX ========== */
-        .stCheckbox > label {
+        .login-container .stCheckbox > label {
             color: rgba(47, 74, 86, 0.8) !important;
             font-size: 14px !important;
+        }
+
+        .login-container .stCheckbox input[type="checkbox"] {
+            accent-color: #7BA5A0 !important; /* Evaluera primary mint */
         }
 
         /* ========== LOGIN BUTTON ========== */
