@@ -174,7 +174,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 
     st.components.v1.html(
         html_code,
-        height=800,
+        height=2000,
         width=None,
         scrolling=False
     )
