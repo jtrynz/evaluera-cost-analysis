@@ -241,6 +241,41 @@ def apply_global_styles():
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
         }}
+
+        /* ==== FORCE OVERRIDE: Remove dark inputs from login screen ==== */
+        input[type="text"],
+        input[type="password"],
+        textarea,
+        select {{
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 1px solid {COLORS['primary_light']} !important;
+            color: {COLORS['gray_900']} !important;
+            border-radius: {RADIUS['md']} !important;
+            box-shadow: 0 4px 12px rgba(15,23,42,0.06) !important;
+        }}
+
+        input[type="text"]::placeholder,
+        input[type="password"]::placeholder {{
+            color: {COLORS['gray_400']} !important;
+        }}
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {{
+            background: #FFFFFF !important;
+            border: 1px solid {COLORS['primary']} !important;
+            box-shadow: 0 0 0 3px rgba(123,165,160,0.25) !important;
+        }}
+
+        /* Remove any dark background bars that Streamlit injects */
+        .stTextInput, .stPasswordInput, .stTextInput > div, .stPasswordInput > div {{
+            background: transparent !important;
+        }}
+
+        /* Remove black bar behind input wrapper */
+        .stTextInput > div > div,
+        .stPasswordInput > div > div {{
+            background: transparent !important;
+        }}
     </style>
     """, unsafe_allow_html=True)
 
