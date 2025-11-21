@@ -251,7 +251,7 @@ def render_login_screen():
 
         password = st.text_input(
             "Passwort",
-            type="text" if st.session_state.show_password else "password",
+            type="default" if st.session_state.show_password else "password",
             placeholder="Passwort eingeben",
             key="login_password",
             label_visibility="collapsed"
