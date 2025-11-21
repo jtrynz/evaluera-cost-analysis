@@ -98,10 +98,8 @@ def render_login_screen():
             width: 100vw;
             height: 100vh;
             z-index: -2;
-            background:
-                radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 70% 80%, rgba(123, 165, 160, 0.3) 0%, transparent 60%);
-            animation: moveGradient 8s ease-in-out infinite;
+            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%);
+            animation: moveGradient 3s ease-in-out infinite;
         }
 
         /* ========== DARK OVERLAY ========== */
@@ -127,9 +125,12 @@ def render_login_screen():
             height: 100vh;
             z-index: -1;
             pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* Spinner in center */
+        /* Pulse circle background */
         .animated-elements::before {
             content: '';
             position: absolute;
@@ -138,24 +139,26 @@ def render_login_screen():
             transform: translate(-50%, -50%);
             width: 120px;
             height: 120px;
-            border: 4px solid rgba(255, 255, 255, 0.15);
-            border-top-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            animation: spin 2s linear infinite;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: pulse 2s ease-in-out infinite;
         }
 
-        /* Pulse circle */
+        /* Spinning ring */
         .animated-elements::after {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.08);
+            margin-top: -70px;
+            margin-left: -70px;
+            width: 140px;
+            height: 140px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+            animation: spin 1.5s linear infinite;
         }
 
         /* ========== CENTER LOGIN PANEL ========== */
@@ -331,30 +334,91 @@ def render_login_screen():
 
         @keyframes moveGradient {
             0%, 100% {
-                transform: translate(0, 0) scale(1);
+                transform: translate(0, 0);
             }
-            33% {
-                transform: translate(30px, -30px) scale(1.1);
-            }
-            66% {
-                transform: translate(-20px, 20px) scale(0.95);
+            50% {
+                transform: translate(20px, -20px);
             }
         }
 
         @keyframes spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         @keyframes pulse {
             0%, 100% {
                 transform: translate(-50%, -50%) scale(1);
-                opacity: 0.3;
             }
             50% {
-                transform: translate(-50%, -50%) scale(1.15);
-                opacity: 0.5;
+                transform: translate(-50%, -50%) scale(1.1);
             }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* ========== SHIMMER BAR ========== */
+        .shimmer-container {
+            position: fixed;
+            bottom: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 100px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: -1;
+        }
+
+        .shimmer-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+        /* ========== BOUNCE DOTS ========== */
+        .bounce-dots {
+            position: fixed;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: -1;
+        }
+
+        .bounce-dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .bounce-dot:nth-child(1) {
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .bounce-dot:nth-child(2) {
+            animation: bounce 1.4s ease-in-out 0.2s infinite;
+        }
+
+        .bounce-dot:nth-child(3) {
+            animation: bounce 1.4s ease-in-out 0.4s infinite;
         }
 
         @keyframes fadeInUp {
@@ -393,6 +457,22 @@ def render_login_screen():
 
     # Add animated elements layer (permanent, CSS-only)
     st.markdown('<div class="animated-elements"></div>', unsafe_allow_html=True)
+
+    # Add shimmer progress bar
+    st.markdown("""
+    <div class="shimmer-container">
+        <div class="shimmer-bar"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Add bounce dots
+    st.markdown("""
+    <div class="bounce-dots">
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ==================== LOGIN PANEL ====================
     with st.container():
