@@ -110,23 +110,49 @@ st.markdown("""
 if not st.session_state.get("logged_in"):
     import base64
 
-    # ---- LOTTIE FULLSCREEN BACKGROUND ----
-    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+    # Load Lottie JSON as Base64
+    encoded_json = base64.b64encode(open(os.path.join(os.path.dirname(__file__), "dark_gradient.json"), "rb").read()).decode()
 
-    with open(lottie_path, "rb") as f:
-        encoded_json = base64.b64encode(f.read()).decode("utf-8")
-
-    # Fullscreen Lottie-Background
+    # Inject fullscreen Lottie background
     st.markdown(f"""
     <style>
+    /* ensure no Streamlit layout shrinks or clips the player */
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {{
+        height: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        background: transparent !important;
+    }}
+
     #lottie-bg {{
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        pointer-events: none;
-        opacity: 1;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        object-fit: cover !important;
+        transform: scale(1.0) !important;
+        z-index: -9999 !important;
+        pointer-events: none !important;
+    }}
+
+    /* Hide Streamlit UI during login */
+    #MainMenu {{visibility: hidden !important;}}
+    footer {{visibility: hidden !important;}}
+    header {{visibility: hidden !important;}}
+    [data-testid="stSidebar"] {{display: none !important;}}
+    [data-testid="stToolbar"] {{display: none !important;}}
+
+    /* Force transparency */
+    .main {{
+        background: transparent !important;
+    }}
+
+    .block-container {{
+        background: transparent !important;
+        padding-top: 0 !important;
     }}
     </style>
 
@@ -135,46 +161,11 @@ if not st.session_state.get("logged_in"):
         autoplay
         loop
         mode="normal"
+        speed="1"
         src="data:application/json;base64,{encoded_json}">
     </lottie-player>
 
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    """, unsafe_allow_html=True)
-
-    # Streamlit Transparency CSS
-    st.markdown("""
-    <style>
-        /* ========== FORCE STREAMLIT TRANSPARENT ========== */
-        html, body, #root, .main, .block-container,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stApp"],
-        .stApp,
-        section.main,
-        div.main,
-        [data-testid="stHeader"],
-        [data-testid="stDecoration"],
-        [data-testid="stToolbar"],
-        .appview-container {
-            background: transparent !important;
-            background-color: transparent !important;
-        }
-
-        .main {
-            background: transparent !important;
-        }
-
-        .block-container {
-            background: transparent !important;
-            padding-top: 0 !important;
-        }
-
-        /* Hide Streamlit UI during login */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
-    </style>
     """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
