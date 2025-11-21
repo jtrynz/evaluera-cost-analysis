@@ -63,6 +63,10 @@ st.set_page_config(
     }
 )
 
+# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
+from inject_lottie_login_background import inject_lottie_background
+inject_lottie_background()
+
 # EVALUERA Theme Override - muss nach set_page_config kommen
 st.markdown("""
 <style>
@@ -105,10 +109,6 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
-
-# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-from inject_lottie_login_background import inject_lottie_background
-inject_lottie_background()
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists

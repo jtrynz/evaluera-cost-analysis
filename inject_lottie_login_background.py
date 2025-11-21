@@ -49,7 +49,24 @@ html, body {{
 </html>
 """
 
-    st.components.v1.html(html, height=0, width=0)
+    st.components.v1.html(html, height=600, width=1000, scrolling=False, key="lottie-bg")
+
+    st.markdown("""
+    <style>
+        /* Lottie iframe fullscreen fix */
+        iframe[title="st.components.v1.html"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -1 !important;
+            pointer-events: none !important;
+            border: none !important;
+            opacity: 1 !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
 <style>
