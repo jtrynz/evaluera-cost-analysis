@@ -65,18 +65,32 @@ st.markdown("""
 <style>
     /* Primary Button Override - EVALUERA Blaugrau */
     .stButton > button[kind="primary"],
-    .stButton > button[data-testid="baseButton-primary"] {
+    .stButton > button[data-testid="baseButton-primary"],
+    button[kind="primary"],
+    button[data-testid="baseButton-primary"] {
         background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
         color: white !important;
         border: 2px solid #B8D4D1 !important;
         font-weight: 600 !important;
     }
 
+    /* Button Text auch weiß */
+    .stButton > button[kind="primary"] p,
+    .stButton > button[kind="primary"] span,
+    .stButton > button[kind="primary"] div,
+    button[kind="primary"] p,
+    button[kind="primary"] span,
+    button[kind="primary"] div {
+        color: white !important;
+    }
+
     .stButton > button[kind="primary"]:hover,
-    .stButton > button[data-testid="baseButton-primary"]:hover {
+    .stButton > button[data-testid="baseButton-primary"]:hover,
+    button[kind="primary"]:hover {
         background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
         box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
         border: 2px solid #7BA5A0 !important;
+        color: white !important;
     }
 
     /* Disabled Button */
