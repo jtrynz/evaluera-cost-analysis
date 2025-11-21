@@ -1,7 +1,7 @@
 """
 🔐 EVALUERA - Premium Login Screen
 ====================================
-Permanent animated background without flickering
+Uses existing EVALUERA loading animation as permanent background
 """
 
 import streamlit as st
@@ -50,14 +50,245 @@ def logout():
     st.rerun()
 
 
+# ==================== RENDER PERMANENT LOADING ANIMATION BACKGROUND ====================
+def render_permanent_loading_background():
+    """
+    Render EVALUERA loading animation as permanent fullscreen background
+    Uses the EXACT same animation from ui_components.py
+    """
+    st.markdown("""
+    <div class="loading-animation-background">
+        <div class="loading-gradient"></div>
+        <div class="loading-content">
+            <div class="spinner-wrapper">
+                <div class="spinner-circle">
+                    <div class="spinner-icon">🤖</div>
+                </div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text">
+                <div class="loading-title">EVALUERA</div>
+                <div class="loading-subtitle">KI-Engine läuft...</div>
+            </div>
+        </div>
+        <div class="progress-bar-container">
+            <div class="shimmer-effect"></div>
+        </div>
+        <div class="bounce-dots-container">
+            <div class="bounce-dot"></div>
+            <div class="bounce-dot"></div>
+            <div class="bounce-dot"></div>
+        </div>
+    </div>
+
+    <style>
+        /* ========== FULLSCREEN LOADING ANIMATION BACKGROUND ========== */
+        .loading-animation-background {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -10 !important;
+            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%);
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: 0 20px 60px rgba(123, 165, 160, 0.3), 0 8px 16px rgba(0, 0, 0, 0.1);
+            border: none !important;
+            backdrop-filter: blur(20px);
+            overflow: hidden;
+        }
+
+        .loading-gradient {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%);
+            animation: moveGradient 3s ease-in-out infinite;
+        }
+
+        .loading-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* Spinner Circle */
+        .spinner-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .spinner-circle {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .spinner-icon {
+            font-size: 3rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 140px;
+            height: 140px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+        }
+
+        /* Loading Text */
+        .loading-text {
+            text-align: center;
+        }
+
+        .loading-title {
+            color: white;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.1em;
+        }
+
+        .loading-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            position: absolute;
+            bottom: 35%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 100px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .shimmer-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+        /* Bounce Dots */
+        .bounce-dots-container {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        .bounce-dot {
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .bounce-dot:nth-child(1) {
+            animation: bounce 1.4s ease-in-out infinite;
+        }
+
+        .bounce-dot:nth-child(2) {
+            animation: bounce 1.4s ease-in-out 0.2s infinite;
+        }
+
+        .bounce-dot:nth-child(3) {
+            animation: bounce 1.4s ease-in-out 0.4s infinite;
+        }
+
+        /* ========== ANIMATIONS ========== */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(300%); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes moveGradient {
+            0%, 100% { transform: translateX(0) translateY(0); }
+            50% { transform: translateX(20px) translateY(-20px); }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+
 # ==================== LOGIN SCREEN ====================
 def render_login_screen():
     """
-    Render premium login screen with permanent animated background
-    NOTE: Background animation HTML is rendered in simple_app.py before this function
+    Render premium login screen with permanent loading animation background
     """
 
-    # ==================== PERMANENT ANIMATED BACKGROUND STYLES ====================
+    # Render permanent loading animation background
+    render_permanent_loading_background()
+
+    # Dark overlay
+    st.markdown("""
+    <div class="dark-overlay"></div>
+    <style>
+        .dark-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.35) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            z-index: -9 !important;
+            pointer-events: none !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Login panel styles
     st.markdown("""
     <style>
         /* ========== HIDE STREAMLIT UI ========== */
@@ -73,89 +304,6 @@ def render_login_screen():
 
         body {
             background: transparent !important;
-        }
-
-        /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
-        .fullscreen-animated-bg {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -10 !important;
-            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%) !important;
-            background-size: 400% 400% !important;
-            animation: gradientShift 15s ease infinite !important;
-            pointer-events: none !important;
-        }
-
-        /* ========== ANIMATED GRADIENT OVERLAY ========== */
-        .animated-gradient-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9 !important;
-            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%) !important;
-            animation: moveGradient 3s ease-in-out infinite !important;
-            pointer-events: none !important;
-        }
-
-        /* ========== DARK OVERLAY ========== */
-        .dark-overlay-layer {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: rgba(0, 0, 0, 0.35) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            z-index: -8 !important;
-            pointer-events: none !important;
-        }
-
-        /* ========== ANIMATED SPINNER ========== */
-        .animated-spinner {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            width: 120px !important;
-            height: 120px !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        /* Pulse circle background */
-        .animated-spinner::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            border-radius: 50% !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-            animation: pulse 2s ease-in-out infinite !important;
-        }
-
-        /* Spinning ring */
-        .animated-spinner::after {
-            content: '' !important;
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            margin-top: -70px !important;
-            margin-left: -70px !important;
-            width: 140px !important;
-            height: 140px !important;
-            border: 4px solid rgba(255, 255, 255, 0.2) !important;
-            border-top-color: white !important;
-            border-radius: 50% !important;
-            animation: spin 1.5s linear infinite !important;
         }
 
         /* ========== CENTER LOGIN PANEL ========== */
@@ -185,6 +333,17 @@ def render_login_screen():
             animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
             position: relative;
             z-index: 1;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* ========== BRANDING ========== */
@@ -284,6 +443,12 @@ def render_login_screen():
             animation: shake 0.5s ease;
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+
         /* ========== HELPER TEXT ========== */
         .login-helper {
             text-align: center;
@@ -317,124 +482,6 @@ def render_login_screen():
                 transparent
             );
             margin: 24px 0 16px 0;
-        }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        @keyframes moveGradient {
-            0%, 100% {
-                transform: translate(0, 0);
-            }
-            50% {
-                transform: translate(20px, -20px);
-            }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* ========== SHIMMER BAR ========== */
-        .shimmer-container-fixed {
-            position: fixed !important;
-            bottom: 35% !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 320px !important;
-            height: 6px !important;
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-radius: 100px !important;
-            overflow: hidden !important;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        .shimmer-bar {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            height: 100% !important;
-            width: 50% !important;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent) !important;
-            animation: shimmer 1.8s ease-in-out infinite !important;
-        }
-
-        /* ========== BOUNCE DOTS ========== */
-        .bounce-dots-fixed {
-            position: fixed !important;
-            bottom: 30% !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            display: flex !important;
-            gap: 10px !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        .bounce-dot {
-            width: 10px !important;
-            height: 10px !important;
-            background: white !important;
-            border-radius: 50% !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-        }
-
-        .bounce-dot:nth-child(1) {
-            animation: bounce 1.4s ease-in-out infinite !important;
-        }
-
-        .bounce-dot:nth-child(2) {
-            animation: bounce 1.4s ease-in-out 0.2s infinite !important;
-        }
-
-        .bounce-dot:nth-child(3) {
-            animation: bounce 1.4s ease-in-out 0.4s infinite !important;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
-            20%, 40%, 60%, 80% { transform: translateX(6px); }
         }
 
         /* ========== RESPONSIVE ========== */

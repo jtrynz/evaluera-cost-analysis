@@ -106,207 +106,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ==================== RENDER ANIMATED BACKGROUND (ALWAYS) ====================
-# Render animation FIRST, before any login checks, so it's always visible
-if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    # First: Load ALL animation CSS styles
-    st.markdown("""
-    <style>
-        /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
-        .fullscreen-animated-bg {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -10 !important;
-            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%) !important;
-            background-size: 400% 400% !important;
-            animation: gradientShift 15s ease infinite !important;
-            pointer-events: none !important;
-        }
-
-        .animated-gradient-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9 !important;
-            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%) !important;
-            animation: moveGradient 3s ease-in-out infinite !important;
-            pointer-events: none !important;
-        }
-
-        .dark-overlay-layer {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: rgba(0, 0, 0, 0.35) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            z-index: -8 !important;
-            pointer-events: none !important;
-        }
-
-        .animated-spinner {
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            width: 120px !important;
-            height: 120px !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        .animated-spinner::before {
-            content: '' !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            background: rgba(255, 255, 255, 0.1) !important;
-            border-radius: 50% !important;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-            animation: pulse 2s ease-in-out infinite !important;
-        }
-
-        .animated-spinner::after {
-            content: '' !important;
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            margin-top: -70px !important;
-            margin-left: -70px !important;
-            width: 140px !important;
-            height: 140px !important;
-            border: 4px solid rgba(255, 255, 255, 0.2) !important;
-            border-top-color: white !important;
-            border-radius: 50% !important;
-            animation: spin 1.5s linear infinite !important;
-        }
-
-        .shimmer-container-fixed {
-            position: fixed !important;
-            bottom: 35% !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            width: 320px !important;
-            height: 6px !important;
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-radius: 100px !important;
-            overflow: hidden !important;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        .shimmer-bar {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            height: 100% !important;
-            width: 50% !important;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent) !important;
-            animation: shimmer 1.8s ease-in-out infinite !important;
-        }
-
-        .bounce-dots-fixed {
-            position: fixed !important;
-            bottom: 30% !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            display: flex !important;
-            gap: 10px !important;
-            z-index: -7 !important;
-            pointer-events: none !important;
-        }
-
-        .bounce-dot {
-            width: 10px !important;
-            height: 10px !important;
-            background: white !important;
-            border-radius: 50% !important;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
-        }
-
-        .bounce-dot:nth-child(1) {
-            animation: bounce 1.4s ease-in-out infinite !important;
-        }
-
-        .bounce-dot:nth-child(2) {
-            animation: bounce 1.4s ease-in-out 0.2s infinite !important;
-        }
-
-        .bounce-dot:nth-child(3) {
-            animation: bounce 1.4s ease-in-out 0.4s infinite !important;
-        }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        @keyframes moveGradient {
-            0%, 100% {
-                transform: translate(0, 0);
-            }
-            50% {
-                transform: translate(20px, -20px);
-            }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.1);
-            }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-    # Then: Render HTML elements
-    st.markdown("""
-    <div class="fullscreen-animated-bg"></div>
-    <div class="animated-gradient-overlay"></div>
-    <div class="dark-overlay-layer"></div>
-    <div class="animated-spinner"></div>
-    <div class="shimmer-container-fixed">
-        <div class="shimmer-bar"></div>
-    </div>
-    <div class="bounce-dots-fixed">
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-    </div>
-    """, unsafe_allow_html=True)
-
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
 if "logged_in" not in st.session_state:
@@ -318,6 +117,70 @@ if not st.session_state.logged_in:
     st.stop()  # Stop execution here - don't render the app
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
+# Render animated waves background
+st.markdown("""
+<div class="bg-waves">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
+</div>
+
+<style>
+    body {
+        margin: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    .bg-waves {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        background: #bfdcdc !important;
+        overflow: hidden !important;
+        z-index: -1 !important;
+        pointer-events: none !important;
+    }
+
+    .wave {
+        position: absolute !important;
+        width: 200% !important;
+        height: 200% !important;
+        opacity: 0.15 !important;
+        background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 60%) !important;
+        animation: drift 18s infinite linear !important;
+        filter: blur(60px) !important;
+        will-change: transform !important;
+    }
+
+    .wave:nth-child(2) {
+        animation-duration: 26s !important;
+        opacity: 0.12 !important;
+    }
+
+    .wave:nth-child(3) {
+        animation-duration: 34s !important;
+        opacity: 0.10 !important;
+    }
+
+    @keyframes drift {
+        0% { transform: translate(-30%, -30%) scale(1); }
+        50% { transform: translate(10%, 10%) scale(1.1); }
+        100% { transform: translate(-30%, -30%) scale(1); }
+    }
+
+    /* Make main container transparent to show waves */
+    .main {
+        background: transparent !important;
+    }
+
+    .block-container {
+        background: transparent !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 apply_global_styles()
 apply_liquid_glass_styles()
 create_scroll_behavior()

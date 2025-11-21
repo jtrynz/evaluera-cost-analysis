@@ -86,12 +86,12 @@ class WizardManager:
 
         with col1:
             if show_previous and st.session_state.wizard_current_step > 1:
-                if st.button("← Zurück", use_container_width=True):
+                if st.button("← Zurück", key=f"wizard_prev_{st.session_state.wizard_current_step}", use_container_width=True):
                     self.previous_step()
 
         with col3:
             if show_next and st.session_state.wizard_current_step < 6:
-                if st.button(next_label + " →", type="primary", use_container_width=True, disabled=next_disabled):
+                if st.button(next_label + " →", key=f"wizard_next_{st.session_state.wizard_current_step}", type="primary", use_container_width=True, disabled=next_disabled):
                     self.next_step()
 
     def render_step_content(self, step_number, content_func):
