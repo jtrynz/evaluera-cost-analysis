@@ -142,7 +142,7 @@ def show_metric_card(label, value, delta=None, help_text=None):
     """
     delta_html = ""
     if delta:
-        delta_color = "#34c759" if "+" in str(delta) else "#2F4A56" if "-" in str(delta) else "#86868b"
+        delta_color = "#34c759" if "+" in str(delta) else "#304B3F" if "-" in str(delta) else "#86868b"
         delta_html = f"""
         <div style="
             color: {delta_color};

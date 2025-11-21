@@ -29,9 +29,9 @@ def get_light_theme_css():
             --fg-muted: #6C757D;    /* Muted text - 4.5:1 ratio */
 
             /* Accent Colors - EVALUERA Branding */
-            --accent-1: #2F4A56;    /* EVALUERA Blaugrau */
+            --accent-1: #304B3F;    /* EVALUERA Dunkelgrün */
             --accent-2: #7BA5A0;    /* EVALUERA Türkis */
-            --accent-gradient: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%);
+            --accent-gradient: linear-gradient(135deg, #304B3F 0%, #3E5C50 100%);
 
             /* Interactive States */
             --focus: #4299E1;
@@ -52,7 +52,7 @@ def get_light_theme_css():
             --success-bg: #D1E7DD;
             --warning: #664D03;
             --warning-bg: #FFF3CD;
-            --error: #2F4A56;
+            --error: #304B3F;
             --error-bg: #F8D7DA;
             --info: #055160;
             --info-bg: #CFF4FC;
@@ -386,9 +386,9 @@ def get_dark_theme_css():
             --fg-muted: #6B7684;    /* Muted text - 4.5:1 ratio */
 
             /* Accent Colors - EVALUERA Branding Dark Mode */
-            --accent-1: #2F4A56;    /* EVALUERA Blaugrau */
+            --accent-1: #304B3F;    /* EVALUERA Dunkelgrün */
             --accent-2: #7BA5A0;    /* EVALUERA Türkis */
-            --accent-gradient: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%);
+            --accent-gradient: linear-gradient(135deg, #304B3F 0%, #3E5C50 100%);
 
             /* Interactive States */
             --focus: #9AD6FF;
@@ -409,7 +409,7 @@ def get_dark_theme_css():
             --success-bg: #1A3E2A;
             --warning: #FFD43B;
             --warning-bg: #3E3416;
-            --error: #2F4A56;
+            --error: #304B3F;
             --error-bg: #3E1C1C;
             --info: #74C0FC;
             --info-bg: #1A2E3E;
