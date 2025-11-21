@@ -194,32 +194,6 @@ def render_login_screen():
             20%, 40%, 60%, 80% { transform: translateX(8px); }
         }
 
-        /* ========== DEMO CREDENTIALS ========== */
-        .demo-creds {
-            text-align: center !important;
-            font-size: 13px !important;
-            color: rgba(47, 74, 86, 0.6) !important;
-            margin-top: 28px !important;
-            line-height: 1.6 !important;
-        }
-
-        .demo-creds strong {
-            color: rgba(47, 74, 86, 0.85) !important;
-            font-weight: 600 !important;
-            display: block !important;
-            margin-bottom: 8px !important;
-        }
-
-        .demo-creds code {
-            background: rgba(255, 255, 255, 0.25) !important;
-            padding: 4px 10px !important;
-            border-radius: 6px !important;
-            font-family: 'SF Mono', monospace !important;
-            font-size: 12px !important;
-            color: #2F4A56 !important;
-            white-space: nowrap !important;
-        }
-
         .divider {
             height: 1px !important;
             background: linear-gradient(90deg, transparent, rgba(47, 74, 86, 0.2), transparent) !important;
@@ -294,15 +268,6 @@ def render_login_screen():
         else:
             st.session_state.login_error = True
             st.rerun()
-
-    # Demo credentials
-    st.markdown("""
-    <div class="demo-creds">
-        <strong>Demo-Zugangsdaten</strong>
-        <code>demo</code> / <code>demo123</code><br>
-        <code>admin</code> / <code>evaluera2024</code>
-    </div>
-    """, unsafe_allow_html=True)
 
     st.markdown('</div></div>', unsafe_allow_html=True)
 
