@@ -348,3 +348,68 @@ def divider():
         """,
         unsafe_allow_html=True,
     )
+
+def wizard_step(step_number, title, description, is_active, is_completed):
+    """
+    Wizard Step Component – kompatibel mit Evaluera UI Theme
+    """
+    # Farben abhängig vom Status
+    if is_completed:
+        bg = COLORS["success"]
+        text_color = "#ffffff"
+        icon = "✓"
+    elif is_active:
+        bg = COLORS["primary"]
+        text_color = "#ffffff"
+        icon = str(step_number)
+    else:
+        bg = COLORS["gray_200"]
+        text_color = COLORS["gray_500"]
+        icon = str(step_number)
+
+    return f"""
+    <div style="
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: {SPACING['md']};
+        margin-bottom: {SPACING['sm']};
+        background: {COLORS['surface']};
+        border-radius: {RADIUS['md']};
+        border: 2px solid {bg if is_active else COLORS['gray_200']};
+        opacity: {1 if (is_active or is_completed) else 0.6};
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    ">
+        <div style="
+            width: 40px;
+            height: 40px;
+            border-radius: {RADIUS['full']};
+            background: {bg};
+            color: {text_color};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+        ">
+            {icon}
+        </div>
+
+        <div style="flex: 1;">
+            <div style="
+                font-weight: 600;
+                color: {COLORS['primary_dark']};
+                font-size: 1rem;
+            ">
+                {title}
+            </div>
+
+            <div style="
+                font-size: 0.875rem;
+                color: {COLORS['gray_600']};
+            ">
+                {description}
+            </div>
+        </div>
+    </div>
+    """
