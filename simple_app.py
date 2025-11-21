@@ -110,11 +110,16 @@ st.markdown("""
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     st.markdown("""
-    <div class="bg-animation"></div>
-    <div class="wave-bottom">
-        <div class="wave-layer wave-layer-1"></div>
-        <div class="wave-layer wave-layer-2"></div>
-        <div class="wave-layer wave-layer-3"></div>
+    <div class="wave-background">
+        <svg class="wave-svg wave-svg-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+        <svg class="wave-svg wave-svg-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="rgba(255,255,255,0.15)" d="M0,224L48,208C96,192,192,160,288,154.7C384,149,480,171,576,165.3C672,160,768,128,864,128C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+        <svg class="wave-svg wave-svg-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <path fill="rgba(255,255,255,0.08)" d="M0,128L48,138.7C96,149,192,171,288,165.3C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
     </div>
 
     <style>
@@ -168,76 +173,81 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         [data-testid="stSidebar"] {display: none !important;}
         [data-testid="stToolbar"] {display: none !important;}
 
-        /* ========== PERMANENT FULLSCREEN BACKGROUND ========== */
-        .bg-animation {
+        /* ========== FULLSCREEN WAVE BACKGROUND ========== */
+        .wave-background {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            z-index: -99999 !important;
             background: #BFDCDC !important;
+            z-index: -99999 !important;
             overflow: hidden !important;
             margin: 0 !important;
             padding: 0 !important;
         }
 
-        /* ========== CSS WAVES (BOTTOM) ========== */
-        .wave-bottom {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            width: 200% !important;
-            height: 12em !important;
-            z-index: -99998 !important;
-        }
-
-        .wave-layer {
+        /* ========== SVG WAVE LAYERS ========== */
+        .wave-svg {
             position: absolute !important;
             bottom: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 100% !important;
-            background-repeat: repeat-x !important;
+            height: 40% !important;
+            min-height: 200px !important;
         }
 
-        .wave-layer-1 {
-            background: rgba(255, 255, 255, 0.15) !important;
-            border-radius: 100% !important;
-            animation: wave-drift-1 25s linear infinite !important;
-            bottom: 2em !important;
+        .wave-svg-1 {
+            animation: wave-drift-1 18s ease-in-out infinite !important;
+            z-index: 3 !important;
         }
 
-        .wave-layer-2 {
-            background: rgba(255, 255, 255, 0.2) !important;
-            border-radius: 100% !important;
-            animation: wave-drift-2 30s linear infinite reverse !important;
-            bottom: 1em !important;
+        .wave-svg-2 {
+            animation: wave-drift-2 25s ease-in-out infinite reverse !important;
+            z-index: 2 !important;
             opacity: 0.8 !important;
         }
 
-        .wave-layer-3 {
-            background: rgba(255, 255, 255, 0.25) !important;
-            border-radius: 100% !important;
-            animation: wave-drift-3 20s linear infinite !important;
-            bottom: 0 !important;
+        .wave-svg-3 {
+            animation: wave-drift-3 30s ease-in-out infinite !important;
+            z-index: 1 !important;
             opacity: 0.6 !important;
         }
 
-        /* ========== WAVE ANIMATIONS ========== */
+        /* ========== WAVE ANIMATIONS (Sanfte Bewegung) ========== */
         @keyframes wave-drift-1 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(-25px) translateY(-10px);
+            }
         }
 
         @keyframes wave-drift-2 {
-            0% { transform: translateX(-50%); }
-            100% { transform: translateX(0); }
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(30px) translateY(-15px);
+            }
         }
 
         @keyframes wave-drift-3 {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0%, 100% {
+                transform: translateX(0) translateY(0);
+            }
+            50% {
+                transform: translateX(-20px) translateY(-8px);
+            }
+        }
+
+        /* ========== VERHINDERE FLACKERN ========== */
+        .wave-background,
+        .wave-svg {
+            will-change: transform !important;
+            backface-visibility: hidden !important;
+            -webkit-backface-visibility: hidden !important;
         }
     </style>
     """, unsafe_allow_html=True)
