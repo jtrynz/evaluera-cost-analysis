@@ -68,12 +68,23 @@ st.markdown("""
     .stButton > button[data-testid="baseButton-primary"] {
         background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
         color: white !important;
+        border: 2px solid #B8D4D1 !important;
+        font-weight: 600 !important;
     }
 
     .stButton > button[kind="primary"]:hover,
     .stButton > button[data-testid="baseButton-primary"]:hover {
         background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
         box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
+        border: 2px solid #7BA5A0 !important;
+    }
+
+    /* Disabled Button */
+    .stButton > button[kind="primary"]:disabled,
+    .stButton > button[data-testid="baseButton-primary"]:disabled {
+        background: #E5E7EB !important;
+        color: #9CA3AF !important;
+        border: 2px solid #D1D5DB !important;
     }
 </style>
 """, unsafe_allow_html=True)
