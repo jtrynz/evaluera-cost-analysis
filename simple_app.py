@@ -109,18 +109,38 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    st.markdown("""
-    <div class="wave-background">
-        <svg class="wave-svg wave-svg-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-        <svg class="wave-svg wave-svg-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path fill="rgba(255,255,255,0.15)" d="M0,224L48,208C96,192,192,160,288,154.7C384,149,480,171,576,165.3C672,160,768,128,864,128C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
-        <svg class="wave-svg wave-svg-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path fill="rgba(255,255,255,0.08)" d="M0,128L48,138.7C96,149,192,171,288,165.3C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,165.3C1248,171,1344,149,1392,138.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-        </svg>
+    # Load Lottie JSON inline
+    import json
+    try:
+        with open("dark_gradient_evaluera.json", "r") as f:
+            lottie_json = json.dumps(json.load(f))
+    except:
+        lottie_json = "{}"  # Fallback empty animation
+
+    st.markdown(f"""
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <div class="lottie-background-container">
+        <div id="lottie-bg-wrapper"></div>
     </div>
+
+    <script>
+    (function() {{
+        const lottieData = {lottie_json};
+        const wrapper = document.getElementById('lottie-bg-wrapper');
+        if (wrapper && !wrapper.hasChildNodes()) {{
+            const player = document.createElement('lottie-player');
+            player.id = 'lottie-bg';
+            player.loop = true;
+            player.autoplay = true;
+            player.speed = 1;
+            player.style.width = '100%';
+            player.style.height = '100%';
+            player.load(lottieData);
+            wrapper.appendChild(player);
+        }}
+    }})();
+    </script>
 
     <style>
         /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
@@ -173,79 +193,34 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         [data-testid="stSidebar"] {display: none !important;}
         [data-testid="stToolbar"] {display: none !important;}
 
-        /* ========== FULLSCREEN WAVE BACKGROUND ========== */
-        .wave-background {
+        /* ========== LOTTIE FULLSCREEN CONTAINER ========== */
+        .lottie-background-container {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            background: #BFDCDC !important;
             z-index: -99999 !important;
             overflow: hidden !important;
+            pointer-events: none !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: #BFDCDC !important;
         }
 
-        /* ========== SVG WAVE LAYERS ========== */
-        .wave-svg {
+        #lottie-bg {
             position: absolute !important;
-            bottom: 0 !important;
+            top: 0 !important;
             left: 0 !important;
             width: 100% !important;
-            height: 40% !important;
-            min-height: 200px !important;
-        }
-
-        .wave-svg-1 {
-            animation: wave-drift-1 18s ease-in-out infinite !important;
-            z-index: 3 !important;
-        }
-
-        .wave-svg-2 {
-            animation: wave-drift-2 25s ease-in-out infinite reverse !important;
-            z-index: 2 !important;
-            opacity: 0.8 !important;
-        }
-
-        .wave-svg-3 {
-            animation: wave-drift-3 30s ease-in-out infinite !important;
-            z-index: 1 !important;
-            opacity: 0.6 !important;
-        }
-
-        /* ========== WAVE ANIMATIONS (Sanfte Bewegung) ========== */
-        @keyframes wave-drift-1 {
-            0%, 100% {
-                transform: translateX(0) translateY(0);
-            }
-            50% {
-                transform: translateX(-25px) translateY(-10px);
-            }
-        }
-
-        @keyframes wave-drift-2 {
-            0%, 100% {
-                transform: translateX(0) translateY(0);
-            }
-            50% {
-                transform: translateX(30px) translateY(-15px);
-            }
-        }
-
-        @keyframes wave-drift-3 {
-            0%, 100% {
-                transform: translateX(0) translateY(0);
-            }
-            50% {
-                transform: translateX(-20px) translateY(-8px);
-            }
+            height: 100% !important;
+            object-fit: cover !important;
         }
 
         /* ========== VERHINDERE FLACKERN ========== */
-        .wave-background,
-        .wave-svg {
-            will-change: transform !important;
+        .lottie-background-container,
+        #lottie-bg {
+            will-change: auto !important;
             backface-visibility: hidden !important;
             -webkit-backface-visibility: hidden !important;
         }
