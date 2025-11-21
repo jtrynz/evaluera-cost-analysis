@@ -150,8 +150,22 @@ st.markdown(f"""<div style="background: {COLORS['brand_bg']}; padding: {SPACING[
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
 
-# Progress Bar (optional, kann auskommentiert werden)
-# wizard.render_progress()
+# Synchronize Navigation with Wizard Steps
+nav_to_wizard = {
+    "upload": 1,
+    "artikel": 2,
+    "preis": 3,
+    "lieferanten": 4,
+    "kosten": 5,
+    "nachhaltigkeit": 6
+}
+if st.session_state.nav_active_section in nav_to_wizard:
+    wizard_step = nav_to_wizard[st.session_state.nav_active_section]
+    if wizard_step != st.session_state.wizard_current_step:
+        wizard.set_step(wizard_step)
+
+# Progress Bar
+wizard.render_progress()
 
 
 # ==================== STEP 1: UPLOAD ====================
