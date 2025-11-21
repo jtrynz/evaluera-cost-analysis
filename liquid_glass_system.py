@@ -43,8 +43,8 @@ def apply_liquid_glass_styles():
             z-index: -1;
             overflow: hidden;
             background: radial-gradient(circle at top left,
-                        {COLORS['primary_light']} 0%,
-                        {COLORS['bg_primary']} 40%,
+                        {COLORS['secondary']} 0%,
+                        {COLORS['light_accent']} 40%,
                         #FFFFFF 100%);
         }}
 
@@ -71,7 +71,7 @@ def apply_liquid_glass_styles():
             width: 380px;
             height: 380px;
             background: radial-gradient(circle at 100% 0%,
-                        {COLORS['primary_dark']} 0%,
+                        {COLORS['dark_accent']} 0%,
                         rgba(255,255,255,0) 70%);
             top: 18%;
             right: 8%;
@@ -83,7 +83,7 @@ def apply_liquid_glass_styles():
             width: 360px;
             height: 360px;
             background: radial-gradient(circle at 50% 100%,
-                        {COLORS['primary_light']} 0%,
+                        {COLORS['secondary']} 0%,
                         rgba(255,255,255,0) 70%);
             bottom: 4%;
             left: 35%;
@@ -243,7 +243,7 @@ def liquid_header(title: str, subtitle: str = None):
                 font-weight: 300;
                 letter-spacing: 0.16em;
                 text-transform: uppercase;
-                color: {COLORS['primary_dark']};
+                color: {COLORS['primary']};
             ">{title}</h1>
             {subtitle_html}
         </div>
@@ -273,7 +273,7 @@ def glass_metric_card(label: str, value: str, icon: str = None):
         <div style="
             font-size: 2.1rem;
             font-weight: 700;
-            color: {COLORS['primary_dark']};
+            color: {COLORS['primary']};
             letter-spacing: -0.03em;
         ">{value}</div>
     </div>
