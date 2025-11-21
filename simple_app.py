@@ -125,25 +125,34 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     <html>
     <head>
         <style>
-body,html {{
+body,html {
     margin:0;
     padding:0;
     width:100vw !important;
     height:100vh !important;
     background:transparent;
     overflow:hidden !important;
-}}
+}
 
-#lottie-bg {{
+#lottie-bg {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100vw !important;
     height: 100vh !important;
-    z-index: -9999 !important;
+    z-index: -1 !important;
     pointer-events: none !important;
     object-fit: cover !important;
-}}
+}
+/* Bring login UI above background */
+.block-container {
+    position: relative !important;
+    z-index: 99999 !important;
+}
+.login-container, .glass-panel {
+    position: relative !important;
+    z-index: 99999 !important;
+}
         </style>
     </head>
     <body>
@@ -224,6 +233,15 @@ document.addEventListener("DOMContentLoaded", function() {{
             html, body {
                 overflow: hidden !important;
                 height: 100vh !important;
+            }
+            /* Ensure login container and glass panel are above background */
+            .block-container {
+                position: relative !important;
+                z-index: 99999 !important;
+            }
+            .login-container, .glass-panel {
+                position: relative !important;
+                z-index: 99999 !important;
             }
         </style>
     """, unsafe_allow_html=True)
