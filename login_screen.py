@@ -56,8 +56,24 @@ def render_login_screen():
     Render premium login screen with permanent animated background
     """
 
-    # ==================== PERMANENT ANIMATED BACKGROUND ====================
-    # CSS-only animation that doesn't reload on rerun
+    # ==================== RENDER ANIMATED BACKGROUND FIRST ====================
+    # This MUST be rendered before everything else to stay in background
+    st.markdown("""
+    <div class="fullscreen-animated-bg"></div>
+    <div class="animated-gradient-overlay"></div>
+    <div class="dark-overlay-layer"></div>
+    <div class="animated-spinner"></div>
+    <div class="shimmer-container-fixed">
+        <div class="shimmer-bar"></div>
+    </div>
+    <div class="bounce-dots-fixed">
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+        <div class="bounce-dot"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ==================== PERMANENT ANIMATED BACKGROUND STYLES ====================
     st.markdown("""
     <style>
         /* ========== HIDE STREAMLIT UI ========== */
@@ -76,89 +92,86 @@ def render_login_screen():
         }
 
         /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
-            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+        .fullscreen-animated-bg {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -10 !important;
+            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%) !important;
+            background-size: 400% 400% !important;
+            animation: gradientShift 15s ease infinite !important;
+            pointer-events: none !important;
         }
 
         /* ========== ANIMATED GRADIENT OVERLAY ========== */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -2;
-            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%);
-            animation: moveGradient 3s ease-in-out infinite;
+        .animated-gradient-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -9 !important;
+            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%) !important;
+            animation: moveGradient 3s ease-in-out infinite !important;
+            pointer-events: none !important;
         }
 
         /* ========== DARK OVERLAY ========== */
-        .main::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            z-index: -1;
+        .dark-overlay-layer {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.35) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            z-index: -8 !important;
+            pointer-events: none !important;
         }
 
-        /* ========== ANIMATED ELEMENTS LAYER ========== */
-        .animated-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: -1;
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        /* ========== ANIMATED SPINNER ========== */
+        .animated-spinner {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            width: 120px !important;
+            height: 120px !important;
+            z-index: -7 !important;
+            pointer-events: none !important;
         }
 
         /* Pulse circle background */
-        .animated-elements::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-            animation: pulse 2s ease-in-out infinite;
+        .animated-spinner::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 50% !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+            animation: pulse 2s ease-in-out infinite !important;
         }
 
         /* Spinning ring */
-        .animated-elements::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            margin-top: -70px;
-            margin-left: -70px;
-            width: 140px;
-            height: 140px;
-            border: 4px solid rgba(255, 255, 255, 0.2);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
+        .animated-spinner::after {
+            content: '' !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            margin-top: -70px !important;
+            margin-left: -70px !important;
+            width: 140px !important;
+            height: 140px !important;
+            border: 4px solid rgba(255, 255, 255, 0.2) !important;
+            border-top-color: white !important;
+            border-radius: 50% !important;
+            animation: spin 1.5s linear infinite !important;
         }
 
         /* ========== CENTER LOGIN PANEL ========== */
@@ -366,59 +379,61 @@ def render_login_screen():
         }
 
         /* ========== SHIMMER BAR ========== */
-        .shimmer-container {
-            position: fixed;
-            bottom: 35%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 320px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 100px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
-            z-index: -1;
+        .shimmer-container-fixed {
+            position: fixed !important;
+            bottom: 35% !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 320px !important;
+            height: 6px !important;
+            background: rgba(255, 255, 255, 0.15) !important;
+            border-radius: 100px !important;
+            overflow: hidden !important;
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            z-index: -7 !important;
+            pointer-events: none !important;
         }
 
         .shimmer-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 50%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-            animation: shimmer 1.8s ease-in-out infinite;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100% !important;
+            width: 50% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent) !important;
+            animation: shimmer 1.8s ease-in-out infinite !important;
         }
 
         /* ========== BOUNCE DOTS ========== */
-        .bounce-dots {
-            position: fixed;
-            bottom: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 10px;
-            z-index: -1;
+        .bounce-dots-fixed {
+            position: fixed !important;
+            bottom: 30% !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            display: flex !important;
+            gap: 10px !important;
+            z-index: -7 !important;
+            pointer-events: none !important;
         }
 
         .bounce-dot {
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 10px !important;
+            height: 10px !important;
+            background: white !important;
+            border-radius: 50% !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
         }
 
         .bounce-dot:nth-child(1) {
-            animation: bounce 1.4s ease-in-out infinite;
+            animation: bounce 1.4s ease-in-out infinite !important;
         }
 
         .bounce-dot:nth-child(2) {
-            animation: bounce 1.4s ease-in-out 0.2s infinite;
+            animation: bounce 1.4s ease-in-out 0.2s infinite !important;
         }
 
         .bounce-dot:nth-child(3) {
-            animation: bounce 1.4s ease-in-out 0.4s infinite;
+            animation: bounce 1.4s ease-in-out 0.4s infinite !important;
         }
 
         @keyframes fadeInUp {
@@ -453,25 +468,6 @@ def render_login_screen():
             }
         }
     </style>
-    """, unsafe_allow_html=True)
-
-    # Add animated elements layer (permanent, CSS-only)
-    st.markdown('<div class="animated-elements"></div>', unsafe_allow_html=True)
-
-    # Add shimmer progress bar
-    st.markdown("""
-    <div class="shimmer-container">
-        <div class="shimmer-bar"></div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Add bounce dots
-    st.markdown("""
-    <div class="bounce-dots">
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-        <div class="bounce-dot"></div>
-    </div>
     """, unsafe_allow_html=True)
 
     # ==================== LOGIN PANEL ====================
