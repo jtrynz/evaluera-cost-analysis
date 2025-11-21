@@ -42,7 +42,8 @@
       "Bash(for file in cluster_items.py loader.py web_price.py debug_gpt5_raw.py debug_gpt5_response.py enterprise_styles.py modern_premium_styles.py ultra_professional_styles.py simple_app_optimized_imports.py)",
       "Bash(do echo '=== Checking $file ===')",
       "Bash(done)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

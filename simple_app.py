@@ -7,6 +7,7 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 import os
 import pandas as pd
 import streamlit as st
+from inject_lottie_login_background import inject_lottie_login_background
 from dotenv import load_dotenv
 
 # Backend-Funktionen
@@ -109,168 +110,122 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    # Load Lottie JSON for EVALUERA gradient animation
-    import json
     import os
 
-    try:
-        lottie_path = os.path.join(os.path.dirname(__file__), "dark gradient.json")
-        with open(lottie_path, 'r') as f:
-            lottie_json = json.dumps(json.load(f))
+    # Load local Lottie JSON → Base64 encoding
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark gradient.json")
+    with open(lottie_path, "rb") as f:
+        anim_data = base64.b64encode(f.read()).decode("utf-8")
+    lottie_data_url = f"data:application/json;base64,{anim_data}"
 
-        # Build HTML with Lottie player (using string concatenation to avoid f-string issues)
-        lottie_html = """
-        <div id="lottie-bg-container"></div>
+    # Load local lottie-player.js
+    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.js")
+    with open(player_js_path, "r") as f:
+        lottie_js = f.read()
 
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.2/dist/lottie-player.js"></script>
-
+    # Build fullscreen Lottie player HTML
+    player_html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-            /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
-            html, body, #root, .main, .block-container,
-            [data-testid="stAppViewContainer"],
-            [data-testid="stApp"],
-            .stApp,
-            section.main,
-            div.main,
-            [data-testid="stHeader"],
-            [data-testid="stDecoration"],
-            [data-testid="stToolbar"],
-            .appview-container {
-                background: transparent !important;
-                background-color: transparent !important;
-            }
-
-            /* Force stApp transparent - CRITICAL */
-            [data-testid="stApp"] > header,
-            [data-testid="stApp"],
-            .stApp {
-                background: transparent !important;
-                background-color: transparent !important;
-            }
-
-            /* Ensure no white flash */
-            * {
-                transition: background-color 0s !important;
-            }
-
-            body {
+            html, body {{
                 margin: 0 !important;
                 padding: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
                 overflow: hidden !important;
-            }
-
-            .main {
                 background: transparent !important;
-            }
-
-            .block-container {
-                background: transparent !important;
-                padding-top: 0 !important;
-            }
-
-            /* Hide Streamlit UI during login */
-            #MainMenu {visibility: hidden !important;}
-            footer {visibility: hidden !important;}
-            header {visibility: hidden !important;}
-            [data-testid="stSidebar"] {display: none !important;}
-            [data-testid="stToolbar"] {display: none !important;}
-
-            /* ========== LOTTIE BACKGROUND ========== */
-            #lottie-bg-container {
+            }}
+            #lottie-bg {{
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
                 width: 100vw !important;
                 height: 100vh !important;
-                z-index: -99999 !important;
-                background: #BFDCDC !important;
-                overflow: hidden !important;
-            }
-
-            #lottie-bg-container lottie-player {
-                width: 100% !important;
-                height: 100% !important;
-            }
-        </style>
-
-        <script>
-            // Wait for DOM to be ready
-            document.addEventListener('DOMContentLoaded', function() {
-                initLottie();
-            });
-
-            // Also try immediately in case DOM is already loaded
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                setTimeout(initLottie, 100);
-            }
-
-            function initLottie() {
-                const container = document.getElementById('lottie-bg-container');
-                if (!container) {
-                    console.log('Container not found, retrying...');
-                    setTimeout(initLottie, 100);
-                    return;
-                }
-
-                // Clear any existing content
-                container.innerHTML = '';
-
-                // Create lottie-player element
-                const player = document.createElement('lottie-player');
-                player.setAttribute('autoplay', '');
-                player.setAttribute('loop', '');
-                player.setAttribute('mode', 'normal');
-                player.style.width = '100%';
-                player.style.height = '100%';
-
-                // Set animation data inline
-                const animationData = """ + lottie_json + """;
-                player.load(animationData);
-
-                container.appendChild(player);
-                console.log('Lottie animation loaded successfully!');
-            }
-        </script>
-        """
-
-        st.markdown(lottie_html, unsafe_allow_html=True)
-
-    except Exception as e:
-        # Fallback to gradient if Lottie fails
-        st.markdown(f"""
-        <div class="animated-gradient-bg"></div>
-        <style>
-            html, body, #root, .main, .block-container,
-            [data-testid="stAppViewContainer"],
-            [data-testid="stApp"], .stApp, section.main, div.main {
-                background: transparent !important;
-            }
-
-            #MainMenu, footer, header, [data-testid="stSidebar"], [data-testid="stToolbar"] {{
-                visibility: hidden !important;
-                display: none !important;
-            }}
-
-            .animated-gradient-bg {{
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
-                z-index: -99999 !important;
-                background: linear-gradient(-45deg, #BFDCDC, #A8C5C2, #7BA5A0, #B8D4D1) !important;
-                background-size: 400% 400% !important;
-                animation: gradientShift 15s ease infinite !important;
-            }}
-
-            @keyframes gradientShift {{
-                0% {{ background-position: 0% 50%; }}
-                50% {{ background-position: 100% 50%; }}
-                100% {{ background-position: 0% 50%; }}
+                z-index: 9999 !important;
+                pointer-events: none !important;
             }}
         </style>
-        <!-- Lottie load error: {str(e)} -->
-        """, unsafe_allow_html=True)
+    </head>
+    <body>
+        <script>{lottie_js}</script>
+        <lottie-player
+            id="lottie-bg"
+            src="{lottie_data_url}"
+            background="transparent"
+            speed="1"
+            loop
+            autoplay
+            renderer="canvas"
+            style="width:100%; height:100%;"
+        ></lottie-player>
+    </body>
+    </html>
+    """
+
+    # Inject via components.html (iframe-based)
+    st.components.v1.html(player_html, width=0, height=0, scrolling=False)
+
+    # CSS Fix: Make iframe fullscreen background + transparent Streamlit
+    st.markdown("""
+    <style>
+        /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
+        iframe[title="st.components.v1.html"] {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -9999 !important;
+            pointer-events: none !important;
+            border: none !important;
+        }
+
+        /* ========== FORCE STREAMLIT TRANSPARENT ========== */
+        html, body, #root, .main, .block-container,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stApp"],
+        .stApp,
+        section.main,
+        div.main,
+        [data-testid="stHeader"],
+        [data-testid="stDecoration"],
+        [data-testid="stToolbar"],
+        .appview-container {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Ensure no white flash */
+        * {
+            transition: background-color 0s !important;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .main {
+            background: transparent !important;
+        }
+
+        .block-container {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
+
+        /* Hide Streamlit UI during login */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
+    </style>
+    """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
@@ -279,6 +234,8 @@ if "logged_in" not in st.session_state:
 
 # Show login screen if not logged in
 if not st.session_state.logged_in:
+    inject_lottie_login_background()
+
     render_login_screen()
     st.stop()  # Stop execution here - don't render the app
 
