@@ -118,7 +118,7 @@ def render_login_screen():
 
         /* ========== INPUT FIELDS ========== */
         .login-container .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.75) !important;
+            background: rgba(255, 255, 255, 0.9) !important;
             backdrop-filter: blur(18px) !important;
             border: 1px solid rgba(184, 212, 209, 0.8) !important;
             border-radius: 14px !important;
@@ -134,7 +134,7 @@ def render_login_screen():
         }
 
         .login-container .stTextInput > div > div > input:focus {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: rgba(255, 255, 255, 1) !important;
             border-color: rgba(123, 165, 160, 1) !important;
             box-shadow: 0 0 0 3px rgba(123,165,160,0.22) !important;
             outline: none !important;
