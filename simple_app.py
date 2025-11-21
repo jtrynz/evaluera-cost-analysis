@@ -113,9 +113,68 @@ if not st.session_state.get("logged_in"):
     # Load Lottie JSON as Base64
     encoded_json = base64.b64encode(open(os.path.join(os.path.dirname(__file__), "dark_gradient.json"), "rb").read()).decode()
 
-    # Inject fullscreen Lottie background
+    # Inject fullscreen Lottie background with guaranteed loading
     st.markdown(f"""
+    <div id="lottie-container"></div>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <script>
+    // Wait for DOM and lottie-player to be ready
+    function initLottie() {{
+        const container = document.getElementById('lottie-container');
+        if (!container) {{
+            setTimeout(initLottie, 100);
+            return;
+        }}
+
+        // Remove existing player if any
+        const existing = document.getElementById('lottie-bg');
+        if (existing) existing.remove();
+
+        // Create lottie player
+        const player = document.createElement('lottie-player');
+        player.id = 'lottie-bg';
+        player.setAttribute('autoplay', '');
+        player.setAttribute('loop', '');
+        player.setAttribute('mode', 'normal');
+        player.setAttribute('speed', '1');
+        player.setAttribute('src', 'data:application/json;base64,{encoded_json}');
+
+        container.appendChild(player);
+    }}
+
+    // Initialize when script loads
+    if (document.readyState === 'loading') {{
+        document.addEventListener('DOMContentLoaded', initLottie);
+    }} else {{
+        initLottie();
+    }}
+    </script>
+
     <style>
+    /* Container for lottie player */
+    #lottie-container {{
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: -9999 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+    }}
+
+    /* Lottie player styling */
+    #lottie-bg {{
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }}
+
     /* ensure no Streamlit layout shrinks or clips the player */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"], #root {{
         height: 100% !important;
@@ -124,18 +183,6 @@ if not st.session_state.get("logged_in"):
         padding: 0 !important;
         overflow: hidden !important;
         background: transparent !important;
-    }}
-
-    #lottie-bg {{
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        object-fit: cover !important;
-        transform: scale(1.0) !important;
-        z-index: -9999 !important;
-        pointer-events: none !important;
     }}
 
     /* Hide Streamlit UI during login */
@@ -155,17 +202,6 @@ if not st.session_state.get("logged_in"):
         padding-top: 0 !important;
     }}
     </style>
-
-    <lottie-player
-        id="lottie-bg"
-        autoplay
-        loop
-        mode="normal"
-        speed="1"
-        src="data:application/json;base64,{encoded_json}">
-    </lottie-player>
-
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
