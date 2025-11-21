@@ -46,6 +46,8 @@ from wizard_system import (
 )
 from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
 from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
+from login_screen import check_login, render_login_screen, render_logout_button
+from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -104,7 +106,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ==================== LOGIN CHECK ====================
+if not check_login():
+    render_login_screen()
+    st.stop()
+
+# ==================== MAIN APP ====================
 apply_global_styles()
+apply_liquid_glass_styles()
 create_scroll_behavior()
 wizard = WizardManager()
 nav = NavigationSidebar()
@@ -144,11 +153,17 @@ def find_col(df, possible_names):
     return None
 
 
-# ==================== HEADER - EVALUERA BRANDING ====================
-st.markdown(f"""<div style="background: {COLORS['brand_bg']}; padding: {SPACING['xl']} {SPACING['xxl']}; border-radius: {RADIUS['lg']}; margin-bottom: {SPACING['xl']}; color: {COLORS['gray_900']}; box-shadow: {SHADOWS['sm']};"><div style="margin-bottom: {SPACING['md']};"><h3 style="margin: 0; font-weight: 400; font-size: 1rem; color: {COLORS['gray_900']};">Wer wir sind</h3></div><h1 style="margin: 0; color: {COLORS['gray_900']}; font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">EVALUERA</h1><p style="margin: {SPACING['md']} 0 0 0; font-size: 1rem; color: {COLORS['gray_800']}; max-width: 700px; line-height: 1.6;"><strong>Projektpartner für den technischen Einkauf</strong> – neutral, unabhängig und spezialisiert auf Industrieunternehmen.</p><p style="margin: {SPACING['sm']} 0 0 0; font-size: 0.9rem; color: {COLORS['gray_700']}; max-width: 700px; line-height: 1.5;">KI-gestützte Bestellanalyse & Kostenschätzung</p></div>""", unsafe_allow_html=True)
+# ==================== HEADER - LIQUID GLASS BRANDING ====================
+liquid_header(
+    "EVALUERA",
+    "KI-gestützte Bestellanalyse & Kostenschätzung"
+)
 
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
+
+# Logout Button
+render_logout_button()
 
 # Synchronize Navigation with Wizard Steps
 nav_to_wizard = {
