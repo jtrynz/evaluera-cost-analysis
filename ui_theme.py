@@ -276,6 +276,39 @@ def apply_global_styles():
         .stPasswordInput > div > div {{
             background: transparent !important;
         }}
+
+        /* ===== FILE UPLOADER OVERRIDE ===== */
+        .stFileUploader, .stFileUploader > div, .stFileUploader > div > div {{
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 14px !important;
+            border: 1px solid {COLORS['primary_light']} !important;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06) !important;
+        }}
+
+        .stFileUploader label {{
+            color: {COLORS['gray_700']} !important;
+        }}
+
+        .stFileUploader div[data-testid="stFileDropzone"] {{
+            background: rgba(255, 255, 255, 0.95) !important;
+            border: 2px dashed {COLORS['primary']}55 !important;
+            border-radius: 14px !important;
+        }}
+
+        /* ===== TOP DARK BAR FIX ===== */
+        header[data-testid="stHeader"] {{
+            background: linear-gradient(
+                90deg,
+                {COLORS['primary_light']} 0%,
+                {COLORS['bg_primary']} 60%,
+                #ffffff 100%
+            ) !important;
+            border-bottom: 1px solid {COLORS['primary_light']}33 !important;
+        }}
+
+        header[data-testid="stHeader"] > div {{
+            background: transparent !important;
+        }}
     </style>
     """, unsafe_allow_html=True)
 
