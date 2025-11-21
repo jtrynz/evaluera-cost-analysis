@@ -1,9 +1,12 @@
 import streamlit as st
 import base64
+import os
 import streamlit.components.v1 as components
 
 def inject_lottie_login_background():
-    with open("dark_gradient.json", "rb") as f:
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+
+    with open(lottie_path, "rb") as f:
         animation_bytes = f.read()
 
     data_url = (
@@ -21,18 +24,18 @@ def inject_lottie_login_background():
         loop
         autoplay
         renderer="canvas"
-        style="width: 100%; height: 100%;"
+        style="position: fixed; inset: 0; width: 100vw; height: 100vh; z-index:-9999;"
     ></lottie-player>
     """
 
-    components.html(lottie_html, width=0, height=0, scrolling=False)
+    components.html(lottie_html, height=0, width=0)
 
     st.markdown(
         """
         <style>
-        body { background-color: #BFDCDC !important; }
+        body { background: #BFDCDC !important; }
         .stApp { background: transparent !important; }
-        iframe {
+        iframe[title="lottie-player"] {
             position: fixed !important;
             inset: 0 !important;
             width: 100vw !important;
