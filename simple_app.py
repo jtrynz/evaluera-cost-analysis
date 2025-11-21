@@ -168,13 +168,18 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     """
 
     # Inject via components.html (iframe-based)
-    st.components.v1.html(player_html, width=0, height=0, scrolling=False)
+    st.components.v1.html(
+        player_html,
+        width=1920,
+        height=1080,
+        scrolling=False
+    )
 
     # CSS Fix: Make iframe fullscreen background + transparent Streamlit
     st.markdown("""
     <style>
         /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
-        iframe[title="st.components.v1.html"] {
+        iframe {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
