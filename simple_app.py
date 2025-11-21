@@ -125,7 +125,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             print(f"Warning: Could not load Lottie JSON: {e}")
             lottie_json = "{}"
 
-    st.markdown(f"""
+    # Build the markdown with embedded JSON (avoiding f-string interpolation issues)
+    lottie_script = f"""
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 
     <div class="lottie-background-container">
@@ -135,7 +136,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     <script>
     (function() {{
         try {{
-            const lottieData = {lottie_json};
+            const lottieData = """ + lottie_json + """;
             const wrapper = document.getElementById('lottie-bg-wrapper');
             if (wrapper && !wrapper.hasChildNodes() && lottieData && Object.keys(lottieData).length > 0) {{
                 const player = document.createElement('lottie-player');
@@ -152,7 +153,9 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             console.warn('Lottie animation failed to load:', e);
         }}
     }})();
-    </script>
+    </script>"""
+
+    st.markdown(lottie_script + """
 
     <style>
         /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
