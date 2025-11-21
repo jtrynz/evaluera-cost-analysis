@@ -109,53 +109,9 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    # Load Lottie JSON inline
-    import json
-    import os
-
-    lottie_json = "{}"  # Default empty
-    json_path = "dark_gradient_evaluera.json"
-
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, "r") as f:
-                lottie_data = json.load(f)
-                lottie_json = json.dumps(lottie_data)
-        except Exception as e:
-            print(f"Warning: Could not load Lottie JSON: {e}")
-            lottie_json = "{}"
-
-    # Build the markdown with embedded JSON (avoiding f-string interpolation issues)
-    lottie_script = f"""
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-
-    <div class="lottie-background-container">
-        <div id="lottie-bg-wrapper"></div>
-    </div>
-
-    <script>
-    (function() {{
-        try {{
-            const lottieData = """ + lottie_json + """;
-            const wrapper = document.getElementById('lottie-bg-wrapper');
-            if (wrapper && !wrapper.hasChildNodes() && lottieData && Object.keys(lottieData).length > 0) {{
-                const player = document.createElement('lottie-player');
-                player.id = 'lottie-bg';
-                player.loop = true;
-                player.autoplay = true;
-                player.speed = 1;
-                player.style.width = '100%';
-                player.style.height = '100%';
-                player.load(lottieData);
-                wrapper.appendChild(player);
-            }}
-        }} catch(e) {{
-            console.warn('Lottie animation failed to load:', e);
-        }}
-    }})();
-    </script>"""
-
-    st.markdown(lottie_script + """
+    # Simple animated gradient background (CSS-only, no Lottie dependencies)
+    st.markdown("""
+    <div class="animated-gradient-bg"></div>
 
     <style>
         /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
@@ -208,36 +164,23 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         [data-testid="stSidebar"] {display: none !important;}
         [data-testid="stToolbar"] {display: none !important;}
 
-        /* ========== LOTTIE FULLSCREEN CONTAINER ========== */
-        .lottie-background-container {
+        /* ========== ANIMATED GRADIENT BACKGROUND ========== */
+        .animated-gradient-bg {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
             z-index: -99999 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #BFDCDC !important;
+            background: linear-gradient(-45deg, #BFDCDC, #A8C5C2, #7BA5A0, #B8D4D1) !important;
+            background-size: 400% 400% !important;
+            animation: gradientShift 15s ease infinite !important;
         }
 
-        #lottie-bg {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-        }
-
-        /* ========== VERHINDERE FLACKERN ========== */
-        .lottie-background-container,
-        #lottie-bg {
-            will-change: auto !important;
-            backface-visibility: hidden !important;
-            -webkit-backface-visibility: hidden !important;
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
     """, unsafe_allow_html=True)
@@ -827,9 +770,31 @@ wizard.render_step_content(4, step4_suppliers)
 wizard.render_step_content(5, step5_cost_estimation)
 wizard.render_step_content(6, step6_sustainability)
 
-# Navigation
+# Navigation with conditional "Weiter" button
 divider()
-wizard.render_navigation()
+
+# Determine if "Weiter" button should be enabled based on current step
+current_step = wizard.get_current_step()
+next_disabled = False
+
+if current_step == 1:
+    # Step 1: Requires file upload
+    next_disabled = "df" not in st.session_state
+elif current_step == 2:
+    # Step 2: Requires article selection
+    next_disabled = "selected_article" not in st.session_state
+elif current_step == 3:
+    # Step 3: Requires price overview completion
+    next_disabled = "avg_price" not in st.session_state
+elif current_step == 4:
+    # Step 4: Requires supplier selection (or no suppliers)
+    next_disabled = "selected_supplier_name" not in st.session_state and "df" in st.session_state
+elif current_step == 5:
+    # Step 5: Requires cost estimation completion
+    next_disabled = "cost_result" not in st.session_state
+# Step 6: Always enabled (last step)
+
+wizard.render_navigation(next_disabled=next_disabled)
 
 # Developer Mode
 with st.expander("🔧 Developer Mode", expanded=False):
