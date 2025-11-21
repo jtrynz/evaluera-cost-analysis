@@ -106,6 +106,162 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
+# Render ONCE, outside any logic, so it persists through reruns
+if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    st.markdown("""
+    <div class="bg-animation">
+        <div class="liquid-wave wave-1"></div>
+        <div class="liquid-wave wave-2"></div>
+        <div class="liquid-wave wave-3"></div>
+        <div class="liquid-wave wave-4"></div>
+    </div>
+
+    <style>
+        /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
+        html, body, #root, .main, .block-container,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stHeader"],
+        [data-testid="stDecoration"] {
+            background: transparent !important;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        .main {
+            background: transparent !important;
+        }
+
+        .block-container {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
+
+        /* Hide Streamlit UI */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
+
+        /* ========== PERMANENT FULLSCREEN BACKGROUND ========== */
+        .bg-animation {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: -99999 !important;
+            background: #BFDCDC !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* ========== LIQUID WAVES ========== */
+        .liquid-wave {
+            position: absolute !important;
+            border-radius: 50% !important;
+            filter: blur(70px) !important;
+            will-change: transform !important;
+        }
+
+        .wave-1 {
+            width: 600px !important;
+            height: 600px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 65%) !important;
+            top: -150px !important;
+            left: -150px !important;
+            opacity: 0.6 !important;
+            animation: wave1drift 28s ease-in-out infinite !important;
+        }
+
+        .wave-2 {
+            width: 700px !important;
+            height: 700px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 65%) !important;
+            bottom: -200px !important;
+            right: -200px !important;
+            opacity: 0.5 !important;
+            animation: wave2drift 35s ease-in-out infinite !important;
+        }
+
+        .wave-3 {
+            width: 550px !important;
+            height: 550px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 65%) !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            opacity: 0.55 !important;
+            animation: wave3drift 32s ease-in-out infinite !important;
+        }
+
+        .wave-4 {
+            width: 500px !important;
+            height: 500px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 65%) !important;
+            bottom: 15% !important;
+            left: 15% !important;
+            opacity: 0.45 !important;
+            animation: wave4drift 26s ease-in-out infinite !important;
+        }
+
+        /* ========== WAVE ANIMATIONS ========== */
+        @keyframes wave1drift {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(60px, 90px) scale(1.15);
+            }
+            66% {
+                transform: translate(-40px, 50px) scale(0.92);
+            }
+        }
+
+        @keyframes wave2drift {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(-70px, -60px) scale(1.08);
+            }
+            66% {
+                transform: translate(50px, 40px) scale(0.88);
+            }
+        }
+
+        @keyframes wave3drift {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            33% {
+                transform: translate(calc(-50% + 50px), calc(-50% - 70px)) scale(1.12);
+            }
+            66% {
+                transform: translate(calc(-50% - 60px), calc(-50% + 50px)) scale(0.9);
+            }
+        }
+
+        @keyframes wave4drift {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(80px, -50px) scale(1.18);
+            }
+            66% {
+                transform: translate(-50px, 70px) scale(0.85);
+            }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
 if "logged_in" not in st.session_state:

@@ -53,166 +53,19 @@ def logout():
 # ==================== LOGIN SCREEN ====================
 def render_login_screen():
     """
-    Render premium login screen with permanent animated background
+    Render premium login screen (background is rendered in simple_app.py)
     """
 
-    # STEP 1: Render FULLSCREEN ANIMATED BACKGROUND + CSS (all in one block)
+    # STEP 1: Render LOGIN PANEL CSS
     st.markdown("""
-    <div class="animated-bg">
-        <div class="wave wave-1"></div>
-        <div class="wave wave-2"></div>
-        <div class="wave wave-3"></div>
-        <div class="wave wave-4"></div>
-    </div>
-
     <style>
-        /* ========== FORCE TRANSPARENT STREAMLIT CONTAINERS ========== */
-        .main {
-            background: transparent !important;
-        }
-
-        .block-container {
-            background: transparent !important;
-            padding-top: 0 !important;
-        }
-
-        body {
-            background: transparent !important;
-            margin: 0 !important;
-            overflow: hidden !important;
-        }
-
-        [data-testid="stAppViewContainer"] {
-            background: transparent !important;
-        }
-
-        [data-testid="stHeader"] {
-            background: transparent !important;
-        }
-
-        /* Hide all Streamlit UI elements */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
-
-        /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
-        .animated-bg {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: #BFDCDC !important;
-            z-index: -1 !important;
-            overflow: hidden !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        /* ========== LIQUID WAVES ========== */
-        .wave {
-            position: absolute !important;
-            border-radius: 50% !important;
-            filter: blur(60px) !important;
-            opacity: 0.4 !important;
-            will-change: transform !important;
-        }
-
-        .wave-1 {
-            width: 500px !important;
-            height: 500px !important;
-            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%) !important;
-            top: -100px !important;
-            left: -100px !important;
-            animation: float1 25s ease-in-out infinite !important;
-        }
-
-        .wave-2 {
-            width: 600px !important;
-            height: 600px !important;
-            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%) !important;
-            bottom: -150px !important;
-            right: -150px !important;
-            animation: float2 30s ease-in-out infinite !important;
-        }
-
-        .wave-3 {
-            width: 450px !important;
-            height: 450px !important;
-            background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 70%) !important;
-            top: 40% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            animation: float3 28s ease-in-out infinite !important;
-        }
-
-        .wave-4 {
-            width: 400px !important;
-            height: 400px !important;
-            background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 70%) !important;
-            bottom: 20% !important;
-            left: 20% !important;
-            animation: float4 23s ease-in-out infinite !important;
-        }
-
-        /* ========== WAVE ANIMATIONS ========== */
-        @keyframes float1 {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(50px, 80px) scale(1.1);
-            }
-            66% {
-                transform: translate(-30px, 40px) scale(0.95);
-            }
-        }
-
-        @keyframes float2 {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(-60px, -50px) scale(1.05);
-            }
-            66% {
-                transform: translate(40px, 30px) scale(0.9);
-            }
-        }
-
-        @keyframes float3 {
-            0%, 100% {
-                transform: translate(-50%, -50%) scale(1);
-            }
-            33% {
-                transform: translate(calc(-50% + 40px), calc(-50% - 60px)) scale(1.08);
-            }
-            66% {
-                transform: translate(calc(-50% - 50px), calc(-50% + 40px)) scale(0.92);
-            }
-        }
-
-        @keyframes float4 {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(70px, -40px) scale(1.12);
-            }
-            66% {
-                transform: translate(-40px, 60px) scale(0.88);
-            }
-        }
-
         /* ========== GLASSMORPHISM LOGIN PANEL ========== */
         .login-container {
             position: fixed !important;
             top: 50% !important;
             left: 50% !important;
             transform: translate(-50%, -50%) !important;
-            z-index: 100 !important;
+            z-index: 99999 !important;
             width: 90% !important;
             max-width: 440px !important;
         }
@@ -375,7 +228,7 @@ def render_login_screen():
     </style>
     """, unsafe_allow_html=True)
 
-    # STEP 2: Render Login Panel (in regular Streamlit container with absolute positioning via CSS)
+    # STEP 2: Render Login Panel
     st.markdown('<div class="login-container"><div class="glass-panel">', unsafe_allow_html=True)
 
     # Logo
