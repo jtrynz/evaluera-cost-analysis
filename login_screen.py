@@ -12,7 +12,8 @@ from ui_theme import COLORS
 VALID_CREDENTIALS = {
     "admin": "evaluera2024",
     "demo": "demo123",
-    "user": "password"
+    "user": "password" ,
+    "alex": "alex"
 }
 
 
@@ -68,6 +69,13 @@ def render_login_screen():
             z-index: 99999 !important;
             width: 90% !important;
             max-width: 440px !important;
+            background: rgba(255,255,255,0.2) !important;
+            backdrop-filter: blur(20px) !important;
+            border-radius: 20px !important;
+            padding: 40px 32px !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            z-index: 100000 !important;
         }
 
         .glass-panel {
