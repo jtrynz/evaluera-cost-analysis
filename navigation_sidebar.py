@@ -100,7 +100,7 @@ class NavigationSidebar:
                 }}
 
                 .nav-item.active {{
-                    background: {COLORS['primary_light']};
+                    background: {COLORS['light_accent']};
                     color: {COLORS['gray_900']};
                     opacity: 1;
                     border-left-color: {COLORS['primary']};
@@ -134,8 +134,8 @@ class NavigationSidebar:
                 }}
 
                 .nav-subitem.active {{
-                    background: {COLORS['primary_light']};
-                    color: {COLORS['primary_dark']};
+                    background: {COLORS['light_accent']};
+                    color: {COLORS['primary']};
                     opacity: 1;
                     font-weight: 500;
                 }}
