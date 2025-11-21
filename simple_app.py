@@ -128,8 +128,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             body,html {{
                 margin:0;
                 padding:0;
-                width:100%;
-                height:100%;
+                width:100vw !important;
+                height:100vh !important;
                 background:transparent;
                 overflow:hidden !important;
             }}
@@ -137,8 +137,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
-                width: 100vw !important;
-                height: 100vh !important;
+                width: 100% !important;
+                height: 100% !important;
                 z-index: -9999 !important;
                 pointer-events: none !important;
             }}
@@ -154,7 +154,19 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             loop
             autoplay
             renderer="canvas"
-            style="width:100vw !important; height:100vh !important; position:fixed !important; top:0 !important; left:0 !important; object-fit:cover !important;"
+            style="
+                width: 100vw !important;
+                height: 100vh !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                object-fit: fill !important;
+                overflow: hidden !important;
+            "
         ></lottie-player>
     </body>
     </html>
