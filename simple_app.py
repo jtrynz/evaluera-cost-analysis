@@ -109,59 +109,68 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if not st.session_state.get("logged_in"):
-    import json
     import base64
-    import os
 
-    # Load lottie JSON as base64
-    lottie_file = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    with open(lottie_file, "r", encoding="utf-8") as f:
-        lottie_raw_json = f.read()
+    # Lottie JSON UND Player laden
+    lottie_json = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+    player_js = os.path.join(os.path.dirname(__file__), "lottie-player.js")
 
-    encoded = base64.b64encode(lottie_raw_json.encode("utf-8")).decode("utf-8")
-    lottie_url = f"data:application/json;base64,{encoded}"
+    with open(lottie_json, "rb") as f:
+        data = base64.b64encode(f.read()).decode("utf-8")
 
-    # Render fullscreen animated background
-    st.markdown(f"""
-    <div id="lottie-container"></div>
+    with open(player_js, "r") as f:
+        player = f.read()
 
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    html_background = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html, body {{
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+}}
 
-    <lottie-player
-        id="bg-animation"
-        autoplay
-        loop
-        mode="normal"
-        src="{lottie_url}"
-    >
-    </lottie-player>
+#bg {{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+}}
+</style>
+</head>
+<body>
+<script>{player}</script>
 
+<lottie-player
+    id="bg"
+    src="data:application/json;base64,{data}"
+    background="transparent"
+    speed="1"
+    loop
+    autoplay
+    mode="normal"
+></lottie-player>
+
+</body>
+</html>
+"""
+
+    st.components.v1.html(
+        html_background,
+        width=0,
+        height=0,
+        scrolling=False
+    )
+
+    # Streamlit Transparency CSS
+    st.markdown("""
     <style>
-        #lottie-container {{
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -9999 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-        }}
-
-        #bg-animation {{
-            width: 100vw !important;
-            height: 100vh !important;
-            object-fit: cover !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            opacity: 1 !important;
-        }}
-
-        html, body {{
-            background: transparent !important;
-        }}
-
         /* ========== FORCE STREAMLIT TRANSPARENT ========== */
         html, body, #root, .main, .block-container,
         [data-testid="stAppViewContainer"],
@@ -172,26 +181,26 @@ if not st.session_state.get("logged_in"):
         [data-testid="stHeader"],
         [data-testid="stDecoration"],
         [data-testid="stToolbar"],
-        .appview-container {{
+        .appview-container {
             background: transparent !important;
             background-color: transparent !important;
-        }}
+        }
 
-        .main {{
+        .main {
             background: transparent !important;
-        }}
+        }
 
-        .block-container {{
+        .block-container {
             background: transparent !important;
             padding-top: 0 !important;
-        }}
+        }
 
         /* Hide Streamlit UI during login */
-        #MainMenu {{visibility: hidden !important;}}
-        footer {{visibility: hidden !important;}}
-        header {{visibility: hidden !important;}}
-        [data-testid="stSidebar"] {{display: none !important;}}
-        [data-testid="stToolbar"] {{display: none !important;}}
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
     </style>
     """, unsafe_allow_html=True)
 
