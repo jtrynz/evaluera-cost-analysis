@@ -5,10 +5,8 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 """
 
 import os
-import base64
 import pandas as pd
 import streamlit as st
-from inject_lottie_login_background import inject_lottie_login_background
 from dotenv import load_dotenv
 
 # Backend-Funktionen
@@ -111,6 +109,7 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
+    import base64
     import os
 
     # Load local Lottie JSON → Base64 encoding
@@ -120,7 +119,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     lottie_data_url = f"data:application/json;base64,{anim_data}"
 
     # Load local lottie-player.js
-    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.min.js")
+    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.js")
     with open(player_js_path, "r") as f:
         lottie_js = f.read()
 
@@ -168,12 +167,7 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
     """
 
     # Inject via components.html (iframe-based)
-    st.components.v1.html(
-        player_html,
-        width=0,
-        height=0,
-        scrolling=False
-    )
+    st.components.v1.html(player_html, width=0, height=0, scrolling=False)
 
     # CSS Fix: Make iframe fullscreen background + transparent Streamlit
     st.markdown("""
@@ -223,6 +217,13 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             background: transparent !important;
             padding-top: 0 !important;
         }
+
+        /* Hide Streamlit UI during login */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
     </style>
     """, unsafe_allow_html=True)
 
