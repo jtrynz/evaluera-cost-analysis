@@ -108,105 +108,58 @@ st.markdown("""
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
-if "logged_in" not in st.session_state or not st.session_state.logged_in:
+if not st.session_state.get("logged_in"):
+    import json
     import base64
     import os
 
-    # Load local Lottie JSON → Base64 encoding
-    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    with open(lottie_path, "rb") as f:
-        anim_data = base64.b64encode(f.read()).decode("utf-8")
-    lottie_data_url = f"data:application/json;base64,{anim_data}"
+    # Load lottie JSON as base64
+    lottie_file = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
+    with open(lottie_file, "r", encoding="utf-8") as f:
+        lottie_raw_json = f.read()
 
-    # Load local lottie-player.js
-    player_js_path = os.path.join(os.path.dirname(__file__), "lottie-player.js")
-    with open(player_js_path, "r") as f:
-        lottie_js = f.read()
+    encoded = base64.b64encode(lottie_raw_json.encode("utf-8")).decode("utf-8")
+    lottie_url = f"data:application/json;base64,{encoded}"
 
-    # Build fullscreen Lottie player HTML
-    player_html = f"""
-    <script>{lottie_js}</script>
+    # Render fullscreen animated background
+    st.markdown(f"""
+    <div id="lottie-container"></div>
+
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <lottie-player
+        id="bg-animation"
+        autoplay
+        loop
+        mode="normal"
+        src="{lottie_url}"
+    >
+    </lottie-player>
 
     <style>
-        html, body {{
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
-            background: transparent !important;
-        }}
-
-        #bg-container {{
+        #lottie-container {{
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
             width: 100vw !important;
             height: 100vh !important;
-            z-index: -10 !important;
+            z-index: -9999 !important;
             overflow: hidden !important;
             pointer-events: none !important;
         }}
 
-        #bg-container lottie-player {{
-            width: 100% !important;
-            height: 100% !important;
+        #bg-animation {{
+            width: 100vw !important;
+            height: 100vh !important;
             object-fit: cover !important;
-        }}
-
-        iframe[title="st.components.v1.html"] {{
-            position: fixed !important;
-            inset: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            pointer-events: none !important;
-            border: none !important;
-            background: transparent !important;
-            z-index: -10 !important;
-        }}
-
-        [data-testid="stAppViewContainer"],
-        .main, .stApp, .block-container {{
-            background: transparent !important;
-        }}
-    </style>
-
-    <div id="bg-container">
-        <lottie-player
-            src="{lottie_data_url}"
-            speed="1"
-            loop
-            autoplay
-            background="transparent"
-        ></lottie-player>
-    </div>
-    """
-
-    # Inject via components.html (iframe-based)
-    st.components.v1.html(player_html, width=0, height=0, scrolling=False)
-
-    # CSS Fix: Make iframe fullscreen background + transparent Streamlit
-    st.markdown("""
-    <style>
-        /* ========== PREVENT SCROLLBARS ========== */
-        html, body {{
-            overflow: hidden !important;
-            position: fixed !important;
-            width: 100vw !important;
-            height: 100vh !important;
-        }}
-
-        /* ========== IFRAME FULLSCREEN BACKGROUND ========== */
-        iframe[title="st.components.v1.html"] {{
-            position: fixed !important;
+            position: absolute !important;
             top: 0 !important;
             left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -10 !important;
-            pointer-events: none !important;
-            border: none !important;
-            overflow: hidden !important;
+            opacity: 1 !important;
+        }}
+
+        html, body {{
+            background: transparent !important;
         }}
 
         /* ========== FORCE STREAMLIT TRANSPARENT ========== */
@@ -224,21 +177,8 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
             background-color: transparent !important;
         }}
 
-        /* Ensure no white flash */
-        * {{
-            transition: background-color 0s !important;
-        }}
-
-        body {{
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-        }}
-
         .main {{
             background: transparent !important;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
         }}
 
         .block-container {{
