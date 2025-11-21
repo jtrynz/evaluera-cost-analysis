@@ -111,11 +111,19 @@ st.markdown("""
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
     # Load Lottie JSON inline
     import json
-    try:
-        with open("dark_gradient_evaluera.json", "r") as f:
-            lottie_json = json.dumps(json.load(f))
-    except:
-        lottie_json = "{}"  # Fallback empty animation
+    import os
+
+    lottie_json = "{}"  # Default empty
+    json_path = "dark_gradient_evaluera.json"
+
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r") as f:
+                lottie_data = json.load(f)
+                lottie_json = json.dumps(lottie_data)
+        except Exception as e:
+            print(f"Warning: Could not load Lottie JSON: {e}")
+            lottie_json = "{}"
 
     st.markdown(f"""
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
@@ -126,18 +134,22 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
 
     <script>
     (function() {{
-        const lottieData = {lottie_json};
-        const wrapper = document.getElementById('lottie-bg-wrapper');
-        if (wrapper && !wrapper.hasChildNodes()) {{
-            const player = document.createElement('lottie-player');
-            player.id = 'lottie-bg';
-            player.loop = true;
-            player.autoplay = true;
-            player.speed = 1;
-            player.style.width = '100%';
-            player.style.height = '100%';
-            player.load(lottieData);
-            wrapper.appendChild(player);
+        try {{
+            const lottieData = {lottie_json};
+            const wrapper = document.getElementById('lottie-bg-wrapper');
+            if (wrapper && !wrapper.hasChildNodes() && lottieData && Object.keys(lottieData).length > 0) {{
+                const player = document.createElement('lottie-player');
+                player.id = 'lottie-bg';
+                player.loop = true;
+                player.autoplay = true;
+                player.speed = 1;
+                player.style.width = '100%';
+                player.style.height = '100%';
+                player.load(lottieData);
+                wrapper.appendChild(player);
+            }}
+        }} catch(e) {{
+            console.warn('Lottie animation failed to load:', e);
         }}
     }})();
     </script>
