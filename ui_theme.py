@@ -28,7 +28,7 @@ COLORS = {
     # Status
     "success": "#22c55e",
     "warning": "#eab308",
-    "error": "#304B3F",  # EVALUERA Dunkelgrün
+    "error": "#2F4A56",  # EVALUERA Blaugrau
     "info": "#7BA5A0",  # EVALUERA Türkis für Info
 
     # Backgrounds
