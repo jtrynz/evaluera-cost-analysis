@@ -196,6 +196,26 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         </style>
     """, unsafe_allow_html=True)
 
+    st.markdown("""
+        <style>
+            /* Center the entire login content vertically + horizontally */
+            .block-container {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                height: 100vh !important;
+                padding-top: 0 !important;
+            }
+
+            /* Prevent scrolling */
+            html, body {
+                overflow: hidden !important;
+                height: 100vh !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
 if "logged_in" not in st.session_state:
