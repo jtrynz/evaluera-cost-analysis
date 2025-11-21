@@ -121,9 +121,29 @@ if "logged_in" not in st.session_state or not st.session_state.logged_in:
         /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
         html, body, #root, .main, .block-container,
         [data-testid="stAppViewContainer"],
+        [data-testid="stApp"],
+        .stApp,
+        section.main,
+        div.main,
         [data-testid="stHeader"],
-        [data-testid="stDecoration"] {
+        [data-testid="stDecoration"],
+        [data-testid="stToolbar"],
+        .appview-container {
             background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Force stApp transparent - CRITICAL */
+        [data-testid="stApp"] > header,
+        [data-testid="stApp"],
+        .stApp {
+            background: transparent !important;
+            background-color: transparent !important;
+        }
+
+        /* Ensure no white flash */
+        * {
+            transition: background-color 0s !important;
         }
 
         body {
