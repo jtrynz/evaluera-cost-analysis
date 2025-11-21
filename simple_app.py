@@ -107,66 +107,39 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-# Render ONCE, outside any logic, so it persists through reruns
 if not st.session_state.get("logged_in"):
     import base64
 
-    # Lottie JSON UND Player laden
-    lottie_json = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
-    player_js = os.path.join(os.path.dirname(__file__), "lottie-player.js")
+    # ---- LOTTIE FULLSCREEN BACKGROUND ----
+    lottie_path = os.path.join(os.path.dirname(__file__), "dark_gradient.json")
 
-    with open(lottie_json, "rb") as f:
-        data = base64.b64encode(f.read()).decode("utf-8")
+    with open(lottie_path, "rb") as f:
+        encoded_json = base64.b64encode(f.read()).decode("utf-8")
 
-    with open(player_js, "r") as f:
-        player = f.read()
+    # Fullscreen Lottie-Background
+    st.markdown(f"""
+    <style>
+    #lottie-bg {{
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 1;
+    }}
+    </style>
 
-    html_background = f"""
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-html, body {{
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: black;
-}}
+    <lottie-player
+        id="lottie-bg"
+        autoplay
+        loop
+        mode="normal"
+        src="data:application/json;base64,{encoded_json}">
+    </lottie-player>
 
-#bg {{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-}}
-</style>
-</head>
-<body>
-<script>{player}</script>
-
-<lottie-player
-    id="bg"
-    src="data:application/json;base64,{data}"
-    background="transparent"
-    speed="1"
-    loop
-    autoplay
-    mode="normal"
-></lottie-player>
-
-</body>
-</html>
-"""
-
-    st.components.v1.html(
-        html_background,
-        width=0,
-        height=0,
-        scrolling=False
-    )
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    """, unsafe_allow_html=True)
 
     # Streamlit Transparency CSS
     st.markdown("""
