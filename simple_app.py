@@ -63,17 +63,17 @@ st.set_page_config(
 # EVALUERA Theme Override - muss nach set_page_config kommen
 st.markdown("""
 <style>
-    /* Primary Button Override - EVALUERA Dunkelrot */
+    /* Primary Button Override - EVALUERA Blaugrau */
     .stButton > button[kind="primary"],
     .stButton > button[data-testid="baseButton-primary"] {
-        background: linear-gradient(135deg, #472B2E 0%, #5A3840 100%) !important;
+        background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
         color: white !important;
     }
 
     .stButton > button[kind="primary"]:hover,
     .stButton > button[data-testid="baseButton-primary"]:hover {
-        background: linear-gradient(135deg, #5A3840 0%, #6B4550 100%) !important;
-        box-shadow: 0 4px 12px rgba(71, 43, 46, 0.3) !important;
+        background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
+        box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
     }
 </style>
 """, unsafe_allow_html=True)
