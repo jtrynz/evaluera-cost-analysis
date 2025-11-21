@@ -49,7 +49,7 @@ from wizard_system import (
 from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
 from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from login_screen import check_login, render_login_screen, render_logout_button
-from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
+from liquid_glass_system import liquid_header
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -292,7 +292,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 apply_global_styles()
-apply_liquid_glass_styles()
 create_scroll_behavior()
 wizard = WizardManager()
 nav = NavigationSidebar()
@@ -333,10 +332,11 @@ def find_col(df, possible_names):
 
 
 # ==================== HEADER - LIQUID GLASS BRANDING ====================
-liquid_header(
-    "EVALUERA",
-    "KI-gestützte Bestellanalyse & Kostenschätzung"
-)
+if st.session_state.logged_in:
+    liquid_header(
+        "EVALUERA",
+        "KI-gestützte Bestellanalyse & Kostenschätzung"
+    )
 
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
