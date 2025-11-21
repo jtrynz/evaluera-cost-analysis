@@ -109,81 +109,168 @@ st.markdown("""
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 # Render ONCE, outside any logic, so it persists through reruns
 if "logged_in" not in st.session_state or not st.session_state.logged_in:
-    # Simple animated gradient background (CSS-only, no Lottie dependencies)
-    st.markdown("""
-    <div class="animated-gradient-bg"></div>
+    # Load Lottie JSON for EVALUERA gradient animation
+    import json
+    import os
 
-    <style>
-        /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
-        html, body, #root, .main, .block-container,
-        [data-testid="stAppViewContainer"],
-        [data-testid="stApp"],
-        .stApp,
-        section.main,
-        div.main,
-        [data-testid="stHeader"],
-        [data-testid="stDecoration"],
-        [data-testid="stToolbar"],
-        .appview-container {
-            background: transparent !important;
-            background-color: transparent !important;
-        }
+    try:
+        lottie_path = os.path.join(os.path.dirname(__file__), "dark gradient.json")
+        with open(lottie_path, 'r') as f:
+            lottie_json = json.dumps(json.load(f))
 
-        /* Force stApp transparent - CRITICAL */
-        [data-testid="stApp"] > header,
-        [data-testid="stApp"],
-        .stApp {
-            background: transparent !important;
-            background-color: transparent !important;
-        }
+        # Build HTML with Lottie player (using string concatenation to avoid f-string issues)
+        lottie_html = """
+        <div id="lottie-bg-container"></div>
 
-        /* Ensure no white flash */
-        * {
-            transition: background-color 0s !important;
-        }
+        <script src="https://unpkg.com/@lottiefiles/lottie-player@2.0.2/dist/lottie-player.js"></script>
 
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: hidden !important;
-        }
+        <style>
+            /* ========== FORCE ALL STREAMLIT CONTAINERS TRANSPARENT ========== */
+            html, body, #root, .main, .block-container,
+            [data-testid="stAppViewContainer"],
+            [data-testid="stApp"],
+            .stApp,
+            section.main,
+            div.main,
+            [data-testid="stHeader"],
+            [data-testid="stDecoration"],
+            [data-testid="stToolbar"],
+            .appview-container {
+                background: transparent !important;
+                background-color: transparent !important;
+            }
 
-        .main {
-            background: transparent !important;
-        }
+            /* Force stApp transparent - CRITICAL */
+            [data-testid="stApp"] > header,
+            [data-testid="stApp"],
+            .stApp {
+                background: transparent !important;
+                background-color: transparent !important;
+            }
 
-        .block-container {
-            background: transparent !important;
-            padding-top: 0 !important;
-        }
+            /* Ensure no white flash */
+            * {
+                transition: background-color 0s !important;
+            }
 
-        /* Hide Streamlit UI */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-        [data-testid="stToolbar"] {display: none !important;}
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
 
-        /* ========== ANIMATED GRADIENT BACKGROUND ========== */
-        .animated-gradient-bg {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -99999 !important;
-            background: linear-gradient(-45deg, #BFDCDC, #A8C5C2, #7BA5A0, #B8D4D1) !important;
-            background-size: 400% 400% !important;
-            animation: gradientShift 15s ease infinite !important;
-        }
+            .main {
+                background: transparent !important;
+            }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-    </style>
-    """, unsafe_allow_html=True)
+            .block-container {
+                background: transparent !important;
+                padding-top: 0 !important;
+            }
+
+            /* Hide Streamlit UI during login */
+            #MainMenu {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            header {visibility: hidden !important;}
+            [data-testid="stSidebar"] {display: none !important;}
+            [data-testid="stToolbar"] {display: none !important;}
+
+            /* ========== LOTTIE BACKGROUND ========== */
+            #lottie-bg-container {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: -99999 !important;
+                background: #BFDCDC !important;
+                overflow: hidden !important;
+            }
+
+            #lottie-bg-container lottie-player {
+                width: 100% !important;
+                height: 100% !important;
+            }
+        </style>
+
+        <script>
+            // Wait for DOM to be ready
+            document.addEventListener('DOMContentLoaded', function() {
+                initLottie();
+            });
+
+            // Also try immediately in case DOM is already loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(initLottie, 100);
+            }
+
+            function initLottie() {
+                const container = document.getElementById('lottie-bg-container');
+                if (!container) {
+                    console.log('Container not found, retrying...');
+                    setTimeout(initLottie, 100);
+                    return;
+                }
+
+                // Clear any existing content
+                container.innerHTML = '';
+
+                // Create lottie-player element
+                const player = document.createElement('lottie-player');
+                player.setAttribute('autoplay', '');
+                player.setAttribute('loop', '');
+                player.setAttribute('mode', 'normal');
+                player.style.width = '100%';
+                player.style.height = '100%';
+
+                // Set animation data inline
+                const animationData = """ + lottie_json + """;
+                player.load(animationData);
+
+                container.appendChild(player);
+                console.log('Lottie animation loaded successfully!');
+            }
+        </script>
+        """
+
+        st.markdown(lottie_html, unsafe_allow_html=True)
+
+    except Exception as e:
+        # Fallback to gradient if Lottie fails
+        st.markdown(f"""
+        <div class="animated-gradient-bg"></div>
+        <style>
+            html, body, #root, .main, .block-container,
+            [data-testid="stAppViewContainer"],
+            [data-testid="stApp"], .stApp, section.main, div.main {
+                background: transparent !important;
+            }
+
+            #MainMenu, footer, header, [data-testid="stSidebar"], [data-testid="stToolbar"] {{
+                visibility: hidden !important;
+                display: none !important;
+            }}
+
+            .animated-gradient-bg {{
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                z-index: -99999 !important;
+                background: linear-gradient(-45deg, #BFDCDC, #A8C5C2, #7BA5A0, #B8D4D1) !important;
+                background-size: 400% 400% !important;
+                animation: gradientShift 15s ease infinite !important;
+            }}
+
+            @keyframes gradientShift {{
+                0% {{ background-position: 0% 50%; }}
+                50% {{ background-position: 100% 50%; }}
+                100% {{ background-position: 0% 50%; }}
+            }}
+        </style>
+        <!-- Lottie load error: {str(e)} -->
+        """, unsafe_allow_html=True)
 
 # ==================== LOGIN CHECK ====================
 # Initialize login state if not exists
