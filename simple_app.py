@@ -52,8 +52,31 @@ load_dotenv()
 st.set_page_config(
     page_title="EVALUERA - Kostenanalyse",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': None,
+        'Report a bug': None,
+        'About': None
+    }
 )
+
+# EVALUERA Theme Override - muss nach set_page_config kommen
+st.markdown("""
+<style>
+    /* Primary Button Override - EVALUERA Dunkelrot */
+    .stButton > button[kind="primary"],
+    .stButton > button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #472B2E 0%, #5A3840 100%) !important;
+        color: white !important;
+    }
+
+    .stButton > button[kind="primary"]:hover,
+    .stButton > button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #5A3840 0%, #6B4550 100%) !important;
+        box-shadow: 0 4px 12px rgba(71, 43, 46, 0.3) !important;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 apply_global_styles()
 wizard = WizardManager()
