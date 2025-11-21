@@ -28,10 +28,10 @@ def get_light_theme_css():
             --fg-3: #495057;        /* Tertiary text - 8:1 ratio */
             --fg-muted: #6C757D;    /* Muted text - 4.5:1 ratio */
 
-            /* Accent Colors - High Contrast */
-            --accent-1: #5B3FD9;    /* Primary purple */
-            --accent-2: #0091DB;    /* Secondary blue */
-            --accent-gradient: linear-gradient(135deg, #5B3FD9 0%, #0091DB 100%);
+            /* Accent Colors - EVALUERA Branding */
+            --accent-1: #472B2E;    /* EVALUERA Dunkelrot */
+            --accent-2: #7BA5A0;    /* EVALUERA Türkis */
+            --accent-gradient: linear-gradient(135deg, #472B2E 0%, #5A3840 100%);
 
             /* Interactive States */
             --focus: #4299E1;
@@ -385,10 +385,10 @@ def get_dark_theme_css():
             --fg-3: #9AA7B5;        /* Tertiary text - 7:1 ratio */
             --fg-muted: #6B7684;    /* Muted text - 4.5:1 ratio */
 
-            /* Accent Colors - Vibrant for Dark Mode */
-            --accent-1: #7B61FF;    /* Primary purple */
-            --accent-2: #4BE1EC;    /* Secondary cyan */
-            --accent-gradient: linear-gradient(135deg, #7B61FF 0%, #4BE1EC 100%);
+            /* Accent Colors - EVALUERA Branding Dark Mode */
+            --accent-1: #472B2E;    /* EVALUERA Dunkelrot */
+            --accent-2: #7BA5A0;    /* EVALUERA Türkis */
+            --accent-gradient: linear-gradient(135deg, #472B2E 0%, #5A3840 100%);
 
             /* Interactive States */
             --focus: #9AD6FF;
