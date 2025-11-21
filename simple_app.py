@@ -45,6 +45,7 @@ from wizard_system import (
     create_compact_kpi_row,
 )
 from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
+from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -104,7 +105,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 apply_global_styles()
+create_scroll_behavior()
 wizard = WizardManager()
+nav = NavigationSidebar()
 
 
 # ==================== API KEY ====================
@@ -144,11 +147,11 @@ def find_col(df, possible_names):
 # ==================== HEADER - EVALUERA BRANDING ====================
 st.markdown(f"""<div style="background: {COLORS['brand_bg']}; padding: {SPACING['xl']} {SPACING['xxl']}; border-radius: {RADIUS['lg']}; margin-bottom: {SPACING['xl']}; color: {COLORS['gray_900']}; box-shadow: {SHADOWS['sm']};"><div style="margin-bottom: {SPACING['md']};"><h3 style="margin: 0; font-weight: 400; font-size: 1rem; color: {COLORS['gray_900']};">Wer wir sind</h3></div><h1 style="margin: 0; color: {COLORS['gray_900']}; font-size: 3rem; font-weight: 300; letter-spacing: 0.1em; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">EVALUERA</h1><p style="margin: {SPACING['md']} 0 0 0; font-size: 1rem; color: {COLORS['gray_800']}; max-width: 700px; line-height: 1.6;"><strong>Projektpartner für den technischen Einkauf</strong> – neutral, unabhängig und spezialisiert auf Industrieunternehmen.</p><p style="margin: {SPACING['sm']} 0 0 0; font-size: 0.9rem; color: {COLORS['gray_700']}; max-width: 700px; line-height: 1.5;">KI-gestützte Bestellanalyse & Kostenschätzung</p></div>""", unsafe_allow_html=True)
 
-# Sidebar Navigation
-wizard.render_all_steps_sidebar()
+# Sidebar Navigation - Apple-ähnliche Navigation
+nav.render()
 
-# Progress Bar
-wizard.render_progress()
+# Progress Bar (optional, kann auskommentiert werden)
+# wizard.render_progress()
 
 
 # ==================== STEP 1: UPLOAD ====================
