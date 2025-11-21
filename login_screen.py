@@ -118,24 +118,25 @@ def render_login_screen():
 
         /* ========== INPUT FIELDS ========== */
         .login-container .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(184, 212, 209, 0.9) !important; /* Evaluera mint border */
+            background: rgba(255, 255, 255, 0.75) !important;
+            backdrop-filter: blur(18px) !important;
+            border: 1px solid rgba(184, 212, 209, 0.8) !important;
             border-radius: 14px !important;
             padding: 16px 18px !important;
             font-size: 15px !important;
-            color: #2F4A56 !important; /* Evaluera dark blue/gray text */
-            transition: all 0.3s ease !important;
+            color: #2F4A56 !important;
+            transition: all 0.25s ease !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05) inset !important;
         }
 
         .login-container .stTextInput > div > div > input::placeholder {
-            color: rgba(47, 74, 86, 0.45) !important;
+            color: rgba(47, 74, 86, 0.35) !important;
         }
 
         .login-container .stTextInput > div > div > input:focus {
-            background: rgba(255, 255, 255, 1) !important;
-            border-color: rgba(123, 165, 160, 0.9) !important; /* darker mint on focus */
-            box-shadow: 0 0 0 3px rgba(123, 165, 160, 0.18) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: rgba(123, 165, 160, 1) !important;
+            box-shadow: 0 0 0 3px rgba(123,165,160,0.22) !important;
             outline: none !important;
         }
 
