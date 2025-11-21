@@ -1,7 +1,7 @@
 """
-🔐 EVALUERA - Premium Login Screen
-====================================
-Uses existing EVALUERA loading animation as permanent background
+🔐 EVALUERA - Premium Login Screen with Animated Background
+============================================================
+Permanent fullscreen animated background with glassmorphism login panel
 """
 
 import streamlit as st
@@ -50,379 +50,271 @@ def logout():
     st.rerun()
 
 
-# ==================== RENDER PERMANENT LOADING ANIMATION BACKGROUND ====================
-def render_permanent_loading_background():
-    """
-    Render EVALUERA loading animation as permanent fullscreen background
-    Uses the EXACT same animation from ui_components.py
-    """
-    st.markdown("""
-    <div class="loading-animation-background">
-        <div class="loading-gradient"></div>
-        <div class="loading-content">
-            <div class="spinner-wrapper">
-                <div class="spinner-circle">
-                    <div class="spinner-icon">🤖</div>
-                </div>
-                <div class="spinner-ring"></div>
-            </div>
-            <div class="loading-text">
-                <div class="loading-title">EVALUERA</div>
-                <div class="loading-subtitle">KI-Engine läuft...</div>
-            </div>
-        </div>
-        <div class="progress-bar-container">
-            <div class="shimmer-effect"></div>
-        </div>
-        <div class="bounce-dots-container">
-            <div class="bounce-dot"></div>
-            <div class="bounce-dot"></div>
-            <div class="bounce-dot"></div>
-        </div>
-    </div>
-
-    <style>
-        /* ========== FULLSCREEN LOADING ANIMATION BACKGROUND ========== */
-        .loading-animation-background {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -10 !important;
-            background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%);
-            border-radius: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            box-shadow: 0 20px 60px rgba(123, 165, 160, 0.3), 0 8px 16px rgba(0, 0, 0, 0.1);
-            border: none !important;
-            backdrop-filter: blur(20px);
-            overflow: hidden;
-        }
-
-        .loading-gradient {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%);
-            animation: moveGradient 3s ease-in-out infinite;
-        }
-
-        .loading-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-        }
-
-        /* Spinner Circle */
-        .spinner-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-        }
-
-        .spinner-circle {
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            position: relative;
-            z-index: 2;
-        }
-
-        .spinner-icon {
-            font-size: 3rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .spinner-ring {
-            position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 140px;
-            height: 140px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-        }
-
-        /* Loading Text */
-        .loading-text {
-            text-align: center;
-        }
-
-        .loading-title {
-            color: white;
-            font-weight: 700;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            letter-spacing: 0.1em;
-        }
-
-        .loading-subtitle {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
-
-        /* Progress Bar */
-        .progress-bar-container {
-            position: absolute;
-            bottom: 35%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 320px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 100px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .shimmer-effect {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 50%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-            animation: shimmer 1.8s ease-in-out infinite;
-        }
-
-        /* Bounce Dots */
-        .bounce-dots-container {
-            position: absolute;
-            bottom: 30%;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-        }
-
-        .bounce-dot {
-            width: 10px;
-            height: 10px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .bounce-dot:nth-child(1) {
-            animation: bounce 1.4s ease-in-out infinite;
-        }
-
-        .bounce-dot:nth-child(2) {
-            animation: bounce 1.4s ease-in-out 0.2s infinite;
-        }
-
-        .bounce-dot:nth-child(3) {
-            animation: bounce 1.4s ease-in-out 0.4s infinite;
-        }
-
-        /* ========== ANIMATIONS ========== */
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(300%); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes moveGradient {
-            0%, 100% { transform: translateX(0) translateY(0); }
-            50% { transform: translateX(20px) translateY(-20px); }
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-
 # ==================== LOGIN SCREEN ====================
 def render_login_screen():
     """
-    Render premium login screen with permanent loading animation background
+    Render premium login screen with permanent animated background
     """
 
-    # Render permanent loading animation background
-    render_permanent_loading_background()
-
-    # Dark overlay
+    # STEP 1: Render FULLSCREEN ANIMATED BACKGROUND + CSS (all in one block)
     st.markdown("""
-    <div class="dark-overlay"></div>
-    <style>
-        .dark-overlay {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            background: rgba(0, 0, 0, 0.35) !important;
-            backdrop-filter: blur(20px) !important;
-            -webkit-backdrop-filter: blur(20px) !important;
-            z-index: -9 !important;
-            pointer-events: none !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    <div class="animated-bg">
+        <div class="wave wave-1"></div>
+        <div class="wave wave-2"></div>
+        <div class="wave wave-3"></div>
+        <div class="wave wave-4"></div>
+    </div>
 
-    # Login panel styles
-    st.markdown("""
     <style>
-        /* ========== HIDE STREAMLIT UI ========== */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        header {visibility: hidden !important;}
-        [data-testid="stSidebar"] {display: none !important;}
-
-        /* ========== TRANSPARENT MAIN ========== */
+        /* ========== FORCE TRANSPARENT STREAMLIT CONTAINERS ========== */
         .main {
             background: transparent !important;
         }
 
+        .block-container {
+            background: transparent !important;
+            padding-top: 0 !important;
+        }
+
         body {
+            background: transparent !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+        }
+
+        [data-testid="stAppViewContainer"] {
             background: transparent !important;
         }
 
-        /* ========== CENTER LOGIN PANEL ========== */
-        .main .block-container {
+        [data-testid="stHeader"] {
+            background: transparent !important;
+        }
+
+        /* Hide all Streamlit UI elements */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        header {visibility: hidden !important;}
+        [data-testid="stSidebar"] {display: none !important;}
+        [data-testid="stToolbar"] {display: none !important;}
+
+        /* ========== FULLSCREEN ANIMATED BACKGROUND ========== */
+        .animated-bg {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: #BFDCDC !important;
+            z-index: -1 !important;
+            overflow: hidden !important;
+            margin: 0 !important;
             padding: 0 !important;
-            max-width: 480px !important;
-            margin: 0 auto !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            min-height: 100vh !important;
         }
 
-        /* ========== FROSTED GLASS LOGIN PANEL ========== */
-        .login-panel {
-            background: rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(30px) saturate(150%);
-            -webkit-backdrop-filter: blur(30px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 22px;
-            padding: 40px;
-            width: 100%;
-            max-width: 460px;
+        /* ========== LIQUID WAVES ========== */
+        .wave {
+            position: absolute !important;
+            border-radius: 50% !important;
+            filter: blur(60px) !important;
+            opacity: 0.4 !important;
+            will-change: transform !important;
+        }
+
+        .wave-1 {
+            width: 500px !important;
+            height: 500px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%) !important;
+            top: -100px !important;
+            left: -100px !important;
+            animation: float1 25s ease-in-out infinite !important;
+        }
+
+        .wave-2 {
+            width: 600px !important;
+            height: 600px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%) !important;
+            bottom: -150px !important;
+            right: -150px !important;
+            animation: float2 30s ease-in-out infinite !important;
+        }
+
+        .wave-3 {
+            width: 450px !important;
+            height: 450px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 70%) !important;
+            top: 40% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            animation: float3 28s ease-in-out infinite !important;
+        }
+
+        .wave-4 {
+            width: 400px !important;
+            height: 400px !important;
+            background: radial-gradient(circle, rgba(255,255,255,0.45) 0%, transparent 70%) !important;
+            bottom: 20% !important;
+            left: 20% !important;
+            animation: float4 23s ease-in-out infinite !important;
+        }
+
+        /* ========== WAVE ANIMATIONS ========== */
+        @keyframes float1 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(50px, 80px) scale(1.1);
+            }
+            66% {
+                transform: translate(-30px, 40px) scale(0.95);
+            }
+        }
+
+        @keyframes float2 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(-60px, -50px) scale(1.05);
+            }
+            66% {
+                transform: translate(40px, 30px) scale(0.9);
+            }
+        }
+
+        @keyframes float3 {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+            33% {
+                transform: translate(calc(-50% + 40px), calc(-50% - 60px)) scale(1.08);
+            }
+            66% {
+                transform: translate(calc(-50% - 50px), calc(-50% + 40px)) scale(0.92);
+            }
+        }
+
+        @keyframes float4 {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(70px, -40px) scale(1.12);
+            }
+            66% {
+                transform: translate(-40px, 60px) scale(0.88);
+            }
+        }
+
+        /* ========== GLASSMORPHISM LOGIN PANEL ========== */
+        .login-container {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            z-index: 100 !important;
+            width: 90% !important;
+            max-width: 440px !important;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.18) !important;
+            backdrop-filter: blur(25px) saturate(150%) !important;
+            -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 24px !important;
+            padding: 48px 40px !important;
             box-shadow:
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards;
-            position: relative;
-            z-index: 1;
+                0 8px 32px rgba(31, 38, 135, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+            animation: fadeInScale 0.8s cubic-bezier(0.16, 1, 0.3, 1) backwards !important;
         }
 
-        @keyframes fadeInUp {
+        @keyframes fadeInScale {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
-        /* ========== BRANDING ========== */
-        .login-header {
-            text-align: center;
-            margin-bottom: 32px;
+        /* ========== LOGIN HEADER ========== */
+        .login-logo {
+            text-align: center !important;
+            margin-bottom: 32px !important;
         }
 
-        .login-header h1 {
-            font-size: 34px;
-            font-weight: 300;
-            letter-spacing: 0.12em;
-            color: #ffffff;
-            margin: 0 0 8px 0;
-            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        .login-logo h1 {
+            font-size: 36px !important;
+            font-weight: 300 !important;
+            letter-spacing: 0.15em !important;
+            color: #2F4A56 !important;
+            margin: 0 0 8px 0 !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
         }
 
-        .login-header p {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.8);
-            margin: 0;
-            font-weight: 400;
-        }
-
-        /* ========== GLASS INPUT FIELDS ========== */
-        .stTextInput > div > div > input {
-            background: rgba(255, 255, 255, 0.22) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 12px !important;
-            padding: 15px 18px !important;
+        .login-logo p {
             font-size: 15px !important;
-            color: #ffffff !important;
+            color: rgba(47, 74, 86, 0.7) !important;
+            margin: 0 !important;
+            font-weight: 400 !important;
+        }
+
+        /* ========== INPUT FIELDS ========== */
+        .stTextInput > div > div > input {
+            background: rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 14px !important;
+            padding: 16px 18px !important;
+            font-size: 15px !important;
+            color: #2F4A56 !important;
             transition: all 0.3s ease !important;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
         }
 
         .stTextInput > div > div > input::placeholder {
-            color: rgba(255, 255, 255, 0.5) !important;
+            color: rgba(47, 74, 86, 0.5) !important;
         }
 
         .stTextInput > div > div > input:focus {
-            background: rgba(255, 255, 255, 0.28) !important;
-            border-color: rgba(184, 212, 209, 0.7) !important;
-            box-shadow:
-                inset 0 2px 4px rgba(0, 0, 0, 0.1),
-                0 0 0 3px rgba(184, 212, 209, 0.2) !important;
+            background: rgba(255, 255, 255, 0.35) !important;
+            border-color: rgba(123, 165, 160, 0.6) !important;
+            box-shadow: 0 0 0 3px rgba(123, 165, 160, 0.15) !important;
             outline: none !important;
         }
 
-        /* ========== PASSWORD TOGGLE ========== */
+        /* ========== CHECKBOX ========== */
         .stCheckbox > label {
-            color: rgba(255, 255, 255, 0.75) !important;
+            color: rgba(47, 74, 86, 0.8) !important;
             font-size: 14px !important;
         }
 
-        /* ========== PREMIUM BUTTON ========== */
+        /* ========== LOGIN BUTTON ========== */
         .stButton > button {
             width: 100% !important;
-            background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 50%, #4B6A78 100%) !important;
+            background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
             color: white !important;
             border: none !important;
-            border-radius: 12px !important;
-            padding: 15px 24px !important;
+            border-radius: 14px !important;
+            padding: 16px 24px !important;
             font-size: 16px !important;
             font-weight: 600 !important;
             cursor: pointer !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             box-shadow:
-                0 8px 24px rgba(47, 74, 86, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+                0 8px 24px rgba(47, 74, 86, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
             margin-top: 12px !important;
         }
 
         .stButton > button:hover {
             transform: translateY(-2px) !important;
             box-shadow:
-                0 12px 32px rgba(47, 74, 86, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+                0 12px 32px rgba(47, 74, 86, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
         }
 
         .stButton > button:active {
@@ -430,155 +322,136 @@ def render_login_screen():
         }
 
         /* ========== ERROR MESSAGE ========== */
-        .login-error {
-            background: rgba(239, 68, 68, 0.18);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(239, 68, 68, 0.35);
-            border-radius: 10px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-            color: #fff;
-            font-size: 14px;
-            text-align: center;
-            animation: shake 0.5s ease;
+        .error-box {
+            background: rgba(239, 68, 68, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            border-radius: 12px !important;
+            padding: 14px 18px !important;
+            margin-bottom: 20px !important;
+            color: #dc2626 !important;
+            font-size: 14px !important;
+            text-align: center !important;
+            animation: shake 0.5s ease !important;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
-            20%, 40%, 60%, 80% { transform: translateX(6px); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
         }
 
-        /* ========== HELPER TEXT ========== */
-        .login-helper {
-            text-align: center;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.65);
-            margin-top: 24px;
-            line-height: 1.6;
+        /* ========== DEMO CREDENTIALS ========== */
+        .demo-creds {
+            text-align: center !important;
+            font-size: 13px !important;
+            color: rgba(47, 74, 86, 0.6) !important;
+            margin-top: 28px !important;
+            line-height: 1.6 !important;
         }
 
-        .login-helper strong {
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 600;
+        .demo-creds strong {
+            color: rgba(47, 74, 86, 0.85) !important;
+            font-weight: 600 !important;
+            display: block !important;
+            margin-bottom: 8px !important;
         }
 
-        .login-helper code {
-            background: rgba(255, 255, 255, 0.18);
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-family: 'SF Mono', monospace;
-            font-size: 12px;
-            color: #fff;
+        .demo-creds code {
+            background: rgba(255, 255, 255, 0.25) !important;
+            padding: 4px 10px !important;
+            border-radius: 6px !important;
+            font-family: 'SF Mono', monospace !important;
+            font-size: 12px !important;
+            color: #2F4A56 !important;
+            white-space: nowrap !important;
         }
 
-        /* ========== DIVIDER ========== */
-        .login-divider {
-            height: 1px;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.25),
-                transparent
-            );
-            margin: 24px 0 16px 0;
-        }
-
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-            .main .block-container {
-                padding: 20px !important;
-            }
-
-            .login-panel {
-                padding: 32px 28px;
-            }
-
-            .login-header h1 {
-                font-size: 28px;
-            }
+        .divider {
+            height: 1px !important;
+            background: linear-gradient(90deg, transparent, rgba(47, 74, 86, 0.2), transparent) !important;
+            margin: 24px 0 20px 0 !important;
         }
     </style>
     """, unsafe_allow_html=True)
 
-    # ==================== LOGIN PANEL ====================
-    with st.container():
-        st.markdown('<div class="login-panel">', unsafe_allow_html=True)
+    # STEP 2: Render Login Panel (in regular Streamlit container with absolute positioning via CSS)
+    st.markdown('<div class="login-container"><div class="glass-panel">', unsafe_allow_html=True)
 
-        # Branding
+    # Logo
+    st.markdown("""
+    <div class="login-logo">
+        <h1>EVALUERA</h1>
+        <p>KI-gestützte Kostenanalyse</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Error message
+    if "login_error" in st.session_state and st.session_state.login_error:
         st.markdown("""
-        <div class="login-header">
-            <h1>EVALUERA</h1>
-            <p>KI-gestützte Kostenanalyse</p>
+        <div class="error-box">
+            ⚠️ Ungültige Zugangsdaten
         </div>
         """, unsafe_allow_html=True)
 
-        # Error message
-        if "login_error" in st.session_state and st.session_state.login_error:
-            st.markdown("""
-            <div class="login-error">
-                ⚠️ Zugangsdaten ungültig
-            </div>
-            """, unsafe_allow_html=True)
+    # Username
+    username = st.text_input(
+        "Benutzername",
+        placeholder="Benutzername eingeben",
+        key="login_username",
+        label_visibility="collapsed"
+    )
 
-        # Username input
-        username = st.text_input(
-            "Benutzername",
-            placeholder="Benutzername eingeben",
-            key="login_username",
-            label_visibility="collapsed"
+    st.markdown('<div style="height: 14px;"></div>', unsafe_allow_html=True)
+
+    # Password
+    if "show_password" not in st.session_state:
+        st.session_state.show_password = False
+
+    password = st.text_input(
+        "Passwort",
+        type="default" if st.session_state.show_password else "password",
+        placeholder="Passwort eingeben",
+        key="login_password",
+        label_visibility="collapsed"
+    )
+
+    # Show password toggle
+    col1, col2 = st.columns([1, 5])
+    with col1:
+        show_pwd = st.checkbox("👁️", key="show_pwd_toggle", value=st.session_state.show_password)
+        st.session_state.show_password = show_pwd
+    with col2:
+        st.markdown(
+            '<div style="padding-top: 8px; font-size: 14px; color: rgba(47, 74, 86, 0.7);">Passwort anzeigen</div>',
+            unsafe_allow_html=True
         )
 
-        st.markdown('<div style="height: 14px;"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-        # Password input
-        if "show_password" not in st.session_state:
-            st.session_state.show_password = False
-
-        password = st.text_input(
-            "Passwort",
-            type="default" if st.session_state.show_password else "password",
-            placeholder="Passwort eingeben",
-            key="login_password",
-            label_visibility="collapsed"
-        )
-
-        # Password toggle
-        col1, col2 = st.columns([1, 5])
-        with col1:
-            show_pwd = st.checkbox("👁️", key="show_pwd_toggle", value=st.session_state.show_password)
-            st.session_state.show_password = show_pwd
-        with col2:
-            st.markdown(
-                '<div style="padding-top: 8px; font-size: 14px; color: rgba(255, 255, 255, 0.75);">Passwort anzeigen</div>',
-                unsafe_allow_html=True
-            )
-
-        st.markdown('<div class="login-divider"></div>', unsafe_allow_html=True)
-
-        # Login button
-        if st.button("🔐  Anmelden", type="primary", use_container_width=True, key="login_btn"):
-            if username and password:
-                if login(username, password):
-                    st.session_state.login_error = False
-                    st.rerun()
-                else:
-                    st.session_state.login_error = True
-                    st.rerun()
+    # Login button
+    if st.button("🔐  Anmelden", type="primary", use_container_width=True, key="login_btn"):
+        if username and password:
+            if login(username, password):
+                st.session_state.login_error = False
+                st.rerun()
             else:
                 st.session_state.login_error = True
                 st.rerun()
+        else:
+            st.session_state.login_error = True
+            st.rerun()
 
-        # Demo credentials
-        st.markdown("""
-        <div class="login-helper">
-            <strong>Demo-Zugangsdaten</strong><br>
-            <code>demo</code> / <code>demo123</code> ·
-            <code>admin</code> / <code>evaluera2024</code>
-        </div>
-        """, unsafe_allow_html=True)
+    # Demo credentials
+    st.markdown("""
+    <div class="demo-creds">
+        <strong>Demo-Zugangsdaten</strong>
+        <code>demo</code> / <code>demo123</code><br>
+        <code>admin</code> / <code>evaluera2024</code>
+    </div>
+    """, unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 
 def render_logout_button():
