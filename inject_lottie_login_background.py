@@ -43,15 +43,11 @@ html, body {{
 }}
 
 #lottie {{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    margin: 0;
+    padding: 0;
 }}
 </style>
 </head>
@@ -71,7 +67,7 @@ html, body {{
 </html>
 """
 
-    st.components.v1.html(html, height=600, scrolling=False)
+    st.components.v1.html(html, height=1, scrolling=False)
 
     st.markdown("""
 <style>
@@ -87,26 +83,26 @@ html, body {{
         pointer-events: none !important;
     }
 
-    /* ========== LOTTIE PLAYER OBJECT-FIT COVER ========== */
-    #bg-container, lottie-player {
-        width: 100% !important;
-        height: 100% !important;
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        object-fit: cover !important;
+    /* ========== FIX: block-container Scrollraum entfernen ========== */
+    .block-container {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        position: relative !important;
+        z-index: 5 !important;
+    }
+
+    /* ========== FIX: Parent-Container des iframes aus Flow entfernen ========== */
+    [data-testid="stApp"] .st-emotion-cache-*,
+    [data-testid="stAppViewContainer"] .st-emotion-cache-* {
+        height: 0 !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
     }
 
     /* ========== PREVENT SCROLLING ON HTML/BODY ========== */
     html, body {
         overflow-x: hidden !important;
         height: auto !important;
-    }
-
-    /* ========== LOGIN UI OVER ANIMATION ========== */
-    .block-container {
-        position: relative !important;
-        z-index: 5 !important;
     }
 
     /* ========== STREAMLIT CONTAINERS NORMAL FLOW ========== */
