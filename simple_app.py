@@ -18,6 +18,7 @@ from cost_helpers import (
     gpt_negotiation_prep,
     calculate_co2_footprint,
 )
+from negotiation_prep_enhanced import gpt_negotiation_prep_enhanced
 from gpt_engine import gpt_intelligent_article_search
 from excel_helpers import (
     find_column,
@@ -735,11 +736,12 @@ def step6_sustainability():
         if article and supplier:
             with GPTLoadingAnimation("🤖 Generiere Strategie...", icon="💼"):
                 try:
-                    tips = gpt_negotiation_prep(
+                    tips = gpt_negotiation_prep_enhanced(
                         supplier_name=supplier,
                         article_name=article,
                         avg_price=avg_price,
-                        target_price=target_price
+                        target_price=target_price,
+                        cost_result=cost_result
                     )
 
                     if tips and not tips.get("_error"):
@@ -793,6 +795,94 @@ def step6_sustainability():
                                 st.markdown("**🎯 Hebelpunkte:**")
                                 for lev in leverage:
                                     st.markdown(f"- {lev}")
+
+                            divider()
+
+                        # ========== NEW: SUPPLIER ANALYSIS ==========
+                        supplier_analysis = tips.get("supplier_analysis", {})
+                        if supplier_analysis and isinstance(supplier_analysis, dict):
+                            st.markdown("#### 🏭 Lieferantenanalyse")
+
+                            prod_comps = supplier_analysis.get("production_competencies", [])
+                            if prod_comps:
+                                st.markdown("**Produktionskompetenzen:**")
+                                for comp in prod_comps[:6]:
+                                    st.markdown(f"- {comp}")
+
+                            scaling = supplier_analysis.get("scaling_capabilities")
+                            if scaling:
+                                st.info(f"**Skalierungsfähigkeit:** {scaling}")
+
+                            certs = supplier_analysis.get("certifications", [])
+                            if certs:
+                                st.markdown(f"**Zertifizierungen:** {', '.join(certs)}")
+
+                            cols_loc = st.columns(2)
+                            with cols_loc[0]:
+                                loc_adv = supplier_analysis.get("location_advantages", [])
+                                if loc_adv:
+                                    st.success("**Standortvorteile:**")
+                                    for adv in loc_adv[:4]:
+                                        st.markdown(f"✅ {adv}")
+
+                            with cols_loc[1]:
+                                loc_dis = supplier_analysis.get("location_disadvantages", [])
+                                if loc_dis:
+                                    st.warning("**Standortnachteile:**")
+                                    for dis in loc_dis[:4]:
+                                        st.markdown(f"⚠️ {dis}")
+
+                            risks = supplier_analysis.get("supply_chain_risks", [])
+                            if risks:
+                                st.error("**Supply Chain Risiken:**")
+                                for risk in risks[:5]:
+                                    st.markdown(f"🚨 {risk}")
+
+                            divider()
+
+                        # ========== NEW: MARKET ANALYSIS ==========
+                        market_analysis = tips.get("market_analysis", {})
+                        if market_analysis and isinstance(market_analysis, dict):
+                            st.markdown("#### 📊 Marktanalyse")
+
+                            raw_mat = market_analysis.get("raw_material_trends", {})
+                            if raw_mat and isinstance(raw_mat, dict):
+                                mat_name = raw_mat.get("material", "Unknown")
+                                current_price = raw_mat.get("current_price_eur_kg", 0)
+                                trend_12mo = raw_mat.get("price_trend_12mo", "Unknown")
+                                trend_24mo = raw_mat.get("price_trend_24mo", "Unknown")
+                                forecast = raw_mat.get("forecast_next_12mo", "Unknown")
+
+                                st.markdown(f"**Rohstoffpreis: {mat_name}**")
+                                cols_mat = st.columns(3)
+                                with cols_mat[0]:
+                                    st.metric("Aktuell", f"{current_price:.2f}€/kg")
+                                with cols_mat[1]:
+                                    st.metric("Trend 12mo", trend_12mo)
+                                with cols_mat[2]:
+                                    st.metric("Trend 24mo", trend_24mo)
+
+                                st.info(f"**📈 Prognose 12 Monate:** {forecast}")
+
+                            energy = market_analysis.get("energy_price_volatility")
+                            if energy:
+                                st.markdown(f"**⚡ Energiepreis-Volatilität:** {energy}")
+
+                            competitors = market_analysis.get("competitor_offers", [])
+                            if competitors:
+                                st.warning("**🏪 Konkurrenzangebote:**")
+                                for comp in competitors:
+                                    st.markdown(f"- {comp}")
+
+                            country_risks = market_analysis.get("country_risks", {})
+                            if country_risks and isinstance(country_risks, dict):
+                                st.markdown("**🌍 Länder-Risiken:**")
+                                for key, value in country_risks.items():
+                                    st.markdown(f"- **{key.replace('_', ' ').title()}:** {value}")
+
+                            price_dev = market_analysis.get("expected_price_development")
+                            if price_dev:
+                                st.success(f"**📅 Erwartete Preisentwicklung:** {price_dev}")
 
                             divider()
 

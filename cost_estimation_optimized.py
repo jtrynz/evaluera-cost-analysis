@@ -92,21 +92,31 @@ def gpt_complete_cost_estimate(
     # KOMBINIERTER PROMPT - Material + Prozess + Kosten (EXTREM GÜNSTIG - WORST CASE)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in globaler Low-Cost-Beschaffung.
 
-**🎯 KALKULATIONSSTRATEGIE - EXTREM GÜNSTIG (WORST-CASE FÜR VERKÄUFER):**
+**🎯 KALKULATIONSSTRATEGIE - ABSOLUT MINIMAL REALISTISCH (WORST-CASE FOR SELLER):**
 
-Berechne die **MINIMAL REALISTISCH MÖGLICHEN** Herstellkosten aus globalen Niedriglohnregionen mit:
-- **Effizientester Massenfertigung** (China, Vietnam, Indien)
-- **Vollautomatisierte Prozesse** (minimale Personalkosten)
-- **Idealer Materialausnutzung** (Verschnitt <3%)
-- **Günstigsten verfügbaren Rohstoffpreisen** (Spot-Markt, Großabnehmer-Konditionen)
-- **Optimaler Auslastung** (24/7 Produktion, >90% Maschinenauslastung)
-- **Modernster Technologie** (neueste CNC/Automatisierung)
+**PFLICHT-ANNAHMEN** für Kalkulation:
+✅ **FIND THE MINIMALLY POSSIBLE REALISTIC MANUFACTURING COSTS**
+✅ **Assume BEST-CASE EFFICIENCY AT SCALE**
+✅ **Assume supplier with HIGHEST AUTOMATION LEVEL**
+✅ **Assume LOWEST GLOBAL RAW MATERIAL SPOT PRICE**
+✅ **Assume OPTIMIZED CYCLE TIME & MINIMAL SCRAP (<2%)**
+✅ **Assume EXPERT SUPPLIER** (wenn expertise vorhanden)
 
-**WICHTIG:**
-- Wähle **IMMER den UNTEREN BEREICH** plausibler Kostenspannen
-- Modelliere den **günstigsten realistischen Fall**
-- Ziel: Zeige dem Einkäufer **maximales Einsparungspotenzial**
+Berechne mit folgenden EXTREM günstigen Parametern:
+- **Niedriglohnland:** China/Vietnam/Indien (Lohnkosten: 5-15€/h)
+- **Energiekosten:** Minimale Industriepreise (0.06-0.10€/kWh)
+- **Vollautomatisierung:** 24/7 Betrieb, >95% Maschinenauslastung
+- **Moderne Technologie:** Neueste CNC/Robotik/Industrie 4.0
+- **Großabnehmer-Konditionen:** Rohstoff-Spot-Markt, Direktbezug
+- **Optimale Materialausnutzung:** Verschnitt <2%, optimierte Blanks
+- **Economies of Scale:** Große Losgrößen, minimale Rüstkosten
+
+**KRITISCH WICHTIG:**
+- Wähle **IMMER den ABSOLUT UNTEREN BEREICH** plausibler Kosten
+- Modelliere **Best-Case-Szenarien** für ALLE Aspekte
+- Ziel: Zeige MAXIMALES Einsparungspotenzial für Einkäufer
 - Kosten müssen technisch plausibel bleiben (KEINE Fantasiewerte!)
+- Denke wie ein Low-Cost-Anbieter in Asien mit modernster Ausstattung
 
 **AUFGABE:** Analysiere den Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) in EINEM Durchgang!
 
