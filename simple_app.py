@@ -691,12 +691,11 @@ def step6_sustainability():
 
             with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
                 try:
-                    # FIX 7: Pass actual supplier country + process info
+                    # FIX 7: Pass actual supplier country
                     co2_result = calculate_co2_footprint(
                         material=material,
                         mass_kg=mass_kg,
-                        supplier_country=supplier_country,
-                        process=res.get('process')  # Pass manufacturing process for accuracy
+                        supplier_country=supplier_country
                     )
 
                     # ROBUST handling - extract values with fallbacks
