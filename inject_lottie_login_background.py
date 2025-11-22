@@ -71,7 +71,7 @@ html, body {{
 </html>
 """
 
-    st.components.v1.html(html, height=0, width=0, scrolling=False)
+    st.components.v1.html(html, height=1, scrolling=False)
 
     st.markdown("""
 <style>
