@@ -243,7 +243,6 @@ ULTRA_PROFESSIONAL_CSS = """
     .hero-banner {
         background: linear-gradient(135deg, rgba(123,97,255,0.18), rgba(75,225,236,0.12));
         border: 1px solid var(--line-1);
-        backdrop-filter: saturate(1.1) blur(8px);
         border-radius: var(--radius-lg);
         padding: var(--space-6);
         margin-bottom: var(--space-5);
@@ -520,7 +519,6 @@ ULTRA_PROFESSIONAL_CSS = """
         align-items: center;
         justify-content: center;
         background: rgba(8, 11, 16, 0.75);
-        backdrop-filter: blur(6px) saturate(1.05);
         z-index: 9999;
     }
 

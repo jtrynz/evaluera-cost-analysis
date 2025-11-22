@@ -338,14 +338,23 @@ def _run_cost_estimate(sel_text, lot_size, avg_purchase, idf=None, supplier_col=
 
 # ==================== HAUPTANWENDUNG ====================
 
-# Header mit Beschreibung und Theme Toggle
-col_title, col_theme = st.columns([6, 1])
+# Header mit Logo, Beschreibung und Theme Toggle
+col_logo, col_title, col_theme = st.columns([1, 5, 1])
+
+with col_logo:
+    # Logo einbinden (falls vorhanden)
+    logo_path = "EVALUERA.png"
+    if os.path.exists(logo_path):
+        st.image(logo_path, width=120)
+    else:
+        st.markdown("<br>", unsafe_allow_html=True)
 
 with col_title:
     st.title("EVALUERA")
     st.markdown("""
     <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 1.5rem; border-radius: 10px; color: white; margin-bottom: 2rem;'>
+                padding: 1.5rem; border-radius: 10px; color: white; margin-bottom: 2rem;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);'>
         <h3 style='margin: 0; color: white;'>KI-gestützte Bestellanalyse & Kostenschätzung</h3>
         <p style='margin: 0.5rem 0 0 0; opacity: 0.9;'>
             Analysieren Sie Ihre Beschaffungsdaten, schätzen Sie Material- und Fertigungskosten mit KI,
