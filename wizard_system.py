@@ -45,18 +45,35 @@ class WizardManager:
         """Check if step is completed"""
         return step_number in st.session_state.wizard_completed_steps
 
+    def sync_navigation_to_step(self, target_step):
+        """Sync navigation sidebar active section with wizard step"""
+        # Mapping: wizard step -> navigation section
+        step_to_nav = {
+            1: "upload",
+            2: "artikel",
+            3: "preise",
+            4: "lieferanten",
+            5: "kosten",
+            6: "nachhaltigkeit"
+        }
+
+        if target_step in step_to_nav:
+            st.session_state.nav_active_section = step_to_nav[target_step]
+
     def next_step(self):
         """Move to next step"""
         current = st.session_state.wizard_current_step
         if current < 6:
             self.complete_step(current)
             st.session_state.wizard_current_step = current + 1
+            self.sync_navigation_to_step(current + 1)
             st.rerun()
 
     def previous_step(self):
         """Move to previous step"""
         if st.session_state.wizard_current_step > 1:
             st.session_state.wizard_current_step -= 1
+            self.sync_navigation_to_step(st.session_state.wizard_current_step)
             st.rerun()
 
     def render_progress(self):
@@ -81,18 +98,87 @@ class WizardManager:
         """, unsafe_allow_html=True)
 
     def render_navigation(self, show_next=True, show_previous=True, next_label="Weiter", next_disabled=False):
-        """Render navigation buttons"""
-        col1, col2, col3 = st.columns([1, 2, 1])
+        """Render navigation buttons with fixed positioning"""
+        # Inject CSS for fixed navigation container
+        st.markdown("""
+        <style>
+            .wizard-next-fixed-container {
+                position: fixed;
+                right: 2.5rem;
+                bottom: 2.0rem;
+                z-index: 50;
+                display: flex;
+                gap: 0.75rem;
+            }
+
+            /* Mobile responsive */
+            @media (max-width: 900px) {
+                .wizard-next-fixed-container {
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: calc(100% - 2rem);
+                    right: auto;
+                    bottom: 1.5rem;
+                }
+            }
+
+            /* Apple-like button styling */
+            .wizard-next-fixed-container .stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #2A4F57 0%, #1e3a41 100%) !important;
+                color: #FFFFFF !important;
+                border: none !important;
+                border-radius: 8px !important;
+                padding: 12px 24px !important;
+                font-size: 16px !important;
+                font-weight: 600 !important;
+                box-shadow: 0 8px 24px rgba(42, 79, 87, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            }
+
+            .wizard-next-fixed-container .stButton > button[kind="primary"]:hover:not(:disabled) {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 12px 32px rgba(42, 79, 87, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+            }
+
+            .wizard-next-fixed-container .stButton > button[kind="primary"]:active:not(:disabled) {
+                transform: translateY(0) scale(0.98) !important;
+            }
+
+            .wizard-next-fixed-container .stButton > button {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border: 1.5px solid #D1D5DB !important;
+                border-radius: 8px !important;
+                padding: 12px 24px !important;
+                font-weight: 500 !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .wizard-next-fixed-container .stButton > button:hover:not(:disabled) {
+                background: rgba(255, 255, 255, 1) !important;
+                border-color: #2A4F57 !important;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+            }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Render in fixed container
+        st.markdown('<div class="wizard-next-fixed-container">', unsafe_allow_html=True)
+
+        col1, col2 = st.columns([1, 1])
 
         with col1:
             if show_previous and st.session_state.wizard_current_step > 1:
                 if st.button("← Zurück", key=f"wizard_prev_{st.session_state.wizard_current_step}", use_container_width=True):
                     self.previous_step()
 
-        with col3:
+        with col2:
             if show_next and st.session_state.wizard_current_step < 6:
                 if st.button(next_label + " →", key=f"wizard_next_{st.session_state.wizard_current_step}", type="primary", use_container_width=True, disabled=next_disabled):
+                    # Update navigation sidebar to match wizard step
+                    self.sync_navigation_to_step(st.session_state.wizard_current_step + 1)
                     self.next_step()
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
     def render_step_content(self, step_number, content_func):
         """Render content for specific step (collapsible)"""

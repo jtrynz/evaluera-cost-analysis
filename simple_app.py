@@ -574,6 +574,7 @@ def step5_cost_estimation():
                 "material": result.get('material_guess'),
                 "process": result.get('process'),
                 "confidence": result.get('confidence'),
+                "mass_kg": result.get('mass_kg', 0.023),  # Store mass for CO₂ calculation, default 23g for screw
             }
 
             wizard.complete_step(5)
@@ -584,6 +585,11 @@ def step5_cost_estimation():
     # Show results
     if "cost_result" in st.session_state:
         res = st.session_state.cost_result
+
+        # Determine trend: positive delta = paying too much (red), negative delta = saving (green)
+        delta_trend = None
+        if res['delta'] is not None:
+            delta_trend = "negative" if res['delta'] > 0 else "positive"  # negative trend = red = bad, positive trend = green = good
 
         create_compact_kpi_row([
             {
@@ -597,15 +603,17 @@ def step5_cost_estimation():
                 "icon": "⚙️"
             },
             {
-                "label": "Zielkosten",
+                "label": "Zielkosten (KI-Optimiert)",
                 "value": f"{res['target']:,.4f} €" if res['target'] else "N/A",
-                "icon": "🎯"
+                "icon": "🎯",
+                "help": "Minimal realistisch mögliche Kosten"
             },
             {
-                "label": "Delta",
+                "label": "Delta (Aktuell - Ziel)",
                 "value": f"{res['delta']:+,.4f} €" if res['delta'] else "N/A",
                 "icon": "📊",
-                "trend": "positive" if res['delta'] and res['delta'] > 0 else "negative"
+                "trend": delta_trend,
+                "help": "Positiv = Einsparungspotenzial, Negativ = unter Zielkosten"
             },
         ])
 
@@ -641,19 +649,45 @@ def step6_sustainability():
         if "cost_result" in st.session_state:
             res = st.session_state.cost_result
             material = res.get('material', 'steel')
-            mass_kg = res.get('mass_kg', 0.01)
+            mass_kg = res.get('mass_kg', 0.023)  # Default 23g for typical screw
 
-            try:
-                co2_result = calculate_co2_footprint(
-                    material=material,
-                    mass_kg=mass_kg,
-                    supplier_country="CN"
-                )
+            with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
+                try:
+                    co2_result = calculate_co2_footprint(
+                        material=material,
+                        mass_kg=mass_kg,
+                        supplier_country="CN"
+                    )
 
-                if co2_result:
-                    st.success(f"✅ CO₂: ~{co2_result.get('total_co2_kg', 0):.3f} kg CO₂e")
-            except Exception as e:
-                st.error(f"❌ CO₂-Berechnung fehlgeschlagen: {e}")
+                    if co2_result and co2_result.get('total_co2_kg', 0) > 0:
+                        total_co2 = co2_result.get('total_co2_kg', 0)
+                        st.session_state.co2_result = co2_result
+                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e")
+
+                        # Show breakdown
+                        create_compact_kpi_row([
+                            {
+                                "label": "Produktion",
+                                "value": f"{co2_result.get('co2_production_kg', 0):.3f} kg",
+                                "icon": "🏭"
+                            },
+                            {
+                                "label": "Transport",
+                                "value": f"{co2_result.get('co2_transport_kg', 0):.3f} kg",
+                                "icon": "🚢"
+                            },
+                            {
+                                "label": "CBAM-Kosten (2026)",
+                                "value": f"{co2_result.get('cbam_cost_eur', 0):.4f} €",
+                                "icon": "💰"
+                            },
+                        ])
+                    else:
+                        st.error("❌ CO₂-Berechnung fehlgeschlagen: Keine Daten")
+                except Exception as e:
+                    st.error(f"❌ CO₂-Berechnung fehlgeschlagen: {e}")
+        else:
+            st.warning("⚠️ Bitte zuerst Kostenschätzung durchführen")
 
     divider()
 
@@ -664,25 +698,80 @@ def step6_sustainability():
         article = st.session_state.get("selected_article")
         avg_price = st.session_state.get("avg_price")
         supplier = st.session_state.get("selected_supplier_name")
+        cost_result = st.session_state.get("cost_result")
+
+        # Get target price from cost estimation
+        target_price = None
+        if cost_result:
+            target_price = cost_result.get("target")
 
         if article and supplier:
             with GPTLoadingAnimation("🤖 Generiere Tipps...", icon="💼"):
                 try:
                     tips = gpt_negotiation_prep(
+                        supplier_name=supplier,
                         article_name=article,
                         avg_price=avg_price,
-                        supplier_name=supplier
+                        target_price=target_price
                     )
 
                     if tips and not tips.get("_error"):
-                        st.markdown("#### 📝 Verhandlungsargumente:")
-                        for arg in tips.get("arguments", []):
-                            st.markdown(f"- {arg}")
+                        st.session_state.negotiation_tips = tips
 
-                        st.markdown("#### 🎯 Zielsetzung:")
-                        st.write(tips.get("target_price_recommendation", "N/A"))
+                        # Display objectives
+                        objectives = tips.get("objectives", {})
+                        if objectives:
+                            st.markdown("#### 🎯 Verhandlungsziele:")
+                            primary = objectives.get("primary_goal")
+                            if primary:
+                                st.markdown(f"**Primäres Ziel:** {primary}")
+
+                            target_range = objectives.get("target_price_range")
+                            if target_range:
+                                st.markdown(f"**Ziel-Preisbereich:** {target_range}")
+
+                        # Display key arguments
+                        key_args = tips.get("key_arguments", [])
+                        if key_args:
+                            st.markdown("#### 📝 Verhandlungsargumente:")
+                            for arg in key_args:
+                                if isinstance(arg, dict):
+                                    argument_text = arg.get("argument", str(arg))
+                                    st.markdown(f"- {argument_text}")
+
+                                    # Show supporting facts if available
+                                    facts = arg.get("supporting_facts", [])
+                                    if facts:
+                                        for fact in facts[:2]:  # Max 2 facts per argument
+                                            st.markdown(f"  - _{fact}_")
+                                else:
+                                    st.markdown(f"- {arg}")
+
+                        # Display tactics
+                        tactics = tips.get("tactics", [])
+                        if tactics:
+                            st.markdown("#### 🎭 Verhandlungstaktiken:")
+                            for tactic in tactics[:5]:  # Max 5 tactics
+                                if isinstance(tactic, dict):
+                                    tactic_name = tactic.get("tactic", str(tactic))
+                                    st.markdown(f"- **{tactic_name}**")
+                                else:
+                                    st.markdown(f"- {tactic}")
+
+                        # Show strategy overview if available
+                        strategy = tips.get("strategy_overview")
+                        if strategy:
+                            with st.expander("📋 Vollständige Strategie"):
+                                st.write(strategy)
+
+                    else:
+                        st.error("❌ Verhandlungstipps konnten nicht generiert werden")
                 except Exception as e:
                     st.error(f"❌ Fehler: {e}")
+                    import traceback
+                    st.code(traceback.format_exc())
+        else:
+            st.warning("⚠️ Bitte Artikel und Lieferant auswählen")
 
     wizard.complete_step(6)
 

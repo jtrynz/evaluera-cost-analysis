@@ -89,8 +89,16 @@ def gpt_complete_cost_estimate(
             processes = [c.get('process') for c in comps[:3]]
             supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(processes)}"
 
-    # KOMBINIERTER PROMPT - Material + Prozess + Kosten
+    # KOMBINIERTER PROMPT - Material + Prozess + Kosten (WORST CASE GÜNSTIG)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in Präzisions-Kostenkalkulation.
+
+**WICHTIG - KALKULATIONSSTRATEGIE:**
+Schätze die MINIMAL REALISTISCH MÖGLICHEN Herstellkosten aus Sicht eines sehr effizienten, gut ausgelasteten Lieferanten.
+Sei konservativ im Sinne des Einkäufers:
+- Wenn plausible Spannweiten existieren, wähle eher den UNTEREN BEREICH der Kosten
+- Modelliere einen optimierten Produktionsprozess (hohe Auslastung, moderne Maschinen, Automatisierung)
+- Die Kosten müssen technisch plausibel bleiben (KEINE unrealistisch niedrigen Werte!)
+- Ziel: Zeige dem Einkäufer, WIE GÜNSTIG ein effizienter Lieferant produzieren könnte
 
 **AUFGABE:** Analysiere den Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) in EINEM Durchgang!
 
