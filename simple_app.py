@@ -721,7 +721,7 @@ def step6_sustainability():
     # Negotiation Tips
     st.markdown("### 💼 Verhandlungsvorbereitung")
 
-    if st.button("📋 Verhandlungstipps generieren", type="primary", use_container_width=True):
+    if st.button("📋 Verhandlungsstrategie generieren", type="primary", use_container_width=True):
         article = st.session_state.get("selected_article")
         avg_price = st.session_state.get("avg_price")
         supplier = st.session_state.get("selected_supplier_name")
@@ -733,7 +733,7 @@ def step6_sustainability():
             target_price = cost_result.get("target")
 
         if article and supplier:
-            with GPTLoadingAnimation("🤖 Generiere Tipps...", icon="💼"):
+            with GPTLoadingAnimation("🤖 Generiere Strategie...", icon="💼"):
                 try:
                     tips = gpt_negotiation_prep(
                         supplier_name=supplier,
@@ -745,54 +745,172 @@ def step6_sustainability():
                     if tips and not tips.get("_error"):
                         st.session_state.negotiation_tips = tips
 
-                        # Display objectives
+                        # ========== 1. STRATEGY OVERVIEW ==========
+                        strategy_overview = tips.get("strategy_overview", {})
+                        if strategy_overview and isinstance(strategy_overview, dict):
+                            st.markdown("#### 📊 Gesamtstrategie")
+
+                            # Main approach with color coding
+                            approach = strategy_overview.get("main_approach", "")
+                            if approach:
+                                approach_colors = {
+                                    "win-win": "🟢",
+                                    "collaborative": "🟢",
+                                    "competitive": "🟡",
+                                    "defensive": "🔴"
+                                }
+                                icon = approach_colors.get(approach.lower(), "🔵")
+                                st.markdown(f"**Ansatz:** {icon} {approach.upper()}")
+
+                            # Rationale
+                            rationale = strategy_overview.get("rationale")
+                            if rationale:
+                                st.info(f"💡 **Begründung:** {rationale}")
+
+                            # Power balance and success probability
+                            cols_strategy = st.columns(2)
+                            with cols_strategy[0]:
+                                power = strategy_overview.get("negotiation_power_balance", "balanced")
+                                power_emoji = {
+                                    "buyer_advantage": "💪 Käufer-Vorteil",
+                                    "balanced": "⚖️ Ausgewogen",
+                                    "supplier_advantage": "⚠️ Lieferanten-Vorteil"
+                                }.get(power, power)
+                                st.markdown(f"**Machtbalance:** {power_emoji}")
+
+                            with cols_strategy[1]:
+                                success_prob = strategy_overview.get("estimated_success_probability", "medium")
+                                success_emoji = {
+                                    "high": "✅ Hoch",
+                                    "medium": "🟡 Mittel",
+                                    "low": "⚠️ Niedrig"
+                                }.get(success_prob, success_prob)
+                                st.markdown(f"**Erfolgswahrscheinlichkeit:** {success_emoji}")
+
+                            # Key leverage points
+                            leverage = strategy_overview.get("key_leverage_points", [])
+                            if leverage:
+                                st.markdown("**🎯 Hebelpunkte:**")
+                                for lev in leverage:
+                                    st.markdown(f"- {lev}")
+
+                            divider()
+
+                        # ========== 2. OBJECTIVES ==========
                         objectives = tips.get("objectives", {})
-                        if objectives:
-                            st.markdown("#### 🎯 Verhandlungsziele:")
+                        if objectives and isinstance(objectives, dict):
+                            st.markdown("#### 🎯 Verhandlungsziele")
+
                             primary = objectives.get("primary_goal")
                             if primary:
-                                st.markdown(f"**Primäres Ziel:** {primary}")
+                                st.success(f"**🏆 Primäres Ziel:** {primary}")
 
-                            target_range = objectives.get("target_price_range")
-                            if target_range:
-                                st.markdown(f"**Ziel-Preisbereich:** {target_range}")
+                            secondary = objectives.get("secondary_goals", [])
+                            if secondary:
+                                st.markdown("**📋 Sekundäre Ziele:**")
+                                for goal in secondary:
+                                    st.markdown(f"- {goal}")
 
-                        # Display key arguments
+                            # BATNA - KRITISCH!
+                            batna = objectives.get("batna")
+                            if batna:
+                                st.warning(f"**🚨 BATNA (Best Alternative):** {batna}")
+
+                            minimum = objectives.get("minimum_acceptable_outcome")
+                            if minimum:
+                                st.markdown(f"**⚠️ Minimum:** {minimum}")
+
+                            divider()
+
+                        # ========== 3. KEY ARGUMENTS (STRUKTURIERT!) ==========
                         key_args = tips.get("key_arguments", [])
                         if key_args:
-                            st.markdown("#### 📝 Verhandlungsargumente:")
-                            for arg in key_args:
+                            st.markdown("#### 📝 Kernargumente")
+
+                            for i, arg in enumerate(key_args, 1):
                                 if isinstance(arg, dict):
                                     argument_text = arg.get("argument", str(arg))
-                                    st.markdown(f"- {argument_text}")
 
-                                    # Show supporting facts if available
-                                    facts = arg.get("supporting_facts", [])
-                                    if facts:
-                                        for fact in facts[:2]:  # Max 2 facts per argument
-                                            st.markdown(f"  - _{fact}_")
+                                    with st.expander(f"**Argument {i}:** {argument_text}", expanded=(i==1)):
+                                        # Supporting facts
+                                        facts = arg.get("supporting_facts", [])
+                                        if facts:
+                                            st.markdown("**🔍 Unterstützende Fakten:**")
+                                            for fact in facts:
+                                                st.markdown(f"- {fact}")
+
+                                        # Expected counter
+                                        counter = arg.get("expected_counter")
+                                        if counter:
+                                            st.markdown(f"**🔄 Erwarteter Gegenargument:** _{counter}_")
+
+                                        # Our response
+                                        response = arg.get("our_response")
+                                        if response:
+                                            st.markdown(f"**💬 Unsere Antwort:** {response}")
                                 else:
-                                    st.markdown(f"- {arg}")
+                                    st.markdown(f"{i}. {arg}")
 
-                        # Display tactics
+                            divider()
+
+                        # ========== 4. TACTICS ==========
                         tactics = tips.get("tactics", [])
                         if tactics:
-                            st.markdown("#### 🎭 Verhandlungstaktiken:")
-                            for tactic in tactics[:5]:  # Max 5 tactics
+                            st.markdown("#### 🎭 Verhandlungstaktiken")
+                            for tactic in tactics:
                                 if isinstance(tactic, dict):
                                     tactic_name = tactic.get("tactic", str(tactic))
                                     st.markdown(f"- **{tactic_name}**")
                                 else:
                                     st.markdown(f"- {tactic}")
 
-                        # Show strategy overview if available
-                        strategy = tips.get("strategy_overview")
-                        if strategy:
-                            with st.expander("📋 Vollständige Strategie"):
-                                st.write(strategy)
+                            divider()
+
+                        # ========== 5. OPENING & CLOSING STATEMENTS ==========
+                        opening = tips.get("opening_statement")
+                        closing = tips.get("closing_statement")
+
+                        if opening or closing:
+                            st.markdown("#### 💬 Formulierungen")
+
+                            if opening:
+                                st.markdown("**🎤 Eröffnung:**")
+                                st.info(f'"{opening}"')
+
+                            if closing:
+                                st.markdown("**🏁 Abschluss:**")
+                                st.success(f'"{closing}"')
+
+                            divider()
+
+                        # ========== 6. CONCESSIONS & TRADE-OFFS ==========
+                        concessions = tips.get("concessions", [])
+                        if concessions:
+                            st.markdown("#### 🤝 Zugeständnisse & Trade-Offs")
+
+                            for conc in concessions:
+                                if isinstance(conc, dict):
+                                    offer = conc.get("what_we_offer", "")
+                                    want = conc.get("what_we_want", "")
+                                    value = conc.get("trade_off_value", "")
+
+                                    st.markdown(f"**Wir bieten:** {offer}")
+                                    st.markdown(f"**Wir fordern:** {want}")
+                                    if value:
+                                        st.markdown(f"_Bewertung: {value}_")
+                                    st.markdown("---")
+
+                            divider()
+
+                        # ========== 7. RED FLAGS ==========
+                        red_flags = tips.get("red_flags", [])
+                        if red_flags:
+                            st.markdown("#### 🚨 Warnsignale")
+                            for flag in red_flags:
+                                st.error(f"⚠️ {flag}")
 
                     else:
-                        st.error("❌ Verhandlungstipps konnten nicht generiert werden")
+                        st.error("❌ Verhandlungsstrategie konnte nicht generiert werden")
                 except Exception as e:
                     st.error(f"❌ Fehler: {e}")
                     import traceback
