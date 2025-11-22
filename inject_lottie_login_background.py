@@ -49,42 +49,50 @@ html, body {{
 </html>
 """
 
-    st.components.v1.html(html, height=600, width=1000, scrolling=False)
-
-    st.markdown("""
-    <style>
-        /* Lottie iframe fullscreen fix */
-        iframe[title="st.components.v1.html"] {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: -1 !important;
-            pointer-events: none !important;
-            border: none !important;
-            opacity: 1 !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    st.components.v1.html(html, height=0, width=0, scrolling=False)
 
     st.markdown("""
 <style>
-html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"],
-.block-container, .main, section.main, div.main,
-[data-testid="stHeader"], [data-testid="stDecoration"] {
-    background: transparent !important;
-    background-color: transparent !important;
-}
+    html, body {
+        height: 100%;
+        width: 100%;
+        overflow: hidden !important;
+    }
 
-#MainMenu {visibility: hidden !important;}
-footer {visibility: hidden !important;}
-header {visibility: hidden !important;}
-[data-testid="stSidebar"] {display: none !important;}
-[data-testid="stToolbar"] {display: none !important;}
+    iframe[title="st.components.v1.html"] {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        z-index: -1 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+        opacity: 1 !important;
+    }
 
-.stApp > div:first-child {
-    background: transparent !important;
-}
+    [data-testid="stAppViewContainer"] {
+        padding-top: 0 !important;
+    }
+
+    html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"],
+    .block-container, .main, section.main, div.main,
+    [data-testid="stHeader"], [data-testid="stDecoration"] {
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    #MainMenu {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+    [data-testid="stSidebar"] {display: none !important;}
+    [data-testid="stToolbar"] {display: none !important;}
+
+    .stApp > div:first-child {
+        background: transparent !important;
+    }
 </style>
 """, unsafe_allow_html=True)
