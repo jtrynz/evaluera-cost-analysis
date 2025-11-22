@@ -1,0 +1,41 @@
+{
+  "name": "EVALUERA Dark Gradient Background",
+  "description": "Apple-inspired dark gradient for login screen",
+  "gradient": {
+    "type": "radial",
+    "colors": [
+      {
+        "position": "0%",
+        "color": "#2A4F57",
+        "opacity": 1.0
+      },
+      {
+        "position": "35%",
+        "color": "#1E2E32",
+        "opacity": 0.95
+      },
+      {
+        "position": "70%",
+        "color": "#0F1A1C",
+        "opacity": 0.9
+      },
+      {
+        "position": "100%",
+        "color": "#0A1214",
+        "opacity": 0.85
+      }
+    ],
+    "center": "50% 50%",
+    "shape": "ellipse"
+  },
+  "overlay": {
+    "enabled": true,
+    "type": "noise",
+    "opacity": 0.03
+  },
+  "animation": {
+    "enabled": true,
+    "duration": "15s",
+    "easing": "ease-in-out"
+  }
+}

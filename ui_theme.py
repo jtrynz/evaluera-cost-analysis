@@ -5,36 +5,50 @@ Design tokens for Apple-like premium UI components
 """
 
 # ==================== COLOR PALETTE ====================
+# Apple-inspired Premium Color System
 COLORS = {
-    # Primary Brand Colors
-    'primary': '#2A4F57',
-    'secondary': '#E8F4F7',
-    'accent': '#4A90A4',
+    # Primary Brand Colors (New Premium Palette)
+    'primary': '#2A4F57',        # Deep Teal - Primary actions
+    'secondary': '#B8D4D1',      # Soft Mint - Hover states
+    'accent': '#8FAEAB',         # Muted Sage - Links & highlights
 
     # Surface Colors
-    'surface': '#FFFFFF',
-    'background': '#F8FAFB',
+    'surface': '#FFFFFF',        # Pure white surfaces
+    'surface_light': '#E7F1EF',  # Light tint - Input backgrounds
+    'background': '#F5F9F8',     # Subtle off-white
 
-    # Text Colors
-    'text_primary': '#1A1A1A',
-    'text_secondary': '#6B7280',
+    # Dark Mode / Gradient Colors
+    'dark_primary': '#1E2E32',   # Dark accent for gradients
+    'dark_deep': '#0F1A1C',      # Deep dark for backgrounds
+    'dark_overlay': '#0A1214',   # Deepest dark
+
+    # Text Colors (High Contrast)
+    'text_primary': '#1A1A1A',   # Primary text
+    'text_secondary': '#4B5563', # Secondary text
+    'text_muted': '#6B7280',     # Muted text
+    'text_light': '#9CA3AF',     # Placeholder text
+
+    # Border & Line Colors
+    'border_light': '#E5E7EB',
+    'border': '#D1D5DB',
+    'border_dark': '#9CA3AF',
+
+    # Legacy Compatibility
+    'gray_200': '#E5E7EB',
+    'gray_300': '#D1D5DB',
     'gray_400': '#9CA3AF',
     'gray_500': '#6B7280',
     'gray_600': '#4B5563',
 
-    # Border & Line Colors
-    'gray_200': '#E5E7EB',
-    'gray_300': '#D1D5DB',
+    # Accent & Status Colors (Refined)
+    'light_accent': '#E7F1EF',
+    'dark_accent': '#1E2E32',
 
-    # Accent & Status Colors
-    'light_accent': '#E8F4F7',
-    'dark_accent': '#1E3A41',
-
-    # Status Colors
-    'success': '#10B981',
-    'warning': '#F59E0B',
-    'error': '#EF4444',
-    'info': '#3B82F6',
+    # Status Colors (Apple-like)
+    'success': '#34C759',        # Apple green
+    'warning': '#FF9500',        # Apple orange
+    'error': '#FF3B30',          # Apple red
+    'info': '#007AFF',           # Apple blue
 }
 
 # ==================== BORDER RADIUS ====================
