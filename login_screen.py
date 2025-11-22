@@ -186,6 +186,27 @@ def render_login_screen():
             background-color: transparent !important;
         }}
 
+        /* Hide tooltip popup on checkbox */
+        .login-container .stCheckbox [data-testid="stTooltipHoverTarget"],
+        .login-container .stCheckbox [data-baseweb="tooltip"],
+        .login-container [role="tooltip"],
+        .login-container [class*="Tooltip"],
+        div[data-baseweb="tooltip"],
+        div[role="tooltip"] {{
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }}
+
+        /* Remove title attribute behavior */
+        .login-container .stCheckbox * {{
+            pointer-events: auto !important;
+        }}
+
+        .login-container .stCheckbox [title]:hover::after {{
+            content: none !important;
+        }}
+
         /* ========== LOGIN BUTTON (APPLE GLOSSY) ========== */
         .login-container .stButton > button {{
             width: 100% !important;
@@ -304,7 +325,8 @@ def render_login_screen():
     show_pwd = st.checkbox(
         "Passwort anzeigen",
         key="show_pwd_toggle",
-        value=st.session_state.show_password
+        value=st.session_state.show_password,
+        help=""  # Disable tooltip
     )
     st.session_state.show_password = show_pwd
 
