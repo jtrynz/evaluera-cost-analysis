@@ -75,31 +75,6 @@ html, body {{
 
     st.markdown("""
 <style>
-    /* ========== FULLSCREEN CONTAINER SETUP ========== */
-    html {
-        height: 100vh !important;
-        width: 100vw !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-    }
-
-    body {
-        height: 100vh !important;
-        width: 100vw !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-        position: fixed !important;
-        inset: 0 !important;
-    }
-
-    #root {
-        height: 100vh !important;
-        width: 100vw !important;
-        overflow: hidden !important;
-    }
-
     /* ========== IFRAME FULLSCREEN POSITIONING ========== */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
@@ -117,42 +92,21 @@ html, body {{
         display: block !important;
     }
 
-    /* ========== STREAMLIT CONTAINERS FULLSCREEN & TRANSPARENT ========== */
+    /* ========== STREAMLIT CONTAINERS TRANSPARENT (NOT FULLSCREEN) ========== */
+    [data-testid="stApp"],
     .stApp {
-        height: 100vh !important;
-        width: 100vw !important;
-        overflow: hidden !important;
-        background: transparent !important;
-        background-color: transparent !important;
-    }
-
-    [data-testid="stApp"] {
-        height: 100vh !important;
-        width: 100vw !important;
-        overflow: hidden !important;
         background: transparent !important;
         background-color: transparent !important;
     }
 
     [data-testid="stAppViewContainer"] {
-        height: 100vh !important;
-        width: 100vw !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        overflow: hidden !important;
         background: transparent !important;
         background-color: transparent !important;
     }
 
     .main,
     section.main,
-    div.main,
-    .block-container {
-        height: 100vh !important;
-        width: 100vw !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        overflow: hidden !important;
+    div.main {
         background: transparent !important;
         background-color: transparent !important;
     }
@@ -161,6 +115,14 @@ html, body {{
     [data-testid="stDecoration"] {
         background: transparent !important;
         background-color: transparent !important;
+    }
+
+    /* ========== LOGIN UI WRAPPER WITH Z-INDEX ========== */
+    .block-container {
+        background: transparent !important;
+        background-color: transparent !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
 
     /* ========== HIDE STREAMLIT UI ELEMENTS ========== */
