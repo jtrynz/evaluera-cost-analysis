@@ -49,6 +49,7 @@ from ui_components import (
     ExcelLoadingAnimation,
     render_evaluera_logo
 )
+from login_screen import check_login, render_login_screen, render_logout_button
 
 load_dotenv()
 
@@ -339,7 +340,41 @@ def _run_cost_estimate(sel_text, lot_size, avg_purchase, idf=None, supplier_col=
         return {'ok': False, 'error': str(e), 'trace': traceback.format_exc()}
 
 
+# ==================== AUTHENTICATION CHECK ====================
+# Prüfe Login-Status bevor die Hauptanwendung gerendert wird
+if not check_login():
+    # Zeige animierten Hintergrund für Login-Screen
+    st.markdown("""
+    <style>
+        /* ========== ANIMATED GRADIENT BACKGROUND ========== */
+        [data-testid="stAppViewContainer"] {
+            background: linear-gradient(-45deg, #2A4F57, #1E3A41, #4A90A4, #E8F4F7);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Ensure proper z-index layering */
+        .main {
+            position: relative;
+            z-index: 1;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Zeige Login-Screen
+    render_login_screen()
+    st.stop()  # Stoppe Ausführung bis Login erfolgreich
+
 # ==================== HAUPTANWENDUNG ====================
+
+# Zeige Logout-Button in Sidebar
+render_logout_button()
 
 # Header mit Logo, Beschreibung und Theme Toggle
 col_logo, col_title, col_theme = st.columns([1, 5, 1])

@@ -287,7 +287,7 @@ def render_login_screen():
     st.markdown('<div class="login-logo">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        render_evaluera_logo(align="center", width=230)
+        render_evaluera_logo()
     st.markdown('<p style="text-align: center; margin-top: 16px;">KI-gestützte Kostenanalyse</p>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
