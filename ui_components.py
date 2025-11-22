@@ -489,3 +489,45 @@ def show_empty_state(icon, title, description, button_text=None, button_action=N
         {button_html}
     </div>
     """, unsafe_allow_html=True)
+
+
+def GPTLoadingAnimation(text="GPT analysiert..."):
+    """
+    Zeigt eine Ladeanimation für GPT-Anfragen.
+
+    Args:
+        text: Text der während des Ladens angezeigt wird
+    """
+    return show_apple_loader(text)
+
+
+def ExcelLoadingAnimation(text="Excel wird verarbeitet..."):
+    """
+    Zeigt eine Ladeanimation für Excel-Verarbeitung.
+
+    Args:
+        text: Text der während des Ladens angezeigt wird
+    """
+    return show_shimmer_skeleton(height="60px", count=3)
+
+
+def render_evaluera_logo():
+    """
+    Rendert das EVALUERA Logo falls vorhanden.
+    """
+    import os
+    logo_path = "EVALUERA.png"
+    if os.path.exists(logo_path):
+        st.image(logo_path, width=200)
+    else:
+        st.markdown("""
+        <div style="
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        ">EVALUERA</div>
+        """, unsafe_allow_html=True)
