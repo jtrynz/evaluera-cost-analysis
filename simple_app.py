@@ -651,17 +651,52 @@ def step6_sustainability():
             res = st.session_state.cost_result
             material = res.get('material', 'steel')
 
-            # ROBUST mass_kg handling - ALWAYS set a value
+            # FIX 7: Get supplier country from session state
+            supplier_data = st.session_state.get("selected_supplier")
+            supplier_country = "CN"  # Default fallback
+            if supplier_data and "Land" in supplier_data:
+                country_map = {
+                    "China": "CN",
+                    "Deutschland": "DE",
+                    "Germany": "DE",
+                    "Italien": "IT",
+                    "Italy": "IT",
+                    "Polen": "PL",
+                    "Poland": "PL",
+                    "Tschechien": "CZ",
+                    "Czech Republic": "CZ",
+                    "Österreich": "AT",
+                    "Austria": "AT"
+                }
+                supplier_country = country_map.get(supplier_data.get("Land"), "CN")
+
+            # ULTRA-ROBUST mass_kg handling with GEOMETRY FALLBACK
             mass_kg = res.get('mass_kg')
+
             if mass_kg is None or mass_kg <= 0:
-                mass_kg = 0.023  # Default 23g for typical screw/fastener
+                # Try to calculate from geometry
+                d_mm = res.get('d_mm', 0)
+                l_mm = res.get('l_mm', 0)
+
+                if d_mm and l_mm and d_mm > 0 and l_mm > 0:
+                    # Cylinder approximation: V = π * (d/2)² * l
+                    # Steel density: 7.85 g/cm³
+                    volume_cm3 = 3.14159 * ((d_mm/2)**2) * l_mm / 1000  # mm³ to cm³
+                    mass_kg = (volume_cm3 * 7.85) / 1000  # g to kg
+                    st.info(f"ℹ️ Masse aus Geometrie berechnet: {mass_kg*1000:.1f}g (Ø{d_mm}mm × {l_mm}mm)")
+                else:
+                    # Ultimate fallback
+                    mass_kg = 0.023  # 23g typical screw
+                    st.warning(f"⚠️ Keine Geometrie - verwende Standard: {mass_kg*1000:.0f}g")
 
             with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
                 try:
+                    # FIX 7: Pass actual supplier country + process info
                     co2_result = calculate_co2_footprint(
                         material=material,
                         mass_kg=mass_kg,
-                        supplier_country="CN"
+                        supplier_country=supplier_country,
+                        process=res.get('process')  # Pass manufacturing process for accuracy
                     )
 
                     # ROBUST handling - extract values with fallbacks
@@ -728,6 +763,12 @@ def step6_sustainability():
         supplier = st.session_state.get("selected_supplier_name")
         cost_result = st.session_state.get("cost_result")
 
+        # FIX 7: Get ALL available context for GPT enrichment
+        supplier_data = st.session_state.get("selected_supplier")
+        supplier_competencies = st.session_state.get("supplier_competencies")
+        commodity_analysis = st.session_state.get("commodity_analysis")
+        price_stats = st.session_state.get("price_stats", {})
+
         # Get target price from cost estimation
         target_price = None
         if cost_result:
@@ -736,11 +777,21 @@ def step6_sustainability():
         if article and supplier:
             with GPTLoadingAnimation("🤖 Generiere Strategie...", icon="💼"):
                 try:
+                    # FIX 7: Pass enriched context to GPT
                     tips = gpt_negotiation_prep_enhanced(
                         supplier_name=supplier,
                         article_name=article,
                         avg_price=avg_price,
                         target_price=target_price,
+                        country=supplier_data.get("Land") if supplier_data else None,
+                        rating=supplier_data.get("Rating") if supplier_data else None,
+                        strengths=supplier_data.get("strengths", []) if supplier_data else None,
+                        weaknesses=supplier_data.get("weaknesses", []) if supplier_data else None,
+                        total_orders=supplier_data.get("total_orders") if supplier_data else None,
+                        supplier_competencies=supplier_competencies,
+                        min_price=price_stats.get("min"),
+                        max_price=price_stats.get("max"),
+                        commodity_analysis=commodity_analysis,
                         cost_result=cost_result
                     )
 

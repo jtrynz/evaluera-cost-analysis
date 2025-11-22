@@ -144,9 +144,21 @@ def apply_global_styles():
             line-height: 1.4 !important;
         }}
 
+        /* ========== FIX 6: HIGH CONTRAST TEXT ========== */
         p, span, label, div {{
-            color: {COLORS['gray_700']} !important;
+            color: {COLORS['gray_800']} !important;
             line-height: 1.6 !important;
+        }}
+
+        /* Strong text for readability */
+        .stMarkdown strong, b {{
+            color: {COLORS['gray_900']} !important;
+            font-weight: 600 !important;
+        }}
+
+        /* Body text high contrast */
+        .stMarkdown p {{
+            color: {COLORS['gray_800']} !important;
         }}
 
         /* ========== APPLE SCROLLBAR ========== */
@@ -189,6 +201,7 @@ def apply_global_styles():
             font-weight: 400 !important;
         }}
 
+        /* ========== FIX 6: REMOVE RED BORDERS - APPLE FOCUS STATE ========== */
         .stTextInput > div > div > input:focus,
         .stNumberInput > div > div > input:focus,
         .stTextArea textarea:focus,
@@ -196,6 +209,21 @@ def apply_global_styles():
             border-color: {COLORS['primary']} !important;
             box-shadow: 0 0 0 4px {COLORS['light_accent']} !important;
             outline: none !important;
+        }}
+
+        /* Ensure NO red borders on invalid state */
+        .stTextInput > div > div > input:invalid,
+        .stNumberInput > div > div > input:invalid,
+        .stTextArea textarea:invalid {{
+            border-color: {COLORS['gray_300']} !important;
+            box-shadow: none !important;
+        }}
+
+        .stTextInput > div > div > input:invalid:focus,
+        .stNumberInput > div > div > input:invalid:focus,
+        .stTextArea textarea:invalid:focus {{
+            border-color: {COLORS['primary']} !important;
+            box-shadow: 0 0 0 4px {COLORS['light_accent']} !important;
         }}
 
         /* Remove Streamlit's dark input background */
@@ -208,6 +236,7 @@ def apply_global_styles():
         }}
 
         /* ========== BUTTONS (APPLE GLASSMORPHISM) ========== */
+        /* ========== FIX 6: SMOOTH ANIMATIONS (280ms ease-out) ========== */
         .stButton > button[kind="primary"],
         button[kind="primary"],
         .stButton > button[data-testid="baseButton-primary"] {{
@@ -220,19 +249,20 @@ def apply_global_styles():
             font-weight: 600 !important;
             letter-spacing: 0.01em !important;
             box-shadow: {SHADOWS['md']}, 0 0 0 1px rgba(255,255,255,0.1) inset !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
             cursor: pointer !important;
         }}
 
         .stButton > button[kind="primary"]:hover,
         button[kind="primary"]:hover {{
-            transform: translateY(-2px) !important;
+            transform: translateY(-2px) scale(1.02) !important;
             box-shadow: {SHADOWS['lg']}, 0 0 0 1px rgba(255,255,255,0.2) inset !important;
         }}
 
         .stButton > button[kind="primary"]:active,
         button[kind="primary"]:active {{
             transform: translateY(0) scale(0.98) !important;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
         .stButton > button[kind="secondary"],
@@ -245,13 +275,19 @@ def apply_global_styles():
             padding: 12px 24px !important;
             font-weight: 600 !important;
             box-shadow: {SHADOWS['sm']} !important;
-            transition: all 0.2s ease !important;
+            transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
         .stButton > button[kind="secondary"]:hover {{
             background: rgba(255, 255, 255, 1) !important;
             border-color: {COLORS['primary']} !important;
-            transform: translateY(-1px) !important;
+            transform: translateY(-2px) scale(1.01) !important;
+            box-shadow: {SHADOWS['md']} !important;
+        }}
+
+        .stButton > button[kind="secondary"]:active {{
+            transform: translateY(0) scale(0.99) !important;
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
         /* ========== CHECKBOX & RADIO (APPLE STYLE) ========== */
@@ -319,6 +355,25 @@ def apply_global_styles():
             letter-spacing: 0.05em !important;
             text-transform: uppercase !important;
             color: {COLORS['gray_500']} !important;
+        }}
+
+        /* ========== FIX 6: APPLE-STYLE CARDS WITH SMOOTH HOVER ========== */
+        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {{
+            border-radius: {RADIUS['lg']} !important;
+            border: 1px solid {COLORS['gray_200']} !important;
+            box-shadow: {SHADOWS['sm']} !important;
+            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }}
+
+        .stAlert:hover, [data-testid="stMetric"]:hover {{
+            box-shadow: {SHADOWS['md']} !important;
+            transform: translateY(-1px) !important;
+            border-color: {COLORS['gray_300']} !important;
+        }}
+
+        /* Alert variants */
+        .stAlert[data-baseweb="notification"] {{
+            border-left-width: 4px !important;
         }}
 
         /* ========== SIDEBAR (APPLE GLASSMORPHISM) ========== */
