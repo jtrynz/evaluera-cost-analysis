@@ -45,7 +45,7 @@ from wizard_system import (
     create_data_table,
     create_compact_kpi_row,
 )
-from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
+from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation, render_evaluera_logo
 from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from login_screen import check_login, render_login_screen, render_logout_button
 from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
@@ -228,10 +228,15 @@ def find_col(df, possible_names):
 
 
 # ==================== HEADER - LIQUID GLASS BRANDING ====================
-liquid_header(
-    "EVALUERA",
-    "KI-gestützte Bestellanalyse & Kostenschätzung"
-)
+# Logo statt Text-Header
+render_evaluera_logo(align="center", width=230)
+st.markdown("""
+<div style="text-align: center; margin-top: -10px; margin-bottom: 32px;">
+    <p style="font-size: 1.25rem; font-weight: 600; color: #2F4A56; letter-spacing: 0.02em;">
+        KI-gestützte Bestellanalyse & Kostenschätzung
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()

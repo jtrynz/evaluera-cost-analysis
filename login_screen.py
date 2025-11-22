@@ -6,6 +6,7 @@ Secure login with animated background and glassmorphism
 
 import streamlit as st
 from ui_theme import COLORS, RADIUS, SPACING, SHADOWS, TYPOGRAPHY
+from ui_components import render_evaluera_logo
 
 
 # ==================== CREDENTIALS ====================
@@ -258,12 +259,10 @@ def render_login_screen():
     st.markdown('<div class="login-container"><div class="glass-panel">', unsafe_allow_html=True)
 
     # Logo & Header
-    st.markdown("""
-    <div class="login-logo">
-        <h1>EVALUERA</h1>
-        <p>KI-gestützte Kostenanalyse</p>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="login-logo">', unsafe_allow_html=True)
+    render_evaluera_logo(align="center", width=230)
+    st.markdown('<p style="text-align: center; margin-top: 16px;">KI-gestützte Kostenanalyse</p>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Error Message
     if "login_error" in st.session_state and st.session_state.login_error:

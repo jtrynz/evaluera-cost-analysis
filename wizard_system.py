@@ -6,6 +6,7 @@ Clean step-by-step workflow for cost analysis
 
 import streamlit as st
 from ui_theme import wizard_step, section_header, divider, COLORS, SPACING, RADIUS
+from ui_components import render_evaluera_logo
 
 
 class WizardManager:
@@ -77,9 +78,12 @@ class WizardManager:
             st.rerun()
 
     def render_progress(self):
-        """Render wizard progress indicators"""
+        """Render wizard progress indicators with logo"""
         current = self.get_current_step()
         progress_pct = int((current / 6) * 100)
+
+        # Logo linksbündig im Wizard-Header
+        render_evaluera_logo(align="left", width=230)
 
         # Use Streamlit native components instead of HTML
         st.markdown(f"""

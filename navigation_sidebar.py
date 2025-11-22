@@ -6,6 +6,7 @@ Apple-ähnliche Navigation mit Accordion-Struktur
 
 import streamlit as st
 from ui_theme import COLORS, SPACING, RADIUS, SHADOWS
+from ui_components import render_evaluera_logo
 
 
 class NavigationSidebar:
@@ -65,6 +66,10 @@ class NavigationSidebar:
     def render(self):
         """Render the navigation sidebar"""
         with st.sidebar:
+            # Logo im Sidebar-Header
+            render_evaluera_logo(align="center", width=200)
+            st.markdown('<div style="height: 16px;"></div>', unsafe_allow_html=True)
+
             # Sticky Sidebar CSS
             st.markdown(f"""
             <style>

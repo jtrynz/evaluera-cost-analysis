@@ -8,6 +8,68 @@ import streamlit as st
 import time
 
 
+def render_evaluera_logo(align="center", width=230):
+    """
+    Renders the EVALUERA logo with responsive sizing and proper alignment.
+
+    Args:
+        align: "center" (default), "left", or "right"
+        width: Logo width in pixels (default: 230)
+            - Desktop: 230px
+            - Tablet: 200px
+            - Mobile: 160px
+
+    Returns:
+        None (renders directly to Streamlit)
+    """
+    # Responsive CSS for logo
+    st.markdown(f"""
+    <style>
+        .evaluera-logo-container {{
+            display: flex;
+            justify-content: {align};
+            align-items: center;
+            margin-bottom: -10px;
+            margin-top: 0;
+            padding: 0;
+        }}
+
+        .evaluera-logo-container img {{
+            width: {width}px !important;
+            max-width: 100% !important;
+            height: auto !important;
+            image-rendering: -webkit-optimize-contrast !important;
+            image-rendering: crisp-edges !important;
+        }}
+
+        /* Responsive breakpoints */
+        @media (max-width: 900px) {{
+            .evaluera-logo-container img {{
+                width: 200px !important;
+            }}
+        }}
+
+        @media (max-width: 600px) {{
+            .evaluera-logo-container img {{
+                width: 160px !important;
+            }}
+        }}
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Render logo with container
+    if align == "center":
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            st.image("EVALUERA.png", width=width)
+    elif align == "left":
+        st.image("EVALUERA.png", width=width)
+    elif align == "right":
+        col1, col2 = st.columns([3, 1])
+        with col2:
+            st.image("EVALUERA.png", width=width)
+
+
 def show_apple_loader(text="Lädt...", duration=None):
     """
     Zeigt einen Apple-like Ladeindikator mit optionalem Text.
