@@ -176,8 +176,14 @@ def render_login_screen():
             cursor: pointer !important;
         }}
 
-        .login-container .stCheckbox > label > div {{
+        /* Remove all backgrounds from checkbox wrappers */
+        .login-container .stCheckbox > label > div,
+        .login-container .stCheckbox > label > div > div,
+        .login-container .stCheckbox > div,
+        .login-container .stCheckbox > div > div,
+        .login-container .stCheckbox div {{
             background: transparent !important;
+            background-color: transparent !important;
         }}
 
         /* ========== LOGIN BUTTON (APPLE GLOSSY) ========== */
