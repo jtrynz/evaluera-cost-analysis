@@ -19,31 +19,53 @@ def inject_lottie_background():
 <html>
 <head>
 <style>
-html, body {{
+* {{
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    box-sizing: border-box;
 }}
-#lottie {{
-    position: fixed;
-    top: 0;
-    left: 0;
+
+html, body {{
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
+    position: fixed;
+    inset: 0;
+}}
+
+#bg-container {{
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 1;
+}}
+
+#lottie {{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
     pointer-events: none;
 }}
 </style>
 </head>
 <body>
-<lottie-player
-    id="lottie"
-    autoplay
-    loop
-    mode="normal"
-    src="{src}">
-</lottie-player>
+<div id="bg-container">
+    <lottie-player
+        id="lottie"
+        autoplay
+        loop
+        mode="normal"
+        background="transparent"
+        src="{src}">
+    </lottie-player>
+</div>
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </body>
 </html>
@@ -53,12 +75,32 @@ html, body {{
 
     st.markdown("""
 <style>
-    html, body {
-        height: 100%;
-        width: 100%;
+    /* ========== FULLSCREEN CONTAINER SETUP ========== */
+    html {
+        height: 100vh !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
         overflow: hidden !important;
     }
 
+    body {
+        height: 100vh !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        position: fixed !important;
+        inset: 0 !important;
+    }
+
+    #root {
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+    }
+
+    /* ========== IFRAME FULLSCREEN POSITIONING ========== */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
         top: 0 !important;
@@ -68,23 +110,60 @@ html, body {{
         margin: 0 !important;
         padding: 0 !important;
         border: none !important;
-        z-index: -1 !important;
+        z-index: -999 !important;
         pointer-events: none !important;
         overflow: hidden !important;
         opacity: 1 !important;
+        display: block !important;
     }
 
-    [data-testid="stAppViewContainer"] {
-        padding-top: 0 !important;
-    }
-
-    html, body, [data-testid="stApp"], [data-testid="stAppViewContainer"],
-    .block-container, .main, section.main, div.main,
-    [data-testid="stHeader"], [data-testid="stDecoration"] {
+    /* ========== STREAMLIT CONTAINERS FULLSCREEN & TRANSPARENT ========== */
+    .stApp {
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
         background: transparent !important;
         background-color: transparent !important;
     }
 
+    [data-testid="stApp"] {
+        height: 100vh !important;
+        width: 100vw !important;
+        overflow: hidden !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        height: 100vh !important;
+        width: 100vw !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    .main,
+    section.main,
+    div.main,
+    .block-container {
+        height: 100vh !important;
+        width: 100vw !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    [data-testid="stHeader"],
+    [data-testid="stDecoration"] {
+        background: transparent !important;
+        background-color: transparent !important;
+    }
+
+    /* ========== HIDE STREAMLIT UI ELEMENTS ========== */
     #MainMenu {visibility: hidden !important;}
     footer {visibility: hidden !important;}
     header {visibility: hidden !important;}
