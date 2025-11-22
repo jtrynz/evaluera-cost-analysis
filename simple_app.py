@@ -649,7 +649,11 @@ def step6_sustainability():
         if "cost_result" in st.session_state:
             res = st.session_state.cost_result
             material = res.get('material', 'steel')
-            mass_kg = res.get('mass_kg', 0.023)  # Default 23g for typical screw
+
+            # ROBUST mass_kg handling - ALWAYS set a value
+            mass_kg = res.get('mass_kg')
+            if mass_kg is None or mass_kg <= 0:
+                mass_kg = 0.023  # Default 23g for typical screw/fastener
 
             with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
                 try:
@@ -659,33 +663,56 @@ def step6_sustainability():
                         supplier_country="CN"
                     )
 
-                    if co2_result and co2_result.get('total_co2_kg', 0) > 0:
-                        total_co2 = co2_result.get('total_co2_kg', 0)
-                        st.session_state.co2_result = co2_result
-                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e")
+                    # ROBUST handling - extract values with fallbacks
+                    if co2_result:
+                        total_co2 = co2_result.get('total_co2_kg', 0) or co2_result.get('co2_total_kg', 0)
+                        production_co2 = co2_result.get('co2_production_kg', 0)
+                        transport_co2 = co2_result.get('co2_transport_kg', 0)
+                        cbam_cost = co2_result.get('cbam_cost_eur', 0)
+
+                        # If total is 0, calculate from components
+                        if total_co2 == 0 and (production_co2 > 0 or transport_co2 > 0):
+                            total_co2 = production_co2 + transport_co2
+
+                        # Store result
+                        st.session_state.co2_result = {
+                            'total_co2_kg': total_co2,
+                            'co2_production_kg': production_co2,
+                            'co2_transport_kg': transport_co2,
+                            'cbam_cost_eur': cbam_cost,
+                            'material': material,
+                            'mass_kg': mass_kg
+                        }
+
+                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e ({mass_kg*1000:.1f}g Masse)")
 
                         # Show breakdown
                         create_compact_kpi_row([
                             {
                                 "label": "Produktion",
-                                "value": f"{co2_result.get('co2_production_kg', 0):.3f} kg",
-                                "icon": "🏭"
+                                "value": f"{production_co2:.3f} kg",
+                                "icon": "🏭",
+                                "help": f"{material.upper()}-Herstellung"
                             },
                             {
                                 "label": "Transport",
-                                "value": f"{co2_result.get('co2_transport_kg', 0):.3f} kg",
-                                "icon": "🚢"
+                                "value": f"{transport_co2:.3f} kg",
+                                "icon": "🚢",
+                                "help": "CN → EU"
                             },
                             {
                                 "label": "CBAM-Kosten (2026)",
-                                "value": f"{co2_result.get('cbam_cost_eur', 0):.4f} €",
-                                "icon": "💰"
+                                "value": f"{cbam_cost:.4f} €",
+                                "icon": "💰",
+                                "help": "EU-Klimaabgabe"
                             },
                         ])
                     else:
-                        st.error("❌ CO₂-Berechnung fehlgeschlagen: Keine Daten")
+                        st.error("❌ CO₂-Berechnung fehlgeschlagen: calculate_co2_footprint returned None")
                 except Exception as e:
                     st.error(f"❌ CO₂-Berechnung fehlgeschlagen: {e}")
+                    import traceback
+                    st.code(traceback.format_exc())
         else:
             st.warning("⚠️ Bitte zuerst Kostenschätzung durchführen")
 

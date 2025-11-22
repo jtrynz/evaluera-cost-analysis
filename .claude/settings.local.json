@@ -43,7 +43,8 @@
       "Bash(do echo '=== Checking $file ===')",
       "Bash(done)",
       "Bash(awk:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []

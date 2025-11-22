@@ -98,84 +98,106 @@ class WizardManager:
         """, unsafe_allow_html=True)
 
     def render_navigation(self, show_next=True, show_previous=True, next_label="Weiter", next_disabled=False):
-        """Render navigation buttons with fixed positioning"""
-        # Inject CSS for fixed navigation container
+        """Render navigation buttons with ABSOLUTE FIXED positioning"""
+        current = st.session_state.wizard_current_step
+
+        # Inject CSS for ABSOLUTE FIXED buttons (not in flow)
         st.markdown("""
         <style>
-            .wizard-next-fixed-container {
-                position: fixed;
-                right: 2.5rem;
-                bottom: 2.0rem;
-                z-index: 50;
-                display: flex;
-                gap: 0.75rem;
+            /* FORCE fixed positioning - outside normal Streamlit flow */
+            div[data-testid="stVerticalBlock"] > div:has(.wizard-nav-btn) {
+                position: fixed !important;
+                right: 2.4rem !important;
+                bottom: 2.2rem !important;
+                z-index: 99999 !important;
+                pointer-events: none !important;
+                width: auto !important;
+                height: auto !important;
+            }
+
+            .wizard-nav-btn {
+                pointer-events: auto !important;
+                display: inline-flex !important;
+                gap: 0.75rem !important;
             }
 
             /* Mobile responsive */
             @media (max-width: 900px) {
-                .wizard-next-fixed-container {
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: calc(100% - 2rem);
-                    right: auto;
-                    bottom: 1.5rem;
+                div[data-testid="stVerticalBlock"] > div:has(.wizard-nav-btn) {
+                    left: 50% !important;
+                    right: auto !important;
+                    transform: translateX(-50%) !important;
+                    bottom: 1.5rem !important;
                 }
             }
 
-            /* Apple-like button styling */
-            .wizard-next-fixed-container .stButton > button[kind="primary"] {
-                background: linear-gradient(135deg, #2A4F57 0%, #1e3a41 100%) !important;
+            /* Apple-like Glassy Button - Primary */
+            .wizard-nav-btn .stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #2F4A56 0%, #1e3640 100%) !important;
+                backdrop-filter: blur(12px) saturate(180%) !important;
+                -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
                 color: #FFFFFF !important;
                 border: none !important;
-                border-radius: 8px !important;
-                padding: 12px 24px !important;
+                border-radius: 12px !important;
+                padding: 14px 28px !important;
                 font-size: 16px !important;
                 font-weight: 600 !important;
-                box-shadow: 0 8px 24px rgba(42, 79, 87, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-                transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                letter-spacing: 0.02em !important;
+                box-shadow:
+                    0 8px 24px rgba(47, 74, 86, 0.35),
+                    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+                    0 2px 8px rgba(0, 0, 0, 0.15) !important;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             }
 
-            .wizard-next-fixed-container .stButton > button[kind="primary"]:hover:not(:disabled) {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 12px 32px rgba(42, 79, 87, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+            .wizard-nav-btn .stButton > button[kind="primary"]:hover:not(:disabled) {
+                transform: translateY(-3px) scale(1.04) !important;
+                box-shadow:
+                    0 16px 40px rgba(47, 74, 86, 0.45),
+                    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+                    0 4px 16px rgba(0, 0, 0, 0.2) !important;
             }
 
-            .wizard-next-fixed-container .stButton > button[kind="primary"]:active:not(:disabled) {
-                transform: translateY(0) scale(0.98) !important;
+            .wizard-nav-btn .stButton > button[kind="primary"]:active:not(:disabled) {
+                transform: translateY(-1px) scale(1.02) !important;
             }
 
-            .wizard-next-fixed-container .stButton > button {
-                background: rgba(255, 255, 255, 0.9) !important;
-                border: 1.5px solid #D1D5DB !important;
-                border-radius: 8px !important;
-                padding: 12px 24px !important;
+            /* Secondary Button (Zurück) */
+            .wizard-nav-btn .stButton > button:not([kind="primary"]) {
+                background: rgba(255, 255, 255, 0.85) !important;
+                backdrop-filter: blur(8px) !important;
+                border: 1.5px solid rgba(47, 74, 86, 0.2) !important;
+                border-radius: 12px !important;
+                padding: 14px 24px !important;
                 font-weight: 500 !important;
-                transition: all 0.2s ease !important;
+                color: #2F4A56 !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+                transition: all 0.25s ease !important;
             }
 
-            .wizard-next-fixed-container .stButton > button:hover:not(:disabled) {
+            .wizard-nav-btn .stButton > button:not([kind="primary"]):hover:not(:disabled) {
                 background: rgba(255, 255, 255, 1) !important;
-                border-color: #2A4F57 !important;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+                border-color: #2F4A56 !important;
+                transform: translateY(-2px) scale(1.03) !important;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12) !important;
             }
         </style>
         """, unsafe_allow_html=True)
 
-        # Render in fixed container
-        st.markdown('<div class="wizard-next-fixed-container">', unsafe_allow_html=True)
+        # Render buttons in wrapper with class for CSS targeting
+        st.markdown('<div class="wizard-nav-btn">', unsafe_allow_html=True)
 
-        col1, col2 = st.columns([1, 1])
+        cols = st.columns([1, 1] if (show_previous and current > 1) else [1])
 
-        with col1:
-            if show_previous and st.session_state.wizard_current_step > 1:
-                if st.button("← Zurück", key=f"wizard_prev_{st.session_state.wizard_current_step}", use_container_width=True):
+        if show_previous and current > 1:
+            with cols[0]:
+                if st.button("← Zurück", key=f"wizard_prev_{current}", use_container_width=True):
                     self.previous_step()
 
-        with col2:
-            if show_next and st.session_state.wizard_current_step < 6:
-                if st.button(next_label + " →", key=f"wizard_next_{st.session_state.wizard_current_step}", type="primary", use_container_width=True, disabled=next_disabled):
-                    # Update navigation sidebar to match wizard step
-                    self.sync_navigation_to_step(st.session_state.wizard_current_step + 1)
+        target_col = cols[1] if (show_previous and current > 1) else cols[0]
+        with target_col:
+            if show_next and current < 6:
+                if st.button(next_label + " →", key=f"wizard_next_{current}", type="primary", use_container_width=True, disabled=next_disabled):
                     self.next_step()
 
         st.markdown('</div>', unsafe_allow_html=True)
