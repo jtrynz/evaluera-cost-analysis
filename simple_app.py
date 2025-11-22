@@ -343,20 +343,41 @@ def _run_cost_estimate(sel_text, lot_size, avg_purchase, idf=None, supplier_col=
 # ==================== AUTHENTICATION CHECK ====================
 # Prüfe Login-Status bevor die Hauptanwendung gerendert wird
 if not check_login():
-    # Zeige animierten Hintergrund für Login-Screen
+    # Zeige Dark Gradient Hintergrund für Login-Screen (Apple-Style)
     st.markdown("""
     <style>
-        /* ========== ANIMATED GRADIENT BACKGROUND ========== */
+        /* ========== DARK GRADIENT ANIMATED BACKGROUND (APPLE) ========== */
         [data-testid="stAppViewContainer"] {
-            background: linear-gradient(-45deg, #2A4F57, #1E3A41, #4A90A4, #E8F4F7);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: radial-gradient(
+                ellipse at 50% 50%,
+                #2A4F57 0%,
+                #1E2E32 35%,
+                #0F1A1C 70%,
+                #0A1214 100%
+            );
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease-in-out infinite;
         }
 
         @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0%, 100% {
+                background-position: 0% 50%;
+                filter: hue-rotate(0deg);
+            }
+            50% {
+                background-position: 100% 50%;
+                filter: hue-rotate(5deg);
+            }
+        }
+
+        /* Noise overlay for texture */
+        [data-testid="stAppViewContainer"]::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* Ensure proper z-index layering */

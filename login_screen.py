@@ -5,8 +5,6 @@ Modern, secure login with dark gradient, glassmorphism, and UX optimizations
 """
 
 import streamlit as st
-import json
-from pathlib import Path
 from ui_theme import COLORS, RADIUS, SPACING, SHADOWS, TYPOGRAPHY
 
 
@@ -63,7 +61,8 @@ def render_login_screen():
     - Smooth animations
     """
 
-    # STEP 1: Inject Apple-Like Login CSS with Dark Gradient Background
+    # STEP 1: Inject Apple-Like Login CSS
+    # Note: Dark gradient background is rendered in simple_app.py
     st.markdown(f"""
     <style>
         /* ========== IMPORT SF PRO FONT (APPLE) ========== */
@@ -72,45 +71,6 @@ def render_login_screen():
         /* Override Streamlit body to use Apple font */
         body, html, * {{
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', sans-serif !important;
-        }}
-
-        /* ========== DARK GRADIENT ANIMATED BACKGROUND ========== */
-        .login-background {{
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            bottom: 0 !important;
-            z-index: -1 !important;
-            background: radial-gradient(
-                ellipse at 50% 50%,
-                {COLORS['primary']} 0%,
-                {COLORS['dark_primary']} 35%,
-                {COLORS['dark_deep']} 70%,
-                {COLORS['dark_overlay']} 100%
-            ) !important;
-            animation: gradientShift 15s ease-in-out infinite !important;
-        }}
-
-        /* Subtle gradient animation */
-        @keyframes gradientShift {{
-            0%, 100% {{
-                background-position: 0% 50%;
-                filter: hue-rotate(0deg);
-            }}
-            50% {{
-                background-position: 100% 50%;
-                filter: hue-rotate(5deg);
-            }}
-        }}
-
-        /* Noise overlay for texture */
-        .login-background::before {{
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
         }}
 
         /* ========== APPLE GLASSMORPHISM LOGIN CONTAINER ========== */
@@ -473,10 +433,7 @@ def render_login_screen():
     </style>
     """, unsafe_allow_html=True)
 
-    # STEP 2: Render Dark Gradient Background
-    st.markdown('<div class="login-background"></div>', unsafe_allow_html=True)
-
-    # STEP 3: Render Login Panel
+    # STEP 2: Render Login Panel
     st.markdown('<div class="login-container"><div class="glass-panel">', unsafe_allow_html=True)
 
     # Logo & Header (centered)
