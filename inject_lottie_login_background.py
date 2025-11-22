@@ -75,54 +75,59 @@ html, body {{
 
     st.markdown("""
 <style>
-    /* ========== IFRAME FULLSCREEN POSITIONING ========== */
+    /* ========== IFRAME FULLSCREEN FIXED ========== */
     iframe[title="st.components.v1.html"] {
         position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
+        inset: 0 !important;
         width: 100vw !important;
         height: 100vh !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        border: none !important;
         z-index: -999 !important;
-        pointer-events: none !important;
-        overflow: hidden !important;
+        border: none !important;
         opacity: 1 !important;
-        display: block !important;
+        pointer-events: none !important;
     }
 
-    /* ========== STREAMLIT CONTAINERS TRANSPARENT (NOT FULLSCREEN) ========== */
+    /* ========== LOTTIE PLAYER OBJECT-FIT COVER ========== */
+    #bg-container, lottie-player {
+        width: 100% !important;
+        height: 100% !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        object-fit: cover !important;
+    }
+
+    /* ========== PREVENT SCROLLING ON HTML/BODY ========== */
+    html, body {
+        overflow-x: hidden !important;
+        height: auto !important;
+    }
+
+    /* ========== LOGIN UI OVER ANIMATION ========== */
+    .block-container {
+        position: relative !important;
+        z-index: 5 !important;
+    }
+
+    /* ========== STREAMLIT CONTAINERS NORMAL FLOW ========== */
+    [data-testid="stAppViewContainer"],
     [data-testid="stApp"],
-    .stApp {
+    .main {
+        position: static !important;
+        height: auto !important;
+        overflow: visible !important;
         background: transparent !important;
         background-color: transparent !important;
     }
 
-    [data-testid="stAppViewContainer"] {
-        background: transparent !important;
-        background-color: transparent !important;
-    }
-
-    .main,
+    /* ========== TRANSPARENT CONTAINERS ========== */
+    .stApp,
     section.main,
-    div.main {
-        background: transparent !important;
-        background-color: transparent !important;
-    }
-
+    div.main,
     [data-testid="stHeader"],
     [data-testid="stDecoration"] {
         background: transparent !important;
         background-color: transparent !important;
-    }
-
-    /* ========== LOGIN UI WRAPPER WITH Z-INDEX ========== */
-    .block-container {
-        background: transparent !important;
-        background-color: transparent !important;
-        position: relative !important;
-        z-index: 1 !important;
     }
 
     /* ========== HIDE STREAMLIT UI ELEMENTS ========== */
@@ -131,9 +136,5 @@ html, body {{
     header {visibility: hidden !important;}
     [data-testid="stSidebar"] {display: none !important;}
     [data-testid="stToolbar"] {display: none !important;}
-
-    .stApp > div:first-child {
-        background: transparent !important;
-    }
 </style>
 """, unsafe_allow_html=True)
