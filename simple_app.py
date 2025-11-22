@@ -703,23 +703,33 @@ def step6_sustainability():
                         total_co2 = co2_result.get('total_co2_kg', 0) or co2_result.get('co2_total_kg', 0)
                         production_co2 = co2_result.get('co2_production_kg', 0)
                         transport_co2 = co2_result.get('co2_transport_kg', 0)
-                        cbam_cost = co2_result.get('cbam_cost_eur', 0)
+                        cbam_cost_per_unit = co2_result.get('cbam_cost_eur', 0)
 
                         # If total is 0, calculate from components
                         if total_co2 == 0 and (production_co2 > 0 or transport_co2 > 0):
                             total_co2 = production_co2 + transport_co2
+
+                        # Get lot_size from session state or cost_result
+                        lot_size = st.session_state.get('lot_size', 1000)
+                        if 'cost_result' in st.session_state:
+                            lot_size = st.session_state.cost_result.get('lot_size', lot_size)
+
+                        # Calculate CBAM for entire lot
+                        cbam_cost_total = cbam_cost_per_unit * lot_size if cbam_cost_per_unit else 0
 
                         # Store result
                         st.session_state.co2_result = {
                             'total_co2_kg': total_co2,
                             'co2_production_kg': production_co2,
                             'co2_transport_kg': transport_co2,
-                            'cbam_cost_eur': cbam_cost,
+                            'cbam_cost_eur_per_unit': cbam_cost_per_unit,
+                            'cbam_cost_eur_total': cbam_cost_total,
+                            'lot_size': lot_size,
                             'material': material,
                             'mass_kg': mass_kg
                         }
 
-                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e ({mass_kg*1000:.1f}g Masse)")
+                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e pro Stück ({mass_kg*1000:.1f}g Masse)")
 
                         # Show breakdown
                         create_compact_kpi_row([
@@ -727,19 +737,19 @@ def step6_sustainability():
                                 "label": "Produktion",
                                 "value": f"{production_co2:.3f} kg",
                                 "icon": "🏭",
-                                "help": f"{material.upper()}-Herstellung"
+                                "help": f"{material.upper()}-Herstellung pro Stück"
                             },
                             {
                                 "label": "Transport",
                                 "value": f"{transport_co2:.3f} kg",
                                 "icon": "🚢",
-                                "help": "CN → EU"
+                                "help": f"{supplier_country} → EU pro Stück"
                             },
                             {
-                                "label": "CBAM-Kosten (2026)",
-                                "value": f"{cbam_cost:.4f} €",
+                                "label": f"CBAM 2026 ({lot_size:,} Stk)",
+                                "value": f"{cbam_cost_total:.2f} €",
                                 "icon": "💰",
-                                "help": "EU-Klimaabgabe"
+                                "help": f"EU-Klimaabgabe für gesamte Losgröße ({cbam_cost_per_unit:.5f} €/Stk × {lot_size:,})"
                             },
                         ])
                     else:
