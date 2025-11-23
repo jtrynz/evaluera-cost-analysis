@@ -267,6 +267,21 @@ def apply_global_styles():
             transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
+        /* Sidebar secondary buttons (Navigation) */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"] {{
+            background: rgba(255, 255, 255, 0.82) !important;
+            border: 1px solid rgba(42, 79, 87, 0.22) !important;
+            color: {COLORS['dark_accent']} !important;
+            border-radius: {RADIUS['md']} !important;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
+        }}
+
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover {{
+            background: rgba(231, 241, 239, 0.9) !important;
+            border-color: rgba(42, 79, 87, 0.35) !important;
+            transform: translateY(-1px) !important;
+        }}
+
         .stButton > button[kind="secondary"],
         button[kind="secondary"] {{
             background: rgba(255, 255, 255, 0.8) !important;
