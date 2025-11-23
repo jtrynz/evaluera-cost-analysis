@@ -5,36 +5,32 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 """
 
 import os
-import sys
-import json
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# Pfad für src-Module
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
-
-# Backend-Funktionen
-from src.core.price_utils import derive_unit_price
-from src.core.cbam import (
+# Backend-Funktionen (alte Struktur)
+from price_utils import derive_unit_price
+from cost_helpers import (
     parse_dims,
     clamp_dims,
     gpt_rate_supplier,
+    gpt_negotiation_prep,
     calculate_co2_footprint,
 )
-from src.negotiation.engine import gpt_negotiation_prep_enhanced
-from src.gpt.engine import gpt_intelligent_article_search
-from src.utils.excel_helpers import (
+from negotiation_prep_enhanced import gpt_negotiation_prep_enhanced
+from gpt_engine import gpt_intelligent_article_search
+from excel_helpers import (
     find_column,
     get_price_series_per_unit,
 )
-from src.gpt.cache import (
+from gpt_cache import (
     cached_gpt_complete_cost_estimate,
     cached_gpt_analyze_supplier,
 )
 
-# UI-System
-from src.ui.theme import (
+# UI-System (alte Struktur)
+from ui_theme import (
     apply_global_styles,
     section_header,
     divider,
@@ -44,15 +40,25 @@ from src.ui.theme import (
     RADIUS,
     SHADOWS,
 )
-from src.ui.wizard import (
+from wizard_system import (
     WizardManager,
     create_data_table,
     create_compact_kpi_row,
 )
-from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation
-from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
-from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
-from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
+from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
+from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
+from login_screen import check_login, render_login_screen, render_logout_button
+from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
+
+# Neues Logo-Handling für Header
+import base64
+def get_logo_base64():
+    try:
+        logo_path = os.path.join(os.path.dirname(__file__), "assets", "EVALUERA.png")
+        with open(logo_path, "rb") as f:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
+        return None
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -69,9 +75,10 @@ st.set_page_config(
 )
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
+from inject_lottie_login_background import inject_lottie_background
 inject_lottie_background()
 
-# Theme Override (Buttons)
+# EVALUERA Theme Override - muss nach set_page_config kommen
 st.markdown("""
 <style>
 /* Primary Button Override - EVALUERA Blaugrau */
@@ -79,10 +86,10 @@ st.markdown("""
 .stButton > button[data-testid="baseButton-primary"],
 button[kind="primary"],
 button[data-testid="baseButton-primary"] {
-background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
-color: white !important;
-border: 2px solid #B8D4D1 !important;
-font-weight: 600 !important;
+    background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
+    color: white !important;
+    border: 2px solid #B8D4D1 !important;
+    font-weight: 600 !important;
 }
 .stButton > button[kind="primary"] p,
 .stButton > button[kind="primary"] span,
@@ -90,21 +97,22 @@ font-weight: 600 !important;
 button[kind="primary"] p,
 button[kind="primary"] span,
 button[kind="primary"] div {
-color: white !important;
+    color: white !important;
 }
 .stButton > button[kind="primary"]:hover,
 .stButton > button[data-testid="baseButton-primary"]:hover,
 button[kind="primary"]:hover {
-background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
-box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
-border: 2px solid #7BA5A0 !important;
-color: white !important;
+    background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
+    box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
+    border: 2px solid #7BA5A0 !important;
+    color: white !important;
 }
+/* Disabled Button */
 .stButton > button[kind="primary"]:disabled,
 .stButton > button[data-testid="baseButton-primary"]:disabled {
-background: #E5E7EB !important;
-color: #9CA3AF !important;
-border: 2px solid #D1D5DB !important;
+    background: #E5E7EB !important;
+    color: #9CA3AF !important;
+    border: 2px solid #D1D5DB !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -113,25 +121,26 @@ border: 2px solid #D1D5DB !important;
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
-if not check_login():
+if not st.session_state.logged_in:
     render_login_screen()
     st.stop()
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
-# Hintergrund
+# Render animated waves background
 st.markdown("""
 <div class="bg-waves">
   <div class="wave"></div>
   <div class="wave"></div>
   <div class="wave"></div>
 </div>
+
 <style>
 body { margin: 0 !important; overflow-x: hidden !important; }
-.bg-waves { position: fixed !important; top:0; left:0; width:100vw; height:100vh; background:#bfdcdc; overflow:hidden; z-index:-1; pointer-events:none; }
-.wave { position:absolute; width:200%; height:200%; opacity:0.15; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 60%); animation: drift 18s infinite linear; filter: blur(60px); will-change: transform; }
-.wave:nth-child(2){ animation-duration:26s; opacity:0.12; }
-.wave:nth-child(3){ animation-duration:34s; opacity:0.10; }
-@keyframes drift { 0% {transform: translate(-30%,-30%) scale(1);} 50% {transform: translate(10%,10%) scale(1.1);} 100% {transform: translate(-30%,-30%) scale(1);} }
+.bg-waves { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #bfdcdc !important; overflow: hidden !important; z-index: -1 !important; pointer-events: none !important; }
+.wave { position: absolute !important; width: 200% !important; height: 200% !important; opacity: 0.15 !important; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 60%) !important; animation: drift 18s infinite linear !important; filter: blur(60px) !important; will-change: transform !important; }
+.wave:nth-child(2) { animation-duration: 26s !important; opacity: 0.12 !important; }
+.wave:nth-child(3) { animation-duration: 34s !important; opacity: 0.10 !important; }
+@keyframes drift { 0% { transform: translate(-30%, -30%) scale(1); } 50% { transform: translate(10%, 10%) scale(1.1); } 100% { transform: translate(-30%, -30%) scale(1); } }
 .main { background: transparent !important; }
 .block-container { background: transparent !important; }
 </style>
@@ -172,7 +181,7 @@ def find_col(df, possible_names):
             return df.columns[df_norm_cols.index(name)]
     return None
 
-# ==================== HEADER ====================
+# ==================== HEADER - nur neu gestalteter Header ====================
 logo_b64 = get_logo_base64()
 st.markdown(
     f"""
@@ -189,10 +198,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
+
+# Logout Button
 render_logout_button()
 
-# Navigation ↔ Wizard Sync
+# Synchronize Navigation with Wizard Steps
 nav_to_wizard = {
     "upload": 1,
     "artikel": 2,
@@ -206,11 +218,16 @@ if st.session_state.nav_active_section in nav_to_wizard:
     if wizard_step != st.session_state.wizard_current_step:
         wizard.set_step(wizard_step)
 
+# Progress Bar
 wizard.render_progress()
+
 
 # ==================== STEP 1: UPLOAD ====================
 def step1_upload():
-    section_header("Daten hochladen", "Excel- oder CSV-Datei mit Bestelldaten")
+    section_header(
+        "Daten hochladen",
+        "Excel- oder CSV-Datei mit Bestelldaten"
+    )
 
     uploaded_file = st.file_uploader(
         "Datei auswählen",
@@ -220,7 +237,9 @@ def step1_upload():
 
     if uploaded_file:
         st.success(f"✅ Datei: {uploaded_file.name}")
+
         try:
+            # Read file with loading animation
             with ExcelLoadingAnimation(f"📂 Analysiere {uploaded_file.name}", icon="📊"):
                 if uploaded_file.name.endswith('.csv'):
                     df = pd.read_csv(uploaded_file, sep=None, engine="python")
@@ -231,6 +250,7 @@ def step1_upload():
                 st.session_state.uploaded_file_name = uploaded_file.name
                 wizard.complete_step(1)
 
+                # Preview
                 with st.expander("📊 Datenvorschau", expanded=False):
                     st.write(f"**{len(df):,} Zeilen × {len(df.columns)} Spalten**")
                     st.dataframe(df.head(10), use_container_width=True)
@@ -243,13 +263,18 @@ def step1_upload():
 
 # ==================== STEP 2: ARTIKEL-SUCHE ====================
 def step2_article_search():
-    section_header("Artikel suchen", "Intelligente Suche in Ihren Bestelldaten")
+    section_header(
+        "Artikel suchen",
+        "Intelligente Suche in Ihren Bestelldaten"
+    )
 
     if "df" not in st.session_state:
         st.warning("⚠️ Bitte zuerst Datei in Schritt 1 hochladen")
         return
 
     df = st.session_state.df
+
+    # Find item column
     item_col = find_col(df, ["item", "artikel", "bezeichnung", "produkt", "artikelnummer", "artnr"])
 
     if not item_col:
@@ -258,6 +283,7 @@ def step2_article_search():
 
     st.session_state.item_col = item_col
 
+    # Search
     query = st.text_input(
         "Suche",
         placeholder="z.B. 'DIN 933 M8'",
@@ -268,9 +294,11 @@ def step2_article_search():
         with GPTLoadingAnimation("🔍 Suche Artikel...", icon="🤖"):
             all_items = df[item_col].unique().tolist()
 
+            # AI + String search
             matched_indices = gpt_intelligent_article_search(query, all_items)
             matched_items = set([all_items[i] for i in matched_indices]) if matched_indices else set()
 
+            # String fallback
             query_tokens = query.lower().split()
             for item in all_items:
                 if all(token in str(item).lower() for token in query_tokens):
@@ -280,9 +308,11 @@ def step2_article_search():
                 idf = df[df[item_col].isin(matched_items)].copy()
                 st.session_state.idf = idf
 
+                # Find supplier column
                 supplier_col = find_col(df, ["supplier", "lieferant", "vendor"])
                 st.session_state.supplier_col = supplier_col
 
+                # KPIs
                 num_suppliers = idf[supplier_col].nunique() if supplier_col else 1
                 create_compact_kpi_row([
                     {"label": "Einträge", "value": str(len(idf)), "icon": "📦"},
@@ -290,12 +320,13 @@ def step2_article_search():
                     {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
                 ])
 
+                # Selection
                 unique_items = sorted(idf[item_col].unique().tolist())
                 if len(unique_items) > 1:
                     selected = st.selectbox(
                         "Artikel wählen",
                         unique_items,
-                        key="article_selector"
+                        key="article_selector"  # Changed key to avoid conflict
                     )
                 else:
                     selected = unique_items[0]
@@ -312,7 +343,10 @@ def step2_article_search():
 
 # ==================== STEP 3: PREISÜBERSICHT ====================
 def step3_price_overview():
-    section_header("Preisübersicht", "Statistische Auswertung")
+    section_header(
+        "Preisübersicht",
+        "Statistische Auswertung"
+    )
 
     if "idf" not in st.session_state:
         st.warning("⚠️ Bitte zuerst Artikel in Schritt 2 suchen")
@@ -325,6 +359,7 @@ def step3_price_overview():
     try:
         avg, mn, mx, qty_col, _src = derive_unit_price(idf)
 
+        # KPI Row
         price_range = ((mx - mn) / mn * 100) if (mn and mx and mn > 0) else None
 
         create_compact_kpi_row([
@@ -338,17 +373,21 @@ def step3_price_overview():
         st.session_state.qty_col = qty_col
         wizard.complete_step(3)
 
+        # Breakdown by supplier
         if supplier_col and supplier_col in idf.columns:
             with st.expander("📋 Breakdown nach Lieferant"):
                 price_series = get_price_series_per_unit(idf, qty_col)
                 if price_series is not None:
                     temp = idf.copy()
                     temp['_price'] = price_series
+
                     breakdown = temp.groupby(supplier_col).agg({
                         '_price': ['mean', 'min', 'max', 'count']
                     }).round(4)
+
                     breakdown.columns = ['Ø Preis', 'Min', 'Max', 'Anzahl']
                     breakdown = breakdown.sort_values('Ø Preis')
+
                     st.dataframe(
                         breakdown.style.highlight_min(subset=['Ø Preis'], color='lightgreen'),
                         use_container_width=True
@@ -360,7 +399,10 @@ def step3_price_overview():
 
 # ==================== STEP 4: LIEFERANTEN ====================
 def step4_suppliers():
-    section_header("Lieferant auswählen", "Wählen Sie einen Lieferanten für die Kostenschätzung")
+    section_header(
+        "Lieferant auswählen",
+        "Wählen Sie einen Lieferanten für die Kostenschätzung"
+    )
 
     if "idf" not in st.session_state:
         st.warning("⚠️ Bitte zuerst Artikel suchen")
@@ -383,6 +425,7 @@ def step4_suppliers():
 
     st.info(f"📦 **{len(suppliers)} Lieferanten** verfügbar")
 
+    # Build supplier table
     supplier_data = []
     price_series = get_price_series_per_unit(idf, qty_col) if qty_col else None
 
@@ -394,7 +437,7 @@ def step4_suppliers():
         else:
             try:
                 avg_price, _, _, _, _ = derive_unit_price(sup_df)
-            except Exception:
+            except:
                 avg_price = None
 
         supplier_data.append({
@@ -406,6 +449,7 @@ def step4_suppliers():
     df_suppliers = pd.DataFrame(supplier_data)
     st.dataframe(df_suppliers, use_container_width=True, hide_index=True)
 
+    # Selection
     if "selected_supplier_name" not in st.session_state:
         st.session_state.selected_supplier_name = None
 
@@ -431,7 +475,10 @@ def step4_suppliers():
 
 # ==================== STEP 5: KOSTENSCHÄTZUNG ====================
 def step5_cost_estimation():
-    section_header("KI-Kostenschätzung", "Material- und Fertigungskosten")
+    section_header(
+        "KI-Kostenschätzung",
+        "Material- und Fertigungskosten"
+    )
 
     if "selected_article" not in st.session_state:
         st.warning("⚠️ Bitte zuerst Artikel auswählen")
@@ -452,9 +499,11 @@ def step5_cost_estimation():
 
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
         with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
+            # Supplier analysis (if available)
             supplier_competencies = None
             if supplier:
                 try:
+                    import json
                     idf = st.session_state.idf
                     supplier_col = st.session_state.get("supplier_col")
                     item_col = st.session_state.item_col
@@ -470,6 +519,7 @@ def step5_cost_estimation():
                 except Exception as e:
                     st.warning(f"Lieferanten-Analyse fehlgeschlagen: {e}")
 
+            # Cost estimation
             result = cached_gpt_complete_cost_estimate(
                 description=article,
                 lot_size=int(lot_size),
@@ -491,7 +541,6 @@ def step5_cost_estimation():
                     "process": result.get('process'),
                     "confidence": result.get('confidence'),
                     "mass_kg": result.get('mass_kg', 0.023),
-                    "lot_size": lot_size,
                 }
 
                 wizard.complete_step(5)
@@ -499,20 +548,42 @@ def step5_cost_estimation():
             else:
                 st.error("❌ Schätzung fehlgeschlagen")
 
+    # Show results
     if "cost_result" in st.session_state:
         res = st.session_state.cost_result
 
+        # Determine trend: positive delta = paying too much (red), negative delta = saving (green)
         delta_trend = None
         if res['delta'] is not None:
-            delta_trend = "negative" if res['delta'] > 0 else "positive"
+            delta_trend = "negative" if res['delta'] > 0 else "positive"  # negative trend = red = bad, positive trend = green = good
 
         create_compact_kpi_row([
-            {"label": "Material €/Stk", "value": f"{res['material_eur']:,.4f} €" if res['material_eur'] else "N/A", "icon": "💎"},
-            {"label": "Fertigung €/Stk", "value": f"{res['fab_eur']:,.4f} €" if res['fab_eur'] else "N/A", "icon": "⚙️"},
-            {"label": "Zielkosten (KI-Optimiert)", "value": f"{res['target']:,.4f} €" if res['target'] else "N/A", "icon": "🎯", "help": "Minimal realistisch mögliche Kosten"},
-            {"label": "Delta (Aktuell - Ziel)", "value": f"{res['delta']:+,.4f} €" if res['delta'] else "N/A", "icon": "📊", "trend": delta_trend, "help": "Positiv = Einsparungspotenzial, Negativ = unter Zielkosten"},
+            {
+                "label": "Material €/Stk",
+                "value": f"{res['material_eur']:,.4f} €" if res['material_eur'] else "N/A",
+                "icon": "💎"
+            },
+            {
+                "label": "Fertigung €/Stk",
+                "value": f"{res['fab_eur']:,.4f} €" if res['fab_eur'] else "N/A",
+                "icon": "⚙️"
+            },
+            {
+                "label": "Zielkosten (KI-Optimiert)",
+                "value": f"{res['target']:,.4f} €" if res['target'] else "N/A",
+                "icon": "🎯",
+                "help": "Minimal realistisch mögliche Kosten"
+            },
+            {
+                "label": "Delta (Aktuell - Ziel)",
+                "value": f"{res['delta']:+,.4f} €" if res['delta'] else "N/A",
+                "icon": "📊",
+                "trend": delta_trend,
+                "help": "Positiv = Einsparungspotenzial, Negativ = unter Zielkosten"
+            },
         ])
 
+        # Details
         with st.expander("📋 Details"):
             col1, col2, col3 = st.columns(3)
             col1.metric("Material", res.get('material', 'N/A'))
@@ -522,12 +593,16 @@ def step5_cost_estimation():
 
 # ==================== STEP 6: NACHHALTIGKEIT ====================
 def step6_sustainability():
-    section_header("Nachhaltigkeit & Verhandlung", "CBAM, CO₂-Analyse und Verhandlungstipps")
+    section_header(
+        "Nachhaltigkeit & Verhandlung",
+        "CBAM, CO₂-Analyse und Verhandlungstipps"
+    )
 
     if "selected_article" not in st.session_state:
         st.warning("⚠️ Bitte zuerst Analyse abschließen")
         return
 
+    # CBAM Info
     st.markdown("### 🌱 CBAM (Carbon Border Adjustment Mechanism)")
     st.info("""
     - EU-Klimaabgabe auf CO₂-intensive Importe
@@ -535,13 +610,15 @@ def step6_sustainability():
     - Ab 2026: Verpflichtende CO₂-Zertifikate
     """)
 
+    # CO₂ Calculation
     if st.button("🌍 CO₂-Fußabdruck berechnen", use_container_width=True):
         if "cost_result" in st.session_state:
             res = st.session_state.cost_result
             material = res.get('material', 'steel')
 
+            # Lieferantenland
             supplier_data = st.session_state.get("selected_supplier")
-            supplier_country = "CN"
+            supplier_country = "CN"  # Default
             if supplier_data and "Land" in supplier_data:
                 country_map = {
                     "China": "CN",
@@ -558,16 +635,18 @@ def step6_sustainability():
                 }
                 supplier_country = country_map.get(supplier_data.get("Land"), "CN")
 
+            # Masse
             mass_kg = res.get('mass_kg')
             if mass_kg is None or mass_kg <= 0:
                 d_mm = res.get('d_mm', 0)
                 l_mm = res.get('l_mm', 0)
+
                 if d_mm and l_mm and d_mm > 0 and l_mm > 0:
-                    volume_cm3 = 3.14159 * ((d_mm/2)**2) * l_mm / 1000
-                    mass_kg = (volume_cm3 * 7.85) / 1000
+                    volume_cm3 = 3.14159 * ((d_mm/2)**2) * l_mm / 1000  # mm³ to cm³
+                    mass_kg = (volume_cm3 * 7.85) / 1000  # g to kg
                     st.info(f"ℹ️ Masse aus Geometrie berechnet: {mass_kg*1000:.1f}g (Ø{d_mm}mm × {l_mm}mm)")
                 else:
-                    mass_kg = 0.023
+                    mass_kg = 0.023  # Default 23g
                     st.warning(f"⚠️ Keine Geometrie - verwende Standard: {mass_kg*1000:.0f}g")
 
             with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
@@ -577,6 +656,7 @@ def step6_sustainability():
                         mass_kg=mass_kg,
                         supplier_country=supplier_country
                     )
+
                     if co2_result:
                         total_co2 = co2_result.get('total_co2_kg', 0) or co2_result.get('co2_total_kg', 0)
                         production_co2 = co2_result.get('co2_production_kg', 0)
@@ -605,12 +685,25 @@ def step6_sustainability():
                             'mass_kg': mass_kg
                         }
 
+                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e ({mass_kg*1000:.1f}g Masse)")
                         st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e pro Stück ({mass_kg*1000:.1f}g Masse)")
 
                         create_compact_kpi_row([
-                            {"label": "Produktion", "value": f"{production_co2:.3f} kg", "icon": "🏭"},
-                            {"label": "Transport", "value": f"{transport_co2:.3f} kg", "icon": "🚢"},
-                            {"label": f"CBAM 2026 ({lot_size:,} Stk)", "value": f"{cbam_cost_total:.2f} €", "icon": "💰"},
+                            {
+                                "label": "Produktion",
+                                "value": f"{production_co2:.3f} kg",
+                                "icon": "🏭",
+                            },
+                            {
+                                "label": "Transport",
+                                "value": f"{transport_co2:.3f} kg",
+                                "icon": "🚢",
+                            },
+                            {
+                                "label": f"CBAM 2026 ({lot_size:,} Stk)",
+                                "value": f"{cbam_cost_total:.2f} €",
+                                "icon": "💰",
+                            },
                         ])
                     else:
                         st.error("❌ CO₂-Berechnung fehlgeschlagen: calculate_co2_footprint returned None")
@@ -619,6 +712,7 @@ def step6_sustainability():
 
     divider()
 
+    # Negotiation Tips
     st.markdown("### 💼 Verhandlungsvorbereitung")
 
     if st.button("📋 Verhandlungsstrategie generieren", type="primary", use_container_width=True):
@@ -658,7 +752,9 @@ def step6_sustainability():
 
                     if tips and not tips.get("_error"):
                         st.session_state.negotiation_tips = tips
-                        st.success("✅ Strategie erstellt")
+
+                        # Minimal Anzeige (Details nach Bedarf erweiterbar)
+                        st.json(tips)
                     else:
                         st.error("❌ Verhandlungsstrategie konnte nicht generiert werden")
                 except Exception as e:
@@ -677,24 +773,32 @@ wizard.render_step_content(4, step4_suppliers)
 wizard.render_step_content(5, step5_cost_estimation)
 wizard.render_step_content(6, step6_sustainability)
 
+# Navigation with conditional "Weiter" button
 divider()
 
 current_step = wizard.get_current_step()
 next_disabled = False
 
 if current_step == 1:
+    # Step 1: Requires file upload
     next_disabled = "df" not in st.session_state
 elif current_step == 2:
+    # Step 2: Requires article selection
     next_disabled = "selected_article" not in st.session_state
 elif current_step == 3:
+    # Step 3: Requires price overview completion
     next_disabled = "avg_price" not in st.session_state
 elif current_step == 4:
+    # Step 4: Requires supplier selection (or no suppliers)
     next_disabled = "selected_supplier_name" not in st.session_state and "df" in st.session_state
 elif current_step == 5:
+    # Step 5: Requires cost estimation completion
     next_disabled = "cost_result" not in st.session_state
+# Step 6: Always enabled (last step)
 
 wizard.render_navigation(next_disabled=next_disabled)
 
+# Developer Mode
 with st.expander("🔧 Developer Mode", expanded=False):
     st.json({
         "current_step": wizard.get_current_step(),
