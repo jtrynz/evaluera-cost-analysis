@@ -17,7 +17,7 @@ import os
 import json
 import re
 from typing import Dict, Any, Optional
-from gpt_utils import parse_gpt_json, safe_float
+from src.gpt.utils import parse_gpt_json, safe_float
 
 try:
     from openai import OpenAI
