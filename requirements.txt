@@ -1,15 +1,30 @@
-streamlit
-pandas
-numpy
-scikit-learn
-matplotlib
-openpyxl
-rapidfuzz
-beautifulsoup4
-lxml
-requests
-python-dotenv
-openai
-Pillow
-PyMuPDF
-tradingeconomics
+# Core Framework
+streamlit==1.39.0
+python-dotenv==1.0.1
+
+# Data Processing
+pandas==2.2.3
+numpy==2.1.3
+openpyxl==3.1.5
+
+# AI/ML
+openai==1.54.5
+scikit-learn==1.5.2
+
+# Web Scraping & Requests
+requests==2.32.3
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# Text Processing
+rapidfuzz==3.10.1
+
+# Visualization & Images
+matplotlib==3.9.2
+Pillow==11.0.0
+
+# PDF Processing
+PyMuPDF==1.24.13
+
+# Trading Economics API
+tradingeconomics==1.0.1
