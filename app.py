@@ -9,6 +9,7 @@ All modules are cleanly organized under src/ directory.
 
 import os
 import sys
+import json
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
@@ -33,6 +34,7 @@ from src.core.cbam import (
     clamp_dims,
     gpt_rate_supplier,
     calculate_co2_footprint,
+    gpt_analyze_supplier_competencies,
 )
 from src.negotiation.engine import gpt_negotiation_prep_enhanced
 
@@ -88,6 +90,10 @@ def init_session_state():
         'supplier_analysis': None,
         'negotiation_prep': None,
         'co2_data': None,
+        # New: Store article search results
+        'article_matches': None,
+        'supplier_competencies': None,
+        'reference_articles': None,
     }
 
     for key, value in defaults.items():
@@ -182,37 +188,58 @@ elif wizard.get_current_step() == 2:
             help="Beschreiben Sie den gesuchten Artikel - die KI findet passende Einträge"
         )
 
+        matches_df = None
         if search_query:
             with GPTLoadingAnimation("KI analysiert Ihre Suchanfrage..."):
                 try:
-                    matches = gpt_intelligent_article_search(search_query, df)
-                    if matches:
-                        st.success(f"✓ {len(matches)} passende Artikel gefunden")
-                        st.dataframe(matches, use_container_width=True)
+                    # Find item column
+                    item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
+                    if item_col:
+                        item_values = df[item_col].dropna().tolist()
+                        matching_indices = gpt_intelligent_article_search(search_query, item_values)
+
+                        if matching_indices:
+                            matches_df = df.iloc[matching_indices].copy()
+                            st.session_state.article_matches = matches_df
+                            st.session_state.article_name = search_query  # Store search query
+                            st.success(f"✓ {len(matches_df)} passende Artikel gefunden")
+                            st.dataframe(matches_df, use_container_width=True)
+                        else:
+                            st.warning("⚠️ Keine passenden Artikel gefunden. Versuchen Sie eine andere Suchanfrage.")
+                    else:
+                        st.error("❌ Keine Artikel-Spalte gefunden in der Excel-Datei")
                 except Exception as e:
                     st.warning(f"⚠️ KI-Suche fehlgeschlagen: {str(e)}")
 
-        # Manual selection
-        st.markdown("**Oder wählen Sie manuell:**")
-        selected_idx = st.selectbox(
-            "Zeile auswählen",
-            options=range(len(df)),
-            format_func=lambda x: f"Zeile {x+1}: {df.iloc[x, 0] if len(df.columns) > 0 else 'N/A'}"
-        )
+        # Manual selection (fallback)
+        if not search_query:
+            st.markdown("**Oder wählen Sie manuell:**")
+            selected_idx = st.selectbox(
+                "Zeile auswählen",
+                options=range(len(df)),
+                format_func=lambda x: f"Zeile {x+1}: {df.iloc[x, 0] if len(df.columns) > 0 else 'N/A'}"
+            )
 
-        if selected_idx is not None:
-            st.session_state.selected_row = df.iloc[selected_idx]
+            if selected_idx is not None:
+                st.session_state.selected_row = df.iloc[selected_idx]
+                st.session_state.article_matches = df.iloc[[selected_idx]].copy()
 
-            st.markdown("**Ausgewählter Artikel:**")
-            st.json(st.session_state.selected_row.to_dict())
+                st.markdown("**Ausgewählter Artikel:**")
+                st.json(st.session_state.selected_row.to_dict())
 
-            col1, col2 = st.columns([1, 4])
-            with col1:
-                if st.button("← Zurück", use_container_width=True):
-                    wizard.prev_step()
-                    st.rerun()
-            with col2:
-                if st.button("Weiter zu Schritt 3 →", type="primary", use_container_width=True):
+        # Navigation buttons
+        col1, col2 = st.columns([1, 4])
+        with col1:
+            if st.button("← Zurück", use_container_width=True):
+                wizard.prev_step()
+                st.rerun()
+        with col2:
+            # Only allow progression if articles were found
+            can_proceed = (st.session_state.article_matches is not None and
+                          len(st.session_state.article_matches) > 0)
+            if st.button("Weiter zu Schritt 3 →", type="primary", use_container_width=True,
+                        disabled=not can_proceed):
+                if can_proceed:
                     wizard.next_step()
                     st.rerun()
 
@@ -227,34 +254,217 @@ elif wizard.get_current_step() == 3:
     </div>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
-
-    with col1:
-        article_name = st.text_input("Artikelbezeichnung", value=st.session_state.article_name)
-        material = st.text_input("Material", value=st.session_state.material, placeholder="z.B. Edelstahl 1.4301, S235JR")
-        dimensions = st.text_input("Abmessungen", value=st.session_state.dimensions, placeholder="z.B. 100x50x2mm")
-
-    with col2:
-        supplier_name = st.text_input("Lieferant", value=st.session_state.supplier_name)
-        lot_size = st.number_input("Losgröße", min_value=1, value=st.session_state.lot_size)
-        process = st.text_input("Fertigungsverfahren", value=st.session_state.process, placeholder="z.B. Laserschneiden, CNC-Fräsen")
-
-    st.session_state.article_name = article_name
-    st.session_state.material = material
-    st.session_state.dimensions = dimensions
-    st.session_state.supplier_name = supplier_name
-    st.session_state.lot_size = lot_size
-    st.session_state.process = process
-
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        if st.button("← Zurück", use_container_width=True):
+    # Check if we have article matches from step 2
+    if st.session_state.article_matches is None or len(st.session_state.article_matches) == 0:
+        st.warning("⚠️ Keine Artikel ausgewählt. Bitte gehen Sie zurück zu Schritt 2.")
+        if st.button("← Zurück zu Schritt 2", use_container_width=True):
             wizard.prev_step()
             st.rerun()
-    with col2:
-        if st.button("Weiter zu Schritt 4 →", type="primary", use_container_width=True):
-            wizard.next_step()
-            st.rerun()
+    else:
+        matches_df = st.session_state.article_matches
+
+        # Display reference articles from Excel
+        st.markdown("### 📋 Referenz-Artikel aus Bestellhistorie")
+        st.markdown(f"Basierend auf Ihrer Suche: **{st.session_state.article_name}**")
+
+        # Show matches in expandable section
+        with st.expander("🔍 Gefundene Artikel anzeigen", expanded=True):
+            st.dataframe(matches_df, use_container_width=True)
+
+        st.markdown("---")
+
+        # STEP 1: Select Supplier (Dropdown from Excel data)
+        st.markdown("### 1️⃣ Lieferant auswählen")
+
+        # Extract unique suppliers from matches
+        supplier_col = find_column(matches_df, ["supplier", "lieferant", "anbieter", "vendor"])
+        if supplier_col:
+            suppliers = matches_df[supplier_col].dropna().unique().tolist()
+
+            if len(suppliers) > 0:
+                selected_supplier = st.selectbox(
+                    "Lieferant",
+                    options=suppliers,
+                    index=suppliers.index(st.session_state.supplier_name) if st.session_state.supplier_name in suppliers else 0,
+                    help="Wählen Sie einen Lieferanten aus, der diesen Artikel bereits geliefert hat"
+                )
+
+                st.session_state.supplier_name = selected_supplier
+
+                # Show supplier articles
+                supplier_articles = matches_df[matches_df[supplier_col] == selected_supplier]
+                item_col = find_column(supplier_articles, ["item", "artikel", "bezeichnung", "produkt"])
+
+                if item_col:
+                    article_list = supplier_articles[item_col].tolist()
+                    st.info(f"📦 **{selected_supplier}** hat {len(supplier_articles)} dieser Artikel geliefert")
+
+                    # STEP 2: Analyze Supplier Competencies (Automatic)
+                    st.markdown("### 2️⃣ Lieferanten-Kompetenzen analysieren")
+
+                    if st.session_state.supplier_competencies is None or \
+                       st.session_state.supplier_competencies.get('supplier_name') != selected_supplier:
+                        if st.button("🔍 Lieferanten-Kompetenzen analysieren", type="primary"):
+                            with GPTLoadingAnimation("KI analysiert Lieferanten-Kompetenzen..."):
+                                try:
+                                    # Analyze supplier competencies based on article history
+                                    competencies = gpt_analyze_supplier_competencies(
+                                        supplier_name=selected_supplier,
+                                        article_history=article_list,
+                                        country=None  # Could extract from Excel if available
+                                    )
+
+                                    st.session_state.supplier_competencies = competencies
+                                    st.rerun()
+
+                                except Exception as e:
+                                    st.error(f"❌ Fehler bei Kompetenz-Analyse: {str(e)}")
+                    else:
+                        # Display competencies
+                        comp = st.session_state.supplier_competencies
+
+                        if not comp.get('_error') and not comp.get('_fallback'):
+                            st.success("✓ Lieferanten-Kompetenzen analysiert")
+
+                            # Core competencies
+                            core_comps = comp.get('core_competencies', [])
+                            if core_comps:
+                                st.markdown("**🏭 Hauptkompetenzen:**")
+                                for c in core_comps[:3]:  # Top 3
+                                    process_name = c.get('process', 'Unknown')
+                                    capability = c.get('capability_level', 'unknown')
+                                    confidence = c.get('confidence', 'unknown')
+                                    st.markdown(f"- **{process_name}** (Level: {capability}, Confidence: {confidence})")
+
+                            # Material expertise
+                            mat_exp = comp.get('material_expertise', [])
+                            if mat_exp:
+                                st.markdown("**🔩 Material-Expertise:**")
+                                materials = [m.get('material', 'Unknown') for m in mat_exp[:3]]
+                                st.markdown(f"- {', '.join(materials)}")
+
+                            # STEP 3: Determine Process (Automatic from competencies)
+                            st.markdown("### 3️⃣ Fertigungsverfahren (automatisch ermittelt)")
+
+                            # Get primary process from competencies
+                            if core_comps:
+                                primary_process = core_comps[0].get('process', 'turning')
+                                process_display = primary_process.replace('_', ' ').title()
+
+                                st.session_state.process = primary_process
+                                st.info(f"🎯 **Empfohlenes Verfahren:** {process_display}")
+                                st.caption(f"Basierend auf Lieferanten-Kompetenz: {core_comps[0].get('capability_level', 'proficient')}")
+                            else:
+                                st.warning("⚠️ Kein primäres Fertigungsverfahren ermittelt")
+
+                            # STEP 4: Material & Dimensions (User input with suggestions)
+                            st.markdown("### 4️⃣ Material & Abmessungen")
+
+                            col1, col2 = st.columns(2)
+
+                            with col1:
+                                # Suggest material based on competencies
+                                suggested_materials = []
+                                if mat_exp:
+                                    suggested_materials = [m.get('material', '') for m in mat_exp[:3] if m.get('material')]
+
+                                material_hint = f"z.B. {', '.join(suggested_materials)}" if suggested_materials else "z.B. Stahl, Edelstahl, Aluminium"
+
+                                material = st.text_input(
+                                    "Material",
+                                    value=st.session_state.material,
+                                    placeholder=material_hint,
+                                    help="KI wird das Material basierend auf Artikel-Kontext weiter präzisieren"
+                                )
+                                st.session_state.material = material
+
+                            with col2:
+                                dimensions = st.text_input(
+                                    "Abmessungen",
+                                    value=st.session_state.dimensions,
+                                    placeholder="z.B. M8x30, 100x50x2mm",
+                                    help="Optional - wird aus Artikel extrahiert falls nicht angegeben"
+                                )
+                                st.session_state.dimensions = dimensions
+
+                            # STEP 5: Lot Size
+                            st.markdown("### 5️⃣ Losgröße")
+
+                            # Get average lot size from history
+                            qty_col = find_column(supplier_articles, ["quantity", "menge", "qty", "anzahl"])
+                            avg_qty = 1
+
+                            if qty_col:
+                                quantities = pd.to_numeric(supplier_articles[qty_col], errors='coerce').dropna()
+                                if len(quantities) > 0:
+                                    avg_qty = int(quantities.mean())
+                                    st.caption(f"📊 Durchschnittliche Bestellmenge: {avg_qty} Stück")
+
+                            lot_size = st.number_input(
+                                "Losgröße",
+                                min_value=1,
+                                value=max(avg_qty, st.session_state.lot_size) if st.session_state.lot_size > 1 else avg_qty,
+                                help="Anzahl der zu produzierenden Teile"
+                            )
+                            st.session_state.lot_size = lot_size
+
+                            # Summary before proceeding
+                            st.markdown("---")
+                            st.markdown("### ✅ Zusammenfassung")
+
+                            summary_cols = st.columns(3)
+                            with summary_cols[0]:
+                                st.markdown(f"""
+                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
+                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Lieferant</p>
+                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{selected_supplier}</p>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                            with summary_cols[1]:
+                                st.markdown(f"""
+                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
+                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Fertigungsverfahren</p>
+                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{st.session_state.process.replace('_', ' ').title() if st.session_state.process else 'N/A'}</p>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                            with summary_cols[2]:
+                                st.markdown(f"""
+                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
+                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Losgröße</p>
+                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{lot_size:,} Stück</p>
+                                </div>
+                                """, unsafe_allow_html=True)
+
+                        else:
+                            st.warning("⚠️ Lieferanten-Kompetenzen konnten nicht analysiert werden. Bitte klicken Sie auf 'Analysieren'.")
+
+            else:
+                st.error("❌ Keine Lieferanten in den gefundenen Artikeln")
+        else:
+            st.error("❌ Keine Lieferanten-Spalte in der Excel-Datei gefunden")
+
+        # Navigation
+        st.markdown("---")
+        col1, col2 = st.columns([1, 4])
+        with col1:
+            if st.button("← Zurück", use_container_width=True):
+                wizard.prev_step()
+                st.rerun()
+        with col2:
+            # Can only proceed if supplier competencies are analyzed
+            can_proceed = (st.session_state.supplier_competencies is not None and
+                          st.session_state.supplier_name and
+                          st.session_state.process)
+
+            if st.button("Weiter zu Schritt 4 →", type="primary", use_container_width=True,
+                        disabled=not can_proceed):
+                if can_proceed:
+                    wizard.next_step()
+                    st.rerun()
+                else:
+                    st.warning("⚠️ Bitte analysieren Sie zuerst die Lieferanten-Kompetenzen")
 
 # ==================== STEP 4: COST ESTIMATION ====================
 elif wizard.get_current_step() == 4:
@@ -270,14 +480,27 @@ elif wizard.get_current_step() == 4:
     if st.button("🚀 Kostenschätzung starten", type="primary", use_container_width=True):
         with GPTLoadingAnimation("KI berechnet optimale Kosten..."):
             try:
-                # Enhanced prompt for minimal costs
+                # Build complete description from available data
+                description_parts = [st.session_state.article_name]
+                if st.session_state.material:
+                    description_parts.append(f"Material: {st.session_state.material}")
+                if st.session_state.dimensions:
+                    description_parts.append(f"Abmessungen: {st.session_state.dimensions}")
+                if st.session_state.process:
+                    description_parts.append(f"Verfahren: {st.session_state.process}")
+
+                full_description = " | ".join(description_parts)
+
+                # Serialize supplier competencies for caching
+                supplier_comp_json = None
+                if st.session_state.supplier_competencies:
+                    supplier_comp_json = json.dumps(st.session_state.supplier_competencies)
+
+                # Call optimized cost estimation with supplier context
                 result = cached_gpt_complete_cost_estimate(
-                    article=st.session_state.article_name,
-                    material=st.session_state.material,
-                    dimensions=st.session_state.dimensions,
+                    description=full_description,
                     lot_size=st.session_state.lot_size,
-                    process=st.session_state.process,
-                    supplier=st.session_state.supplier_name
+                    supplier_competencies_json=supplier_comp_json
                 )
 
                 st.session_state.cost_estimate = result
