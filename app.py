@@ -290,11 +290,9 @@ def step2_article_search():
                 idf = df[df[item_col].isin(matched_items)].copy()
                 st.session_state.idf = idf
 
-                # Find supplier column
                 supplier_col = find_col(df, ["supplier", "lieferant", "vendor"])
                 st.session_state.supplier_col = supplier_col
 
-                # KPIs
                 num_suppliers = idf[supplier_col].nunique() if supplier_col else 1
                 create_compact_kpi_row([
                     {"label": "Einträge", "value": str(len(idf)), "icon": "📦"},
@@ -302,10 +300,21 @@ def step2_article_search():
                     {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
                 ])
 
-                # Auswahl nicht erzwingen: nutze die Sucheingabe als Artikelbezeichnung
-                st.success(f"**Artikel (aus Suche):** {query.strip()}")
-                st.session_state.selected_article = query.strip()
-                wizard.complete_step(2)
+                # Auswahl nur per Nutzerklick (kein Default)
+                unique_items = sorted(idf[item_col].unique().tolist())
+                options = ["(Bitte wählen...)"] + unique_items
+                choice = st.selectbox(
+                    "Artikel wählen",
+                    options=options,
+                    index=0,
+                    key="article_selector"
+                )
+                if choice != "(Bitte wählen...)":
+                    st.session_state.selected_article = choice
+                    st.success(f"**Artikel:** {choice}")
+                    wizard.complete_step(2)
+                else:
+                    st.session_state.selected_article = None
 
             else:
                 st.warning(f"❌ Keine Ergebnisse für '{query}'")
