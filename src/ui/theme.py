@@ -235,6 +235,29 @@ def apply_global_styles():
             background: rgba(255, 255, 255, 0.98) !important;
         }}
 
+        /* Hard override any invalid/red glow */
+        div[data-baseweb="input"][aria-invalid="true"],
+        div[data-baseweb="input"][aria-invalid="true"]:focus-within,
+        div[data-baseweb="input"] input[aria-invalid="true"],
+        div[data-baseweb="input"] input[aria-invalid="true"]:focus,
+        .stTextInput input:invalid,
+        .stTextInput input:invalid:focus,
+        .stTextInput input:user-invalid,
+        .stTextInput input:user-invalid:focus {{
+            border-color: {COLORS['primary']} !important;
+            box-shadow:
+                0 0 0 2px rgba(42, 79, 87, 0.18) !important;
+            outline: none !important;
+        }}
+
+        /* Strip any leftover default focus glow */
+        div[data-baseweb="input"] input:focus,
+        div[data-baseweb="input"] input:focus-visible,
+        div[data-baseweb="input"] input:active {{
+            box-shadow: none !important;
+            outline: none !important;
+        }}
+
         /* Labels and placeholder */
         .stTextInput > label,
         .stNumberInput > label,
