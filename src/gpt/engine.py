@@ -140,12 +140,18 @@ def gpt_intelligent_article_search(query, item_column_values):
     Returns:
         Liste der passenden Artikel-Indizes oder leere Liste
     """
-    key = os.getenv("OPENAI_API_KEY")
+    key = os.getenv("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
+    if not key:
+        try:
+            import streamlit as st
+            key = st.secrets.get("OPENAI_API_KEY")
+        except Exception:
+            key = None
     if not key or not query or not query.strip():
         return []
 
-    # Limit zu max 500 Artikel für Performance
-    sample_items = list(item_column_values)[:500]
+    # Limit zu max 1000 Artikel für bessere Recall
+    sample_items = list(item_column_values)[:1000]
 
     from openai import OpenAI
     client = OpenAI(api_key=key)

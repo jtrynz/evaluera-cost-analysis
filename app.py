@@ -215,12 +215,27 @@ elif wizard.get_current_step() == 2:
     if st.session_state.df_raw is not None:
         df = st.session_state.df_raw
 
+        # API-Key Check für KI-Suche
+        if not (os.getenv("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")):
+            try:
+                _ = st.secrets["OPENAI_API_KEY"]
+            except Exception:
+                st.warning("⚠️ Kein OPENAI_API_KEY gefunden. KI-Suche ist deaktiviert.", icon="⚠️")
+
         # AI-powered search
         search_query = st.text_input(
             "🤖 KI-Artikelsuche",
             placeholder="z.B. 'Zylinderschraube M8x30' oder 'Edelstahlblech 2mm'",
             help="Beschreiben Sie den gesuchten Artikel - die KI findet passende Einträge"
         )
+
+        # Kombiniere mehrere Spalten zu einem Suchtext, damit GPT mehr Kontext hat
+        search_cols = ["item", "artikel", "bezeichnung", "produkt", "article", "name", "cluster", "din", "iso", "material", "oberfläche 1", "oberfläche", "festigkeit"]
+        present_cols = [c for c in df.columns if str(c).strip().lower() in [s.lower() for s in search_cols]]
+        combined_texts = df.apply(
+            lambda row: " | ".join([str(row[c]) for c in present_cols if pd.notna(row[c])]),
+            axis=1
+        ) if present_cols else df.iloc[:,0].astype(str)
 
         matches_df = None
         if search_query:
@@ -231,9 +246,7 @@ elif wizard.get_current_step() == 2:
                     # Find item column
                     item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
                     if item_col:
-                        # WICHTIG: Kein dropna() - sonst stimmen Indizes nicht!
-                        item_values = df[item_col].tolist()
-                        matching_indices = gpt_intelligent_article_search(search_query, item_values)
+                        matching_indices = gpt_intelligent_article_search(search_query, combined_texts.tolist())
 
                         if matching_indices and len(matching_indices) > 0:
                             # GPT hat was gefunden
