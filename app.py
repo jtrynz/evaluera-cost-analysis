@@ -195,21 +195,49 @@ elif wizard.get_current_step() == 2:
                     # Find item column
                     item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
                     if item_col:
-                        item_values = df[item_col].dropna().tolist()
+                        # WICHTIG: Kein dropna() - sonst stimmen Indizes nicht!
+                        item_values = df[item_col].tolist()
                         matching_indices = gpt_intelligent_article_search(search_query, item_values)
 
-                        if matching_indices:
+                        if matching_indices and len(matching_indices) > 0:
+                            # GPT hat was gefunden
                             matches_df = df.iloc[matching_indices].copy()
                             st.session_state.article_matches = matches_df
-                            st.session_state.article_name = search_query  # Store search query
-                            st.success(f"✓ {len(matches_df)} passende Artikel gefunden")
+                            st.session_state.article_name = search_query
+                            st.success(f"✓ {len(matches_df)} passende Artikel gefunden (KI-Suche)")
                             st.dataframe(matches_df, use_container_width=True)
                         else:
-                            st.warning("⚠️ Keine passenden Artikel gefunden. Versuchen Sie eine andere Suchanfrage.")
+                            # FALLBACK: String-basierte Suche (wie vorher!)
+                            st.info("🔍 KI fand nichts - verwende erweiterte Suche...")
+                            search_mask = df[item_col].astype(str).str.lower().str.contains(
+                                search_query.lower(), na=False, regex=False
+                            )
+                            matches_df = df[search_mask].copy()
+
+                            if len(matches_df) > 0:
+                                st.session_state.article_matches = matches_df
+                                st.session_state.article_name = search_query
+                                st.success(f"✓ {len(matches_df)} passende Artikel gefunden (String-Suche)")
+                                st.dataframe(matches_df, use_container_width=True)
+                            else:
+                                st.warning("⚠️ Keine passenden Artikel gefunden. Versuchen Sie andere Suchbegriffe.")
                     else:
                         st.error("❌ Keine Artikel-Spalte gefunden in der Excel-Datei")
                 except Exception as e:
-                    st.warning(f"⚠️ KI-Suche fehlgeschlagen: {str(e)}")
+                    st.error(f"⚠️ KI-Suche fehlgeschlagen: {str(e)}")
+                    # FALLBACK bei Fehler: String-Suche
+                    item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
+                    if item_col:
+                        st.info("🔄 Verwende Fallback-Suche...")
+                        search_mask = df[item_col].astype(str).str.lower().str.contains(
+                            search_query.lower(), na=False, regex=False
+                        )
+                        matches_df = df[search_mask].copy()
+                        if len(matches_df) > 0:
+                            st.session_state.article_matches = matches_df
+                            st.session_state.article_name = search_query
+                            st.success(f"✓ {len(matches_df)} Artikel gefunden")
+                            st.dataframe(matches_df, use_container_width=True)
 
         # Manual selection (fallback)
         if not search_query:
