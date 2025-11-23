@@ -260,7 +260,7 @@ class WizardManager:
             text_color = COLORS['gray_500']
             icon = str(step_number)
 
-        st.markdown(f"""<div style="display: flex; align-items: center; gap: 1rem; padding: {SPACING['md']}; margin-bottom: {SPACING['sm']}; background: {COLORS['surface']}; border-radius: {RADIUS['md']}; border: 2px solid {bg if is_active else COLORS['gray_200']}; opacity: {1 if (is_active or is_completed) else 0.6};"><div style="width: 40px; height: 40px; border-radius: 50%; background: {bg}; color: {text_color}; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem;">{icon}</div><div style="flex: 1;"><div style="font-weight: 600; color: {COLORS['error']}; font-size: 1rem;">{step_info['title']}</div><div style="font-size: 0.875rem; color: {COLORS['gray_500']};">{step_info['desc']}</div></div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div style="display: flex; align-items: center; gap: 1rem; padding: {SPACING['md']}; margin-bottom: {SPACING['sm']}; background: {COLORS['surface']}; border-radius: {RADIUS['md']}; border: 2px solid {bg if is_active else COLORS['gray_200']}; opacity: {1 if (is_active or is_completed) else 0.6};"><div style="width: 40px; height: 40px; border-radius: 50%; background: {bg}; color: {text_color} !important; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem;">{icon}</div><div style="flex: 1;"><div style="font-weight: 600; color: {COLORS['error']}; font-size: 1rem;">{step_info['title']}</div><div style="font-size: 0.875rem; color: {COLORS['gray_500']};">{step_info['desc']}</div></div></div>""", unsafe_allow_html=True)
 
         # Only show content if active
         if is_active:
