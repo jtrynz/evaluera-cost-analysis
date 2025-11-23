@@ -10,6 +10,7 @@ import streamlit as st
 COLORS = {
     # EVALUERA Brand Colors
     "primary": "#2A4F57",        # Primary: Dunkles Evaluera Blaugrau
+    "primary_light": "#E7F1EF",  # Primary Light: Sehr helles Mint
     "secondary": "#B8D4D1",      # Secondary: Helles Mint
     "light_accent": "#E7F1EF",   # Light Accent: Sehr helles Mint
     "dark_accent": "#1E2E32",    # Dark Accent: Fast Schwarz
@@ -37,6 +38,7 @@ COLORS = {
     "bg_primary": "#FFFFFF",
     "bg_secondary": "#F9FAFB",
     "surface": "#FFFFFF",
+    "surface_tint": "#F9FAFB",   # Leicht getönte Oberfläche
 }
 
 SPACING = {
