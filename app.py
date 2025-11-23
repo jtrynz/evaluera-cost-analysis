@@ -176,6 +176,129 @@ st.markdown(
             background: rgba(42, 79, 87, 0.1) !important;
             margin: 8px 0 !important;
         }
+
+        /* SAFE-TO-DELETE: hide known spacer classes and empty shells */
+        .css-18e3th9, .css-1v0mbdj, .css-1dp5vir, .css-1kyxreq,
+        .css-ocqkz7, .css-hg7snz, .css-ffhzg2 {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border: none !important;
+        }
+
+        /* Remove empty divs/pills */
+        div:empty {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Strip empty Streamlit containers */
+        [data-testid="stVerticalBlock"] > div:empty,
+        [data-testid="stHorizontalBlock"] > div:empty,
+        [data-testid="column"] > div:empty,
+        [data-testid="block-container"] > div:empty {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Only style cards when they have content */
+        div[data-testid="stHorizontalBlock"] > div > div,
+        div[data-testid="stVerticalBlock"] > div > div,
+        div[data-testid="column"] > div {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div > div:has(*),
+        div[data-testid="stVerticalBlock"] > div > div:has(*),
+        div[data-testid="column"] > div:has(*) {
+            background: #FFFFFF !important;
+            border: 1px solid rgba(42, 79, 87, 0.06) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
+            padding: 14px 16px !important;
+        }
+
+        /* Max width and centered content */
+        .block-container {
+            max-width: 1300px !important;
+            margin: 0 auto !important;
+            padding-left: 1.25rem !important;
+            padding-right: 1.25rem !important;
+        }
+
+        /* Remove any background pills */
+        div[data-testid="stHorizontalBlock"] > div > div,
+        div[data-testid="stVerticalBlock"] > div > div,
+        div[data-testid="column"] > div {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div > div:has(*),
+        div[data-testid="stVerticalBlock"] > div > div:has(*),
+        div[data-testid="column"] > div:has(*),
+        .stAlert, [data-testid="stMetric"] {
+            background: #FFFFFF !important;
+            border: 1px solid rgba(42, 79, 87, 0.06) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
+            padding: 14px 16px !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div > div:empty,
+        div[data-testid="stVerticalBlock"] > div > div:empty,
+        div[data-testid="stHorizontalBlock"] > div:empty,
+        div[data-testid="stVerticalBlock"] > div:empty,
+        div[data-testid="column"] > div:empty {
+            display: none !important;
+            height: 0 !important;
+        }
+
+        /* Fixed Next button */
+        #wizard-next-fixed-container {
+           position: fixed !important;
+           right: 2.4rem !important;
+           bottom: 2.0rem !important;
+           z-index: 9999 !important;
+        }
+        @media(max-width:900px){
+           #wizard-next-fixed-container {
+               right: 50% !important;
+               transform: translateX(50%);
+           }
+        }
+
+        /* Input focus ring in primary */
+        div[data-baseweb="input"]:focus-within {
+            border-color: #1F3C45 !important;
+            box-shadow: 0 0 0 2px rgba(31, 60, 69, 0.18), 0 6px 16px rgba(0,0,0,0.08) !important;
+        }
+
+        /* Buttons darker */
+        .stButton > button, button[kind="primary"] {
+            background: #1F3C45 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -251,16 +374,11 @@ init_session_state()
 # ==================== MAIN APP HEADER ====================
 st.markdown(f"""
 <div style="text-align: center; padding: {SPACING['xl']} 0 {SPACING['md']} 0;">
-""", unsafe_allow_html=True)
-
-render_evaluera_logo(align="center", width=230)
-
-st.markdown(f"""
-<div style="text-align: center; margin-top: {SPACING['md']}; margin-bottom: {SPACING['xl']};">
-    <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: 0;">
+    <img src="data:image/png;base64,{get_logo_base64()}" alt="EVALUERA" style="height: 48px; object-fit: contain;" />
+    <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: {SPACING['md']} 0 {SPACING['sm']} 0;">
         KI-gestützte Bestellanalyse & Kostenschätzung
     </h1>
-    <p style="color: #333333; font-size: 1.05rem; margin-top: {SPACING['sm']}; font-weight: 500;">
+    <p style="color: #333333; font-size: 1.05rem; margin-top: 0; font-weight: 500;">
         Professionelle Beschaffungsoptimierung mit künstlicher Intelligenz
     </p>
 </div>
