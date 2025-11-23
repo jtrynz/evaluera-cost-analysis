@@ -7,9 +7,17 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 import os
 import re
 import traceback
+import sys
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
+
+# Sicherstellen, dass das Projekt-Root und das src-Paket im Python-Pfad liegen
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+SRC_DIR = os.path.join(BASE_DIR, "src")
+for path in (BASE_DIR, SRC_DIR):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
 # Backend-Funktionen (angepasste src-Pfade)
 from src.core.price_utils import derive_unit_price
