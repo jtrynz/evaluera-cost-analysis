@@ -202,6 +202,30 @@ st.markdown(
             background: transparent !important;
         }
 
+        /* Hide pill bars with no real content (even if whitespace nodes exist) */
+        div[data-testid="stHorizontalBlock"] > div > div:not(:has(*)),
+        div[data-testid="stVerticalBlock"] > div > div:not(:has(*)),
+        div[data-testid="stHorizontalBlock"] > div:not(:has(*)),
+        div[data-testid="stVerticalBlock"] > div:not(:has(*)),
+        div[data-testid="column"] > div:not(:has(*)),
+        div[data-testid="block-container"] > div:not(:has(*)),
+        div[data-testid="block-container"] > div > div:not(:has(*)) {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Card padding a bit smaller to avoid oversized blocks */
+        div[data-testid="stHorizontalBlock"] > div > div,
+        div[data-testid="stVerticalBlock"] > div > div,
+        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
+            padding: 14px 16px !important;
+        }
+
         /* Sidebar buttons spacing/height */
         [data-testid="stSidebar"] .stButton {
             margin: 6px 0 !important;
