@@ -302,19 +302,9 @@ def step2_article_search():
                     {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
                 ])
 
-                # Selection
-                unique_items = sorted(idf[item_col].unique().tolist())
-                if len(unique_items) > 1:
-                    selected = st.selectbox(
-                        "Artikel wählen",
-                        unique_items,
-                        key="article_selector"  # Changed key to avoid conflict
-                    )
-                else:
-                    selected = unique_items[0]
-                st.success(f"**Artikel:** {selected}")
-
-                st.session_state.selected_article = selected
+                # Auswahl nicht erzwingen: nutze die Sucheingabe als Artikelbezeichnung
+                st.success(f"**Artikel (aus Suche):** {query.strip()}")
+                st.session_state.selected_article = query.strip()
                 wizard.complete_step(2)
 
             else:
@@ -508,7 +498,7 @@ def step5_cost_estimation():
             result = cached_gpt_complete_cost_estimate(
                 description=_sanitize(article),
                 lot_size=int(lot_size),
-                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=False)
+                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=True)
             )
 
             if result and not result.get("_error"):
