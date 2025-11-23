@@ -174,9 +174,7 @@ st.markdown(
         <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: 0 0 10px 0; font-size: 2.6rem;">
             KI-gestützte Bestellanalyse & Kostenschätzung
         </h1>
-        <p style="color: #1E2E32; font-size: 1.05rem; margin-top: 0; font-weight: 500;">
-            Professionelle Beschaffungsoptimierung mit künstlicher Intelligenz
-        </p>
+        
     </div>
     """,
     unsafe_allow_html=True,
