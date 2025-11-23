@@ -5,7 +5,7 @@ Apple-ähnliche Navigation mit Accordion-Struktur
 """
 
 import streamlit as st
-from ui_theme import COLORS, SPACING, RADIUS, SHADOWS
+from src.ui.theme import COLORS, SPACING, RADIUS, SHADOWS
 
 
 class NavigationSidebar:

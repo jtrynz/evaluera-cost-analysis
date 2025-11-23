@@ -5,7 +5,7 @@ Apple-ähnliches Glassmorphism-Design mit Evaluera-Farben
 """
 
 import streamlit as st
-from ui_theme import COLORS, SPACING, RADIUS
+from src.ui.theme import COLORS, SPACING, RADIUS
 
 
 def apply_liquid_glass_styles():
