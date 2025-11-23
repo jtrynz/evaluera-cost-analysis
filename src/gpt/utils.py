@@ -1,11 +1,11 @@
 """
 GPT UTILITIES
 =============
-Wiederverwendbare Helper-Funktionen für GPT-Interaktionen.
-Reduziert Code-Duplikation massiv (DRY-Prinzip).
+Sanitizing & robuste GPT-Wrapper, um alle Unicode-/Encoding-Probleme zu vermeiden.
 """
 
 import json
+import os
 import re
 import unicodedata
 import traceback
@@ -13,7 +13,10 @@ from typing import Dict, Any, Optional, Callable
 
 
 def sanitize_input(text: Any) -> str:
-    """Entfernt problematische Unicode-Zeichen (U+2028/2029, Zero-Width, Control) und normalisiert."""
+    """
+    Entfernt problematische Unicode-Zeichen (U+2028/2029, Zero-Width, Control),
+    normalisiert (NFKC) und verdichtet Whitespaces.
+    """
     if text is None:
         return ""
     if not isinstance(text, str):
@@ -27,7 +30,7 @@ def sanitize_input(text: Any) -> str:
 
 
 def sanitize_payload_recursive(obj: Any):
-    """Sanitizes all strings (keys + values) recursively in payloads for GPT/JSON."""
+    """Sanitizes alle Strings (Keys + Values) rekursiv."""
     if isinstance(obj, dict):
         return {sanitize_input(k): sanitize_payload_recursive(v) for k, v in obj.items()}
     if isinstance(obj, list):
@@ -37,6 +40,47 @@ def sanitize_payload_recursive(obj: Any):
     if isinstance(obj, str):
         return sanitize_input(obj)
     return obj
+
+
+def sanitize_env_variables(keys: list):
+    """
+    Reinigt relevante ENV-Variablen in-place (os.environ).
+    """
+    for k in keys:
+        if k in os.environ:
+            os.environ[k] = sanitize_input(os.environ[k])
+
+
+def sanitize_headers(headers: Dict[str, Any]) -> Dict[str, str]:
+    """
+    Reinigt Header-Keys und -Values vollständig (UTF-8 safe).
+    """
+    clean = {}
+    for k, v in (headers or {}).items():
+        ck = sanitize_input(k)
+        cv = sanitize_input(v)
+        # Explizit U+2028/U+2029 eliminieren
+        cv = cv.replace("\u2028", " ").replace("\u2029", " ")
+        clean[ck] = cv
+    return clean
+
+
+def sanitize_options(kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Reinigt alle Optionen/kwargs, inkl. model, metadata, seed, user, etc.
+    """
+    clean = {}
+    for k, v in (kwargs or {}).items():
+        ck = sanitize_input(k)
+        if isinstance(v, str):
+            clean[ck] = sanitize_input(v)
+        elif isinstance(v, dict):
+            clean[ck] = sanitize_payload_recursive(v)
+        elif isinstance(v, list):
+            clean[ck] = sanitize_payload_recursive(v)
+        else:
+            clean[ck] = v
+    return clean
 
 
 def safe_print(msg: str):
@@ -53,19 +97,27 @@ def safe_gpt_request(
     model: str,
     messages: Any,
     client_factory: Callable[[], Any],
-    temperature: float = 0.1,
-    max_tokens: int = 2000,
-    retries: int = 1,
+    headers: Optional[Dict[str, Any]] = None,
+    retries: int = 0,
+    **kwargs,
 ) -> Dict[str, Any]:
     """
-    Führt einen GPT-Request robust aus (UTF-8 safe, Sanitizing, optional Retry).
-    Erwartet eine client_factory, die den OpenAI-Client liefert.
+    Führt einen GPT-Request robust aus.
+    - Reinigt ENV (API-Key, Modell, Base URL, ORG)
+    - Reinigt Headers
+    - Reinigt messages + kwargs
+    - Prüft auf U+2028/U+2029 in finalen Headers
     """
-    clean_messages = sanitize_payload_recursive(messages)
+    sanitize_env_variables(["OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_BASE_URL", "OPENAI_ORG"])
 
-    # Debug serialization (UTF-8, ensure_ascii=False)
+    clean_model = sanitize_input(model)
+    clean_messages = sanitize_payload_recursive(messages)
+    clean_kwargs = sanitize_options(kwargs)
+    clean_headers = sanitize_headers(headers or {})
+
+    # Debug-Serialisierung
     try:
-        _ = json.dumps({"model": model, "messages": clean_messages}, ensure_ascii=False)[:0]
+        _ = json.dumps({"model": clean_model, "messages": clean_messages}, ensure_ascii=False)[:0]
     except Exception as ser_err:
         return {
             "_error": True,
@@ -74,20 +126,22 @@ def safe_gpt_request(
             "_stage": "serialize",
         }
 
+    # Finaler Header-Check
+    for hk, hv in list(clean_headers.items()):
+        if "\u2028" in hv or "\u2029" in hv:
+            clean_headers[hk] = sanitize_input(hv)
+
     last_err = None
     for attempt in range(retries + 1):
         try:
             client = client_factory()
             res = client.chat.completions.create(
-                model=model,
+                model=clean_model,
                 messages=clean_messages,
-                temperature=temperature,
-                max_tokens=max_tokens,
+                headers=clean_headers if clean_headers else None,
+                **clean_kwargs,
             )
-            return {
-                "_error": False,
-                "response": res,
-            }
+            return {"_error": False, "response": res}
         except Exception as e:
             last_err = e
             if attempt >= retries:
