@@ -111,32 +111,42 @@ def render_login_screen():
 
             section.main, .main {{
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 0 18px 0 !important;
+                display: block;
+                padding: 0 !important;
                 position: relative;
                 z-index: 2;
             }}
 
             .block-container {{
-                padding: 32px 26px 28px 26px !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                width: 100%;
+                max-width: 600px;
+            }}
+
+            .login-viewport {{
+                min-height: 100vh;
+                width: 100%;
+                display: grid;
+                place-items: center;
+                padding: 32px 16px;
+            }}
+
+            .login-card {{
                 width: 100%;
                 max-width: 520px;
-                margin-top: 0 !important;
                 background: var(--eval-glass);
                 border: 1px solid rgba(42, 79, 87, 0.18);
                 border-radius: {RADIUS['xl']};
                 box-shadow:
                     0 18px 55px rgba(0, 0, 0, 0.25),
                     0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+                padding: 32px 26px 28px 26px;
                 position: relative;
                 overflow: hidden;
-            }}
-
-            /* Entfernt evtl. leere Streifen-Container */
-            .block-container > div:empty {{
-                display: none !important;
             }}
 
             .login-header {{
@@ -342,7 +352,7 @@ def render_login_screen():
     )
 
     # Layout shell
-    st.markdown('<div class="login-shell"><div class="login-card"><div class="login-inner">', unsafe_allow_html=True)
+    st.markdown('<div class="login-viewport"><div class="login-card"><div class="login-inner">', unsafe_allow_html=True)
 
     # Logo & Header
     if logo_base64:
