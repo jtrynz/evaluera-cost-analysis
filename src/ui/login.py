@@ -98,7 +98,7 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: linear-gradient(140deg, #a9d9d3 0%, #88c2bd 45%, #6fa9a2 100%) !important;
+                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
             }}
 
             header[data-testid="stHeader"],
@@ -120,35 +120,23 @@ def render_login_screen():
             }}
 
             .block-container {{
-                padding: 0 !important;
+                padding: 32px 26px 28px 26px !important;
                 width: 100%;
                 max-width: 520px;
                 margin-top: 0 !important;
-            }}
-
-            .login-shell {{
-                width: 100%;
-                padding: 32px 16px;
-                display: flex;
-                justify-content: center;
-            }}
-
-            .login-card {{
-                width: 100%;
                 background: var(--eval-glass);
                 border: 1px solid rgba(42, 79, 87, 0.18);
                 border-radius: {RADIUS['xl']};
                 box-shadow:
                     0 18px 55px rgba(0, 0, 0, 0.25),
                     0 0 0 1px rgba(255, 255, 255, 0.12) inset;
-                padding: 32px 26px 28px 26px;
                 position: relative;
                 overflow: hidden;
             }}
 
-            .login-inner {{
-                position: relative;
-                z-index: 2;
+            /* Entfernt evtl. leere Streifen-Container */
+            .block-container > div:empty {{
+                display: none !important;
             }}
 
             .login-header {{
@@ -189,13 +177,14 @@ def render_login_screen():
 
             .stTextInput > div > div > input {{
                 background: var(--eval-soft) !important;
-                border: 1.5px solid rgba(42, 79, 87, 0.35) !important;
-                border-radius: {RADIUS['md']} !important;
+                border: 2px solid rgba(42, 79, 87, 0.28) !important;
+                border-radius: 8px !important;
                 color: #1E2E32 !important;
-                padding: 14px 16px !important;
+                padding: 10px 14px !important;
                 font-size: 15px !important;
+                min-height: 42px !important;
                 transition: all 0.25s ease !important;
-                box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+                box-shadow: inset 0 1px 2px rgba(0,0,0,0.06) !important;
             }}
 
             .stTextInput > div > div > input::placeholder {{
@@ -207,9 +196,13 @@ def render_login_screen():
                 border-color: #2A4F57 !important;
                 box-shadow:
                     0 0 0 2px rgba(42, 79, 87, 0.28),
-                    0 6px 16px rgba(0,0,0,0.18) !important;
+                    0 6px 16px rgba(0,0,0,0.12) !important;
                 outline: none !important;
                 background: #F6FAF9 !important;
+            }}
+
+            .stTextInput > div > div > input:focus-visible {{
+                outline: none !important;
             }}
 
             .stTextInput > div > div > input:invalid,
