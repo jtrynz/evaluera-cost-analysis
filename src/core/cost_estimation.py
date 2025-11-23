@@ -15,6 +15,7 @@ NACHHER:
 
 import os
 import json
+import traceback
 from typing import Dict, Any, Optional
 from src.gpt.utils import (
     parse_gpt_json,
@@ -55,6 +56,20 @@ def gpt_complete_cost_estimate(
         Dict mit allen Kosten-Informationen
     """
     description = sanitize_input(description)
+
+    def _debug_unicode(label: str, text: str):
+        try:
+            if "\u2028" in text or "\u2029" in text:
+                safe_print(f"DEBUG unicode in {label}: contains U+2028/U+2029")
+        except Exception:
+            pass
+
+    def _debug_unicode(label: str, text: str):
+        try:
+            if "\u2028" in text or "\u2029" in text:
+                safe_print(f"DEBUG unicode in {label}: contains U+2028/U+2029")
+        except Exception:
+            pass
 
     key = os.getenv("OPENAI_API_KEY")
     if not key or OpenAI is None:
@@ -248,12 +263,20 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
             },
         ])
 
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=messages,
-            temperature=0.1,
-            max_tokens=2000
-        )
+        _debug_unicode("prompt", prompt)
+        _debug_unicode("description", description)
+        _debug_unicode("supplier_context", supplier_context)
+
+        try:
+            response = OpenAI(api_key=key).chat.completions.create(
+                model="gpt-4o",
+                messages=messages,
+                temperature=0.1,
+                max_tokens=2000
+            )
+        except Exception as api_err:
+            safe_print(f"ERROR OpenAI call failed: {api_err!r}")
+            raise
 
         raw_txt = response.choices[0].message.content or ""
         txt = sanitize_input(raw_txt.strip())
@@ -307,11 +330,14 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
         return result
 
     except Exception as e:
-        safe_print(f"ERROR in gpt_complete_cost_estimate: {e}")
-        import traceback
+        safe_print(f"ERROR in gpt_complete_cost_estimate: {e!r}")
         return {
             "material_guess": "stahl",
             "error": str(e),
             "error_trace": traceback.format_exc(),
-            "_error": True
+            "_error": True,
+            "_debug_prompt_present": ("\u2028" in prompt) or ("\u2029" in prompt),
+            "_debug_description": description,
+            "_debug_supplier_context": supplier_context,
+            "_debug_messages": messages if 'messages' in locals() else None,
         }
