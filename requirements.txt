@@ -21,10 +21,10 @@ rapidfuzz==3.10.1
 
 # Visualization & Images
 matplotlib==3.9.2
-Pillow==11.0.0
+Pillow==10.4.0
 
 # PDF Processing
 PyMuPDF==1.24.13
 
 # Trading Economics API
-tradingeconomics==1.0.1
+tradingeconomics==0.3.5
