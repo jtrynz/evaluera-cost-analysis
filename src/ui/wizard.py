@@ -245,7 +245,7 @@ class WizardManager:
         step_info = self.STEPS[step_number]
 
         # Render step indicator (clickable)
-        from ui_theme import COLORS, RADIUS, SPACING
+        from src.ui.theme import COLORS, RADIUS, SPACING
 
         if is_completed:
             bg = COLORS['success']
@@ -321,7 +321,7 @@ def create_compact_kpi_row(kpis):
     Args:
         kpis: List of dicts with keys: label, value, icon, help, trend
     """
-    from ui_theme import COLORS, SPACING, RADIUS, SHADOWS
+    from src.ui.theme import COLORS, SPACING, RADIUS, SHADOWS
 
     num_kpis = len(kpis)
     cols = st.columns(num_kpis)
