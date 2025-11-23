@@ -1,6 +1,7 @@
 import os, json, math
 import pandas as pd
 from dotenv import load_dotenv
+from src.gpt.utils import sanitize_input, sanitize_payload_recursive, safe_gpt_request, safe_print
 load_dotenv()
 
 def _safe_float(x, d=None):
@@ -140,6 +141,9 @@ def gpt_intelligent_article_search(query, item_column_values):
     Returns:
         Liste der passenden Artikel-Indizes oder leere Liste
     """
+    query = sanitize_input(query)
+    item_column_values = [sanitize_input(v) for v in item_column_values]
+
     key = os.getenv("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")
     if not key:
         try:
@@ -154,7 +158,6 @@ def gpt_intelligent_article_search(query, item_column_values):
     sample_items = list(item_column_values)[:1000]
 
     from openai import OpenAI
-    client = OpenAI(api_key=key)
 
     system_prompt = """Du bist ein intelligenter Artikel-Such-Assistent für technische Teile.
 
@@ -184,16 +187,25 @@ Verfügbare Artikel:
 Welche Artikel passen zur Suchanfrage? Gib NUR die Indizes als JSON-Array zurück.
 WICHTIG: Finde ALLE Varianten, auch mit unterschiedlichen Längen/Größen!"""
 
+    messages = sanitize_payload_recursive([
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt},
+    ])
+
     try:
-        r = client.chat.completions.create(
+        res = safe_gpt_request(
             model="gpt-4o-mini",
-            temperature=0.3,  # Leicht erhöht für mehr Flexibilität (war 0)
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt}
-            ]
+            messages=messages,
+            client_factory=lambda: OpenAI(api_key=key),
+            temperature=0.3,
+            max_tokens=500,
+            retries=0,
         )
-        txt = r.choices[0].message.content.strip()
+        if res.get("_error"):
+            safe_print(f"GPT Artikel-Suche fehlgeschlagen: {res}")
+            return []
+        r = res["response"]
+        txt = sanitize_input(r.choices[0].message.content or "")
 
         # Extrahiere JSON aus möglicher Markdown-Formatierung
         if "```json" in txt:
@@ -206,10 +218,10 @@ WICHTIG: Finde ALLE Varianten, auch mit unterschiedlichen Längen/Größen!"""
         # Validiere Indizes
         valid_indices = [i for i in indices if isinstance(i, int) and 0 <= i < len(sample_items)]
 
-        print(f"🔍 GPT Intelligente Suche: '{query}' → {len(valid_indices)} Treffer gefunden")
+        safe_print(f"GPT Intelligente Suche: '{query}' → {len(valid_indices)} Treffer gefunden")
         return valid_indices
 
     except Exception as e:
-        print(f"⚠️ GPT Artikel-Suche fehlgeschlagen: {e}")
+        safe_print(f"⚠️ GPT Artikel-Suche fehlgeschlagen: {e!r}")
         # Fallback: Einfache String-Suche
         return []
