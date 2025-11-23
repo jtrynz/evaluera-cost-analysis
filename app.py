@@ -124,6 +124,20 @@ st.markdown(
             box-shadow: 0 8px 18px rgba(0,0,0,0.07) !important;
         }
 
+        /* Hide empty placeholder containers that create white bars */
+        div[data-testid="stVerticalBlock"] > div > div:empty,
+        div[data-testid="stHorizontalBlock"] > div > div:empty,
+        div[data-testid="stVerticalBlock"] > div:empty,
+        div[data-testid="stHorizontalBlock"] > div:empty {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
         /* Progress bar */
         [data-testid="stProgressBar"] > div {
             background: #E7F1EF !important;
@@ -160,6 +174,7 @@ st.markdown(
             border: none !important;
             height: 1px !important;
             background: rgba(42, 79, 87, 0.1) !important;
+            margin: 8px 0 !important;
         }
     </style>
     """,
