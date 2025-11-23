@@ -73,44 +73,55 @@ apply_global_styles()
 st.markdown(
     """
     <style>
-        html, body, .stApp, [data-testid="stAppViewContainer"] {
-            background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+        /* Light, clean base */
+        html, body, .stApp, [data-testid="stAppViewContainer"], .main {
+            background: #FFFFFF !important;
         }
 
+        /* Sidebar minimal hell */
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(231,241,239,0.94) 100%) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(245,248,247,0.96) 100%) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
             border-right: 1px solid rgba(42, 79, 87, 0.08) !important;
-            box-shadow: 4px 0 14px rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 4px 0 12px rgba(0, 0, 0, 0.04) !important;
         }
 
         /* Sidebar buttons */
         [data-testid="stSidebar"] button[data-testid="baseButton-primary"],
         [data-testid="stSidebar"] button[kind="primary"] {
-            background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
+            min-height: 42px !important;
+            border-radius: 10px !important;
+            background: #2A4F57 !important;
             color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.22) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 2px rgba(255,255,255,0.28) !important;
-            border-radius: 12px !important;
+            border: 1px solid rgba(42, 79, 87, 0.3) !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.1) !important;
+            font-weight: 700 !important;
         }
         [data-testid="stSidebar"] button[data-testid="baseButton-secondary"],
         [data-testid="stSidebar"] button[kind="secondary"] {
-            background: rgba(255, 255, 255, 0.82) !important;
-            border: 1px solid rgba(42, 79, 87, 0.22) !important;
+            min-height: 42px !important;
+            border-radius: 10px !important;
+            background: rgba(255, 255, 255, 0.92) !important;
+            border: 1px solid rgba(42, 79, 87, 0.18) !important;
             color: #1E2E32 !important;
-            border-radius: 12px !important;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stSidebar"] button[data-testid="baseButton-secondary"]:hover,
+        [data-testid="stSidebar"] button[kind="secondary"]:hover {
+            background: rgba(231, 241, 239, 0.9) !important;
+            border-color: rgba(42, 79, 87, 0.28) !important;
         }
 
-        /* Main cards */
+        /* Cards / containers */
         div[data-testid="stHorizontalBlock"] > div > div,
         div[data-testid="stVerticalBlock"] > div > div,
         .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
-            background: rgba(255, 255, 255, 0.96) !important;
+            background: #FFFFFF !important;
             border: 1px solid rgba(42, 79, 87, 0.06) !important;
             border-radius: 16px !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.07) !important;
         }
 
         /* Progress bar */
@@ -126,15 +137,14 @@ st.markdown(
 
         /* Upload dropzone */
         .stFileUploader {
-            background: rgba(255, 255, 255, 0.9) !important;
-            border: 2px dashed rgba(42, 79, 87, 0.28) !important;
+            background: #FFFFFF !important;
+            border: 1.5px dashed rgba(42, 79, 87, 0.18) !important;
             border-radius: 16px !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 10px 22px rgba(0,0,0,0.08) !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
         }
         .stFileUploader:hover {
             border-color: #2A4F57 !important;
-            background: rgba(231, 241, 239, 0.92) !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 12px 26px rgba(0,0,0,0.12) !important;
+            background: rgba(231, 241, 239, 0.94) !important;
         }
         .stFileUploader label {
             color: #1E2E32 !important;
@@ -142,63 +152,14 @@ st.markdown(
         }
 
         /* Headings/Text */
-        h1, h2, h3, h4 {
-            color: #2A4F57 !important;
-        }
-        p, span, label, div {
-            color: #333333 !important;
-        }
+        h1, h2, h3, h4 { color: #2A4F57 !important; }
+        p, span, label, div { color: #333333 !important; }
 
-        /* Header spacing cleanup */
-        [data-testid="stHeader"] { margin-bottom: 0 !important; }
-
-        /* Sidebar nav buttons: compact, rounded, mint */
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"],
-        [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
-            min-height: 44px !important;
-            border-radius: 10px !important;
-            background: rgba(231, 241, 239, 0.8) !important;
-            border: 1px solid rgba(42, 79, 87, 0.2) !important;
-            color: #1E2E32 !important;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 6px 14px rgba(0,0,0,0.06) !important;
-            font-weight: 600 !important;
-        }
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover,
-        [data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
-            background: rgba(231, 241, 239, 0.9) !important;
-            border-color: rgba(42, 79, 87, 0.35) !important;
-            transform: translateY(-1px) !important;
-        }
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"],
-        [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-            min-height: 44px !important;
-            border-radius: 10px !important;
-            background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.2) !important;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.22) !important;
-            font-weight: 700 !important;
-        }
-
-        /* Cards / containers soft glass */
-        div[data-testid="stHorizontalBlock"] > div > div,
-        div[data-testid="stVerticalBlock"] > div > div,
-        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
-            background: rgba(255, 255, 255, 0.9) !important;
-            border: 1px solid rgba(42, 79, 87, 0.12) !important;
-            border-radius: 16px !important;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.12) !important;
-        }
-
-        /* Progress bar */
-        [data-testid="stProgressBar"] > div {
-            background: #E7F1EF !important;
-            border-radius: 9999px !important;
-        }
-        [data-testid="stProgressBar"] > div > div {
-            background: linear-gradient(90deg, #2A4F57 0%, #B8D4D1 100%) !important;
-            border-radius: 9999px !important;
-            height: 10px !important;
+        /* HR clean */
+        hr, div[role="separator"] {
+            border: none !important;
+            height: 1px !important;
+            background: rgba(42, 79, 87, 0.1) !important;
         }
     </style>
     """,
