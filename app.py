@@ -266,11 +266,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Logout button in top right
-col1, col2 = st.columns([6, 1])
-with col2:
-    render_logout_button()
-
 # ==================== WIZARD NAVIGATION ====================
 wizard = WizardManager()
 wizard.render_progress()
