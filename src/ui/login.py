@@ -98,7 +98,8 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+                background: linear-gradient(160deg, #6FBFB8 0%, #86D1C9 40%, #5DA59F 100%) !important;
+                background-attachment: fixed !important;
             }}
 
             header[data-testid="stHeader"],
