@@ -1,13 +1,13 @@
 """
 🔐 EVALUERA - Premium Apple-Inspired Login Screen
 ===================================================
-Modern authentication with glassmorphism, dark gradient background,
-and UX best practices following Apple Human Interface Guidelines
+Professional authentication with glassmorphism, dark gradient,
+and Apple Human Interface Guidelines compliance
 """
 
 import streamlit as st
 import os
-import json
+import base64
 from src.ui.theme import COLORS, RADIUS, SPACING, SHADOWS, TYPOGRAPHY
 
 
@@ -53,12 +53,24 @@ def logout():
     st.rerun()
 
 
+def get_logo_base64():
+    """Get EVALUERA logo as base64 for embedding"""
+    logo_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'EVALUERA.png')
+    try:
+        with open(logo_path, 'rb') as f:
+            logo_data = f.read()
+            return base64.b64encode(logo_data).decode()
+    except:
+        return None
+
+
 # ==================== PREMIUM LOGIN SCREEN ====================
 def render_login_screen():
     """
     Render premium Apple-inspired login screen with:
     - Dark gradient animated background
-    - Glassmorphism card
+    - EVALUERA logo (PNG)
+    - Premium glassmorphism card
     - Live input validation
     - Caps Lock warning
     - Smooth animations
@@ -70,14 +82,15 @@ def render_login_screen():
         st.session_state.show_password = False
     if "login_error" not in st.session_state:
         st.session_state.login_error = False
-    if "username_valid" not in st.session_state:
-        st.session_state.username_valid = False
+
+    # Get logo
+    logo_base64 = get_logo_base64()
 
     # Inject Premium CSS
     st.markdown(f"""
     <style>
-        /* ========== APPLE SF PRO FONT ========== */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        /* ========== APPLE FONTS ========== */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
         /* ========== DARK GRADIENT BACKGROUND ========== */
         .login-screen {{
@@ -88,14 +101,14 @@ def render_login_screen():
             height: 100vh;
             background: linear-gradient(
                 135deg,
-                #1E2E32 0%,
-                #2A4F57 25%,
-                #1E2E32 50%,
-                #2A4F57 75%,
-                #1E2E32 100%
+                {COLORS['dark_accent']} 0%,
+                {COLORS['primary']} 25%,
+                {COLORS['dark_accent']} 50%,
+                {COLORS['primary']} 75%,
+                {COLORS['dark_accent']} 100%
             );
             background-size: 400% 400%;
-            animation: gradientFlow 15s ease infinite;
+            animation: gradientFlow 18s ease infinite;
             z-index: -2;
         }}
 
@@ -113,25 +126,18 @@ def render_login_screen():
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(
-                circle at 20% 50%,
-                rgba(47, 74, 86, 0.3) 0%,
-                transparent 50%
-            ),
-            radial-gradient(
-                circle at 80% 80%,
-                rgba(47, 74, 86, 0.2) 0%,
-                transparent 50%
-            );
-            animation: patternMove 20s ease-in-out infinite;
+            background:
+                radial-gradient(circle at 25% 30%, rgba(184, 212, 209, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 75% 70%, rgba(184, 212, 209, 0.06) 0%, transparent 40%);
+            animation: patternPulse 15s ease-in-out infinite;
         }}
 
-        @keyframes patternMove {{
-            0%, 100% {{ opacity: 0.5; }}
-            50% {{ opacity: 0.8; }}
+        @keyframes patternPulse {{
+            0%, 100% {{ opacity: 0.6; }}
+            50% {{ opacity: 0.9; }}
         }}
 
-        /* Hide Streamlit default elements */
+        /* Hide Streamlit chrome */
         .stApp:has(.login-container) {{
             overflow: hidden !important;
         }}
@@ -151,16 +157,16 @@ def render_login_screen():
             left: 50% !important;
             transform: translate(-50%, -50%) !important;
             z-index: 99999 !important;
-            width: 90% !important;
-            max-width: 480px !important;
-            animation: floatIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+            width: 92% !important;
+            max-width: 460px !important;
+            animation: floatIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
         }}
 
         @keyframes floatIn {{
             from {{
                 opacity: 0;
-                transform: translate(-50%, -45%) scale(0.94);
-                filter: blur(10px);
+                transform: translate(-50%, -46%) scale(0.93);
+                filter: blur(12px);
             }}
             to {{
                 opacity: 1;
@@ -169,88 +175,99 @@ def render_login_screen():
             }}
         }}
 
-        /* ========== GLASS CARD (PREMIUM FROSTED) ========== */
+        /* ========== PREMIUM GLASS CARD ========== */
         .glass-card {{
-            background: rgba(255, 255, 255, 0.08) !important;
-            backdrop-filter: blur(40px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(40px) saturate(180%) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+            background: rgba(255, 255, 255, 0.09) !important;
+            backdrop-filter: blur(45px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(45px) saturate(180%) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
             border-radius: {RADIUS['xl']} !important;
-            padding: 56px 48px !important;
+            padding: 48px 44px !important;
             box-shadow:
-                0 32px 64px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset,
-                0 1px 2px rgba(255, 255, 255, 0.1) inset !important;
+                0 40px 80px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+                0 2px 4px rgba(255, 255, 255, 0.12) inset !important;
             position: relative;
             overflow: hidden;
         }}
 
-        /* Subtle light reflection */
+        /* Subtle shine effect */
         .glass-card::before {{
             content: '';
             position: absolute;
-            top: 0;
-            left: -75%;
-            width: 50%;
-            height: 100%;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
             background: linear-gradient(
-                90deg,
+                45deg,
                 transparent,
                 rgba(255, 255, 255, 0.03),
                 transparent
             );
-            animation: shimmer 8s infinite;
+            animation: rotate 8s linear infinite;
         }}
 
-        @keyframes shimmer {{
-            0%, 100% {{ left: -75%; }}
-            50% {{ left: 125%; }}
+        @keyframes rotate {{
+            0% {{ transform: rotate(0deg); }}
+            100% {{ transform: rotate(360deg); }}
         }}
 
-        /* ========== LOGO & BRANDING (APPLE-STYLE) ========== */
+        /* ========== LOGO & BRANDING ========== */
         .login-header {{
             text-align: center !important;
-            margin-bottom: 48px !important;
+            margin-bottom: 40px !important;
+            position: relative;
+            z-index: 1;
         }}
 
-        .login-logo {{
-            font-size: 48px !important;
-            font-weight: 800 !important;
-            letter-spacing: -0.03em !important;
-            background: linear-gradient(
-                135deg,
-                #FFFFFF 0%,
-                rgba(255, 255, 255, 0.85) 100%
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin: 0 0 12px 0 !important;
-            text-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        .logo-container {{
+            margin-bottom: 16px;
+            animation: logoFloat 3s ease-in-out infinite;
+        }}
+
+        @keyframes logoFloat {{
+            0%, 100% {{ transform: translateY(0); }}
+            50% {{ transform: translateY(-6px); }}
+        }}
+
+        .logo-container img {{
+            width: 220px !important;
+            height: auto !important;
+            filter: drop-shadow(0 8px 24px rgba(255, 255, 255, 0.15));
+            opacity: 0.95;
         }}
 
         .login-tagline {{
-            font-size: 16px !important;
+            font-size: 15px !important;
             font-weight: 500 !important;
-            color: rgba(255, 255, 255, 0.7) !important;
-            margin: 0 !important;
-            letter-spacing: 0.02em !important;
+            color: rgba(255, 255, 255, 0.75) !important;
+            margin: 12px 0 0 0 !important;
+            letter-spacing: 0.03em !important;
             font-family: 'Inter', -apple-system, sans-serif !important;
         }}
 
-        /* ========== INPUT FIELDS (APPLE CLEAN) ========== */
+        /* ========== INPUT FIELDS (APPLE STYLE) ========== */
+        .login-container .stTextInput > label {{
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            margin-bottom: 8px !important;
+            letter-spacing: 0.01em !important;
+            font-family: 'Inter', sans-serif !important;
+        }}
+
         .login-container .stTextInput > div > div > input {{
-            background: rgba(255, 255, 255, 0.06) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.12) !important;
+            background: rgba(231, 241, 239, 0.08) !important;
+            border: 1.5px solid rgba(231, 241, 239, 0.15) !important;
             border-radius: {RADIUS['md']} !important;
-            padding: 16px 20px !important;
+            padding: 15px 18px !important;
             font-size: 16px !important;
             font-weight: 400 !important;
             color: #FFFFFF !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+            font-family: 'Inter', sans-serif !important;
         }}
 
         .login-container .stTextInput > div > div > input::placeholder {{
@@ -259,18 +276,12 @@ def render_login_screen():
         }}
 
         .login-container .stTextInput > div > div > input:focus {{
-            background: rgba(255, 255, 255, 0.09) !important;
-            border-color: rgba(255, 255, 255, 0.3) !important;
+            background: rgba(231, 241, 239, 0.12) !important;
+            border-color: {COLORS['secondary']} !important;
             box-shadow:
-                0 0 0 4px rgba(255, 255, 255, 0.08),
-                0 4px 16px rgba(0, 0, 0, 0.2) !important;
+                0 0 0 4px rgba(184, 212, 209, 0.12),
+                0 4px 16px rgba(0, 0, 0, 0.25) !important;
             outline: none !important;
-        }}
-
-        /* Valid input indicator */
-        .input-valid input {{
-            border-color: #10B981 !important;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
         }}
 
         /* Remove dark backgrounds */
@@ -280,24 +291,15 @@ def render_login_screen():
             background: transparent !important;
         }}
 
-        /* Input labels */
-        .login-container .stTextInput > label {{
-            color: rgba(255, 255, 255, 0.85) !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            margin-bottom: 8px !important;
-            letter-spacing: 0.01em !important;
-        }}
-
-        /* ========== PASSWORD TOGGLE (PREMIUM) ========== */
+        /* ========== PASSWORD CONTROLS ========== */
         .password-controls {{
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin: 16px 0 24px 0;
-            padding: 12px 16px;
+            gap: 10px;
+            margin: 14px 0 20px 0;
+            padding: 10px 14px;
             background: rgba(255, 255, 255, 0.04);
-            border-radius: {RADIUS['md']};
+            border-radius: {RADIUS['sm']};
             border: 1px solid rgba(255, 255, 255, 0.08);
         }}
 
@@ -306,39 +308,40 @@ def render_login_screen():
         }}
 
         .login-container .stCheckbox > label {{
-            color: rgba(255, 255, 255, 0.75) !important;
-            font-size: 14px !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-size: 13px !important;
             font-weight: 500 !important;
             cursor: pointer !important;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }}
 
         .login-container .stCheckbox input[type="checkbox"] {{
-            width: 20px !important;
-            height: 20px !important;
+            width: 18px !important;
+            height: 18px !important;
             cursor: pointer !important;
-            accent-color: rgba(255, 255, 255, 0.3) !important;
+            accent-color: {COLORS['secondary']} !important;
         }}
 
         /* ========== CAPS LOCK WARNING ========== */
-        .caps-lock-warning {{
-            display: flex;
+        .caps-warning {{
+            display: none;
             align-items: center;
             gap: 8px;
             padding: 10px 14px;
             background: rgba(245, 158, 11, 0.15);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.35);
             border-radius: {RADIUS['sm']};
-            margin: -8px 0 16px 0;
+            margin: 0 0 16px 0;
             animation: slideDown 0.3s ease;
+        }}
+
+        .caps-warning.active {{
+            display: flex;
         }}
 
         @keyframes slideDown {{
             from {{
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(-8px);
             }}
             to {{
                 opacity: 1;
@@ -346,87 +349,85 @@ def render_login_screen():
             }}
         }}
 
-        .caps-lock-warning span {{
-            color: #F59E0B;
+        .caps-warning span {{
+            color: #FCD34D;
             font-size: 13px;
             font-weight: 500;
         }}
 
-        /* ========== LOGIN BUTTON (PREMIUM GRADIENT) ========== */
+        /* ========== LOGIN BUTTON (PRIMARY BRAND COLOR) ========== */
         .login-container .stButton > button {{
             width: 100% !important;
             background: linear-gradient(
                 135deg,
-                rgba(255, 255, 255, 0.15) 0%,
-                rgba(255, 255, 255, 0.08) 100%
+                {COLORS['primary']} 0%,
+                {COLORS['dark_accent']} 100%
             ) !important;
-            border: 1.5px solid rgba(255, 255, 255, 0.2) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
             color: #FFFFFF !important;
             border-radius: {RADIUS['md']} !important;
-            padding: 18px 32px !important;
-            font-size: 17px !important;
+            padding: 17px 32px !important;
+            font-size: 16px !important;
             font-weight: 600 !important;
             letter-spacing: 0.02em !important;
             cursor: pointer !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             box-shadow:
-                0 12px 32px rgba(0, 0, 0, 0.3),
+                0 12px 36px rgba(42, 79, 87, 0.4),
                 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
             margin-top: 8px !important;
-            font-family: 'Inter', -apple-system, sans-serif !important;
+            font-family: 'Inter', sans-serif !important;
             position: relative;
             overflow: hidden;
         }}
 
-        /* Button shine effect */
-        .login-container .stButton > button::before {{
+        /* Button glow effect */
+        .login-container .stButton > button::after {{
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.2),
-                transparent
-            );
-            transition: left 0.5s;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }}
 
         .login-container .stButton > button:hover {{
             transform: translateY(-2px) !important;
             background: linear-gradient(
                 135deg,
-                rgba(255, 255, 255, 0.2) 0%,
-                rgba(255, 255, 255, 0.12) 100%
+                {COLORS['primary']} 0%,
+                #1A2528 100%
             ) !important;
-            border-color: rgba(255, 255, 255, 0.3) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
             box-shadow:
-                0 16px 40px rgba(0, 0, 0, 0.4),
+                0 16px 48px rgba(42, 79, 87, 0.5),
                 0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
         }}
 
-        .login-container .stButton > button:hover::before {{
-            left: 100%;
+        .login-container .stButton > button:hover::after {{
+            width: 300px;
+            height: 300px;
         }}
 
         .login-container .stButton > button:active {{
             transform: translateY(0) scale(0.98) !important;
             box-shadow:
-                0 8px 24px rgba(0, 0, 0, 0.3),
-                0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+                0 8px 24px rgba(42, 79, 87, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.15) inset !important;
         }}
 
-        /* ========== ERROR MESSAGE (APPLE ALERT) ========== */
+        /* ========== ERROR ALERT ========== */
         .error-alert {{
             background: rgba(239, 68, 68, 0.15) !important;
             backdrop-filter: blur(10px) !important;
-            border: 1.5px solid rgba(239, 68, 68, 0.3) !important;
+            border: 1.5px solid rgba(239, 68, 68, 0.35) !important;
             border-radius: {RADIUS['md']} !important;
-            padding: 16px 20px !important;
-            margin-bottom: 24px !important;
+            padding: 14px 18px !important;
+            margin-bottom: 20px !important;
             color: #FCA5A5 !important;
             font-size: 14px !important;
             font-weight: 500 !important;
@@ -440,8 +441,8 @@ def render_login_screen():
 
         @keyframes shake {{
             0%, 100% {{ transform: translateX(0); }}
-            10%, 30%, 50%, 70%, 90% {{ transform: translateX(-6px); }}
-            20%, 40%, 60%, 80% {{ transform: translateX(6px); }}
+            10%, 30%, 50%, 70%, 90% {{ transform: translateX(-5px); }}
+            20%, 40%, 60%, 80% {{ transform: translateX(5px); }}
         }}
 
         @keyframes fadeIn {{
@@ -458,42 +459,22 @@ def render_login_screen():
                 rgba(255, 255, 255, 0.15),
                 transparent
             ) !important;
-            margin: 32px 0 28px 0 !important;
+            margin: 28px 0 24px 0 !important;
         }}
 
-        /* ========== FOOTER HINT ========== */
-        .login-footer {{
-            text-align: center;
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-        }}
+        /* ========== MOBILE RESPONSIVE ========== */
+        @media (max-width: 600px) {{
+            .glass-card {{
+                padding: 36px 28px !important;
+            }}
 
-        .login-footer p {{
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            font-weight: 400;
-            margin: 0;
-            line-height: 1.6;
-        }}
+            .logo-container img {{
+                width: 180px !important;
+            }}
 
-        .demo-credentials {{
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: {RADIUS['sm']};
-            padding: 12px 16px;
-            margin-top: 12px;
-            font-family: 'Monaco', 'Courier New', monospace;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
-            text-align: left;
-        }}
-
-        .demo-credentials code {{
-            background: rgba(255, 255, 255, 0.08);
-            padding: 2px 6px;
-            border-radius: 4px;
-            color: #B8D4D1;
+            .login-tagline {{
+                font-size: 14px !important;
+            }}
         }}
     </style>
 
@@ -505,73 +486,89 @@ def render_login_screen():
     st.markdown('<div class="login-container"><div class="glass-card">', unsafe_allow_html=True)
 
     # Logo & Header
-    st.markdown("""
-    <div class="login-header">
-        <div class="login-logo">EVALUERA</div>
-        <div class="login-tagline">KI-gestützte Kostenanalyse</div>
-    </div>
-    """, unsafe_allow_html=True)
+    if logo_base64:
+        st.markdown(f"""
+        <div class="login-header">
+            <div class="logo-container">
+                <img src="data:image/png;base64,{logo_base64}" alt="EVALUERA" />
+            </div>
+            <div class="login-tagline">KI-gestützte Kostenanalyse</div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Fallback if logo not found
+        st.markdown("""
+        <div class="login-header">
+            <div style="font-size: 42px; font-weight: 800; color: rgba(255,255,255,0.95); margin-bottom: 8px; letter-spacing: -0.02em;">
+                EVALUERA
+            </div>
+            <div class="login-tagline">KI-gestützte Kostenanalyse</div>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Error Message
     if st.session_state.login_error:
         st.markdown("""
         <div class="error-alert">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
             </svg>
-            <span>Ungültige Zugangsdaten. Bitte erneut versuchen.</span>
+            <span>Ungültige Zugangsdaten</span>
         </div>
         """, unsafe_allow_html=True)
 
     # Username Input
-    st.markdown('<div style="margin-bottom: 20px;">', unsafe_allow_html=True)
+    st.markdown('<div style="margin-bottom: 18px;">', unsafe_allow_html=True)
     username = st.text_input(
         "Benutzername",
-        placeholder="Geben Sie Ihren Benutzernamen ein",
+        placeholder="Ihr Benutzername",
         key="login_username",
         label_visibility="visible"
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
     # Password Input
-    st.markdown('<div style="margin-bottom: 8px;">', unsafe_allow_html=True)
+    st.markdown('<div style="margin-bottom: 4px;">', unsafe_allow_html=True)
     password = st.text_input(
         "Passwort",
         type="default" if st.session_state.show_password else "password",
-        placeholder="Geben Sie Ihr Passwort ein",
+        placeholder="Ihr Passwort",
         key="login_password",
         label_visibility="visible"
     )
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Password Controls (Show Password + Caps Lock Warning)
+    # Password Controls
     st.markdown('<div class="password-controls">', unsafe_allow_html=True)
-    col1, col2 = st.columns([0.08, 0.92])
+    col1, col2 = st.columns([0.07, 0.93])
     with col1:
         show_pwd = st.checkbox("", key="show_pwd_toggle", value=st.session_state.show_password)
         st.session_state.show_password = show_pwd
     with col2:
+        icon = "🔓" if show_pwd else "👁️"
+        text = "Passwort verbergen" if show_pwd else "Passwort anzeigen"
         st.markdown(
-            f'<span style="color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 500;">{"🔓 Passwort verbergen" if show_pwd else "👁️ Passwort anzeigen"}</span>',
+            f'<span style="color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 500;">{icon} {text}</span>',
             unsafe_allow_html=True
         )
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # Caps Lock Warning (JavaScript-based)
+    # Caps Lock Warning
     st.markdown("""
     <script>
-        document.addEventListener('keyup', function(event) {
-            if (event.getModifierState && event.getModifierState('CapsLock')) {
-                const warning = document.getElementById('caps-warning');
-                if (warning) warning.style.display = 'flex';
-            } else {
-                const warning = document.getElementById('caps-warning');
-                if (warning) warning.style.display = 'none';
+        document.addEventListener('keyup', function(e) {
+            const warning = document.getElementById('caps-warning');
+            if (warning) {
+                if (e.getModifierState && e.getModifierState('CapsLock')) {
+                    warning.classList.add('active');
+                } else {
+                    warning.classList.remove('active');
+                }
             }
         });
     </script>
-    <div id="caps-warning" class="caps-lock-warning" style="display: none;">
-        <svg width="16" height="16" viewBox="0 0 20 20" fill="#F59E0B">
+    <div id="caps-warning" class="caps-warning">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="#FCD34D">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
         </svg>
         <span>Caps Lock ist aktiviert</span>
@@ -593,17 +590,6 @@ def render_login_screen():
             st.session_state.login_error = True
             st.rerun()
 
-    # Footer with demo credentials
-    st.markdown("""
-    <div class="login-footer">
-        <p>Demo-Zugang für Testzwecke:</p>
-        <div class="demo-credentials">
-            <code>admin</code> / <code>evaluera2024</code><br>
-            <code>demo</code> / <code>demo123</code>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
     st.markdown('</div></div>', unsafe_allow_html=True)
 
 
@@ -613,7 +599,7 @@ def render_logout_button():
         st.markdown("---")
         st.markdown(f"""
         <div style="
-            padding: 20px;
+            padding: 18px;
             background: linear-gradient(135deg, rgba(42, 79, 87, 0.08) 0%, rgba(184, 212, 209, 0.08) 100%);
             backdrop-filter: blur(10px);
             border-radius: {RADIUS['md']};
@@ -633,9 +619,9 @@ def render_logout_button():
             </div>
             <div style="
                 font-weight: 700;
-                font-size: 18px;
+                font-size: 17px;
                 color: {COLORS['primary']};
-                letter-spacing: -0.02em;
+                letter-spacing: -0.01em;
             ">
                 {st.session_state.get('username', 'Benutzer')}
             </div>
@@ -648,8 +634,7 @@ def render_logout_button():
 
 def inject_lottie_background():
     """
-    Inject dark gradient background animation
-    Note: Background is now handled via CSS gradient in render_login_screen()
-    This function is kept for compatibility but not required
+    Legacy function - background is now handled via CSS
+    Kept for compatibility with existing code
     """
     pass
