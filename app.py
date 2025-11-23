@@ -114,21 +114,35 @@ st.markdown(
             border-color: rgba(42, 79, 87, 0.28) !important;
         }
 
-        /* Cards / containers */
+        /* Reset: no styling unless content is present */
         div[data-testid="stHorizontalBlock"] > div > div,
         div[data-testid="stVerticalBlock"] > div > div,
-        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
+        div[data-testid="column"] > div {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        /* Apply card styling only when there is actual content */
+        div[data-testid="stHorizontalBlock"] > div > div:has(*),
+        div[data-testid="stVerticalBlock"] > div > div:has(*),
+        div[data-testid="column"] > div:has(*) {
             background: #FFFFFF !important;
             border: 1px solid rgba(42, 79, 87, 0.06) !important;
-            border-radius: 16px !important;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.07) !important;
+            border-radius: 14px !important;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
+            padding: 14px 16px !important;
         }
 
         /* Hide empty placeholder containers that create white bars */
         div[data-testid="stVerticalBlock"] > div > div:empty,
         div[data-testid="stHorizontalBlock"] > div > div:empty,
         div[data-testid="stVerticalBlock"] > div:empty,
-        div[data-testid="stHorizontalBlock"] > div:empty {
+        div[data-testid="stHorizontalBlock"] > div:empty,
+        div[data-testid="column"] > div:empty {
             display: none !important;
             height: 0 !important;
             padding: 0 !important;
@@ -200,30 +214,6 @@ st.markdown(
             border: none !important;
             box-shadow: none !important;
             background: transparent !important;
-        }
-
-        /* Hide pill bars with no real content (even if whitespace nodes exist) */
-        div[data-testid="stHorizontalBlock"] > div > div:not(:has(*)),
-        div[data-testid="stVerticalBlock"] > div > div:not(:has(*)),
-        div[data-testid="stHorizontalBlock"] > div:not(:has(*)),
-        div[data-testid="stVerticalBlock"] > div:not(:has(*)),
-        div[data-testid="column"] > div:not(:has(*)),
-        div[data-testid="block-container"] > div:not(:has(*)),
-        div[data-testid="block-container"] > div > div:not(:has(*)) {
-            display: none !important;
-            height: 0 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: none !important;
-            box-shadow: none !important;
-            background: transparent !important;
-        }
-
-        /* Card padding a bit smaller to avoid oversized blocks */
-        div[data-testid="stHorizontalBlock"] > div > div,
-        div[data-testid="stVerticalBlock"] > div > div,
-        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
-            padding: 14px 16px !important;
         }
 
         /* Sidebar buttons spacing/height */
