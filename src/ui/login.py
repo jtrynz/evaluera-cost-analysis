@@ -93,12 +93,12 @@ def render_login_screen():
                 --eval-primary: {COLORS['primary']};
                 --eval-secondary: {COLORS['secondary']};
                 --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(255, 255, 255, 0.94);
+                --eval-glass: rgba(255, 255, 255, 0.92);
                 --eval-soft: #E7F1EF;
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: linear-gradient(145deg, {COLORS['dark_accent']} 0%, {COLORS['primary']} 60%, #0C1315 100%) !important;
+                background: linear-gradient(140deg, #a9d9d3 0%, #88c2bd 45%, #6fa9a2 100%) !important;
             }}
 
             header[data-testid="stHeader"],
@@ -258,7 +258,7 @@ def render_login_screen():
 
             .stButton > button {{
                 width: 100% !important;
-                background: linear-gradient(135deg, {COLORS['secondary']} 0%, {COLORS['primary']} 45%, {COLORS['dark_accent']} 100%) !important;
+                background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
                 color: #F6FAF9 !important;
                 border: none !important;
                 border-radius: {RADIUS['md']} !important;
@@ -493,71 +493,7 @@ def render_logout_button():
 
 def inject_lottie_background():
     """
-    Render animated Lottie background for the login screen
-    and skip when the user is already authenticated.
+    Previously rendered animated Lottie background.
+    Disabled to keep the mint gradient clean (liquid glass header removed).
     """
-    if st.session_state.get("logged_in"):
-        return
-
-    assets_dir = os.path.join(os.path.dirname(__file__), "..", "..", "assets")
-    lottie_path = os.path.join(assets_dir, "dark_gradient.json")
-
-    if not os.path.exists(lottie_path):
-        return
-
-    with open(lottie_path, "rb") as f:
-        lottie_base64 = base64.b64encode(f.read()).decode()
-
-    st.components.v1.html(
-        f"""
-        <div id="eval-bg">
-            <div class="eval-overlay"></div>
-            <lottie-player
-                id="eval-lottie"
-                autoplay
-                loop
-                mode="normal"
-                src="data:application/json;base64,{lottie_base64}">
-            </lottie-player>
-        </div>
-        <style>
-            #eval-bg {{
-                position: fixed;
-                inset: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
-                z-index: 0;
-                pointer-events: none;
-                background: linear-gradient(140deg, {COLORS['dark_accent']} 0%, {COLORS['primary']} 50%, #0C1315 100%);
-            }}
-
-            #eval-bg .eval-overlay {{
-                position: absolute;
-                inset: 0;
-                background:
-                    radial-gradient(circle at 20% 20%, rgba(184, 212, 209, 0.12), transparent 40%),
-                    radial-gradient(circle at 78% 70%, rgba(184, 212, 209, 0.1), transparent 45%),
-                    linear-gradient(180deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.55));
-                z-index: 1;
-            }}
-
-            #eval-bg lottie-player {{
-                position: absolute;
-                inset: -15% -15% -15% -15%;
-                width: 130%;
-                height: 130%;
-                opacity: 0.9;
-                z-index: 0;
-            }}
-
-            .stApp, [data-testid="stAppViewContainer"] {{
-                position: relative;
-                z-index: 2;
-            }}
-        </style>
-        <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-        """,
-        height=1,
-        width=1,
-    )
+    return

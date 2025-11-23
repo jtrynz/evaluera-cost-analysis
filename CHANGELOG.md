@@ -6,3 +6,4 @@
 - Loader unter dem Button entfernt; Spinner erscheint nur noch während des Login-Vorgangs.
 - „Passwort vergessen?“ Link ergänzt; redundante Passwort-Checkbox entfernt.
 - Liquid-Glass-Balken über dem Logo entfernt; Fokus-Ränder auf Evaluera-Farben gesetzt; Fallback-Gradient per CSS ergänzt.
+- Mint-Gradient (hell #a9d9d3 zu #6fa9a2) als Hintergrund gesetzt, Button auf dunkles Evaluera-Grün umgestellt, Lottie-Gradient deaktiviert; dark_gradient.json nach assets/deprecated verschoben; neues Backup: login_20251123_122130.py.
