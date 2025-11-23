@@ -481,8 +481,11 @@ def step5_cost_estimation():
         key="lot_size"
     )
 
+    def _sanitize(text: str) -> str:
+        return "".join(ch for ch in (text or "") if ord(ch) < 128)
+
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
-        with GPTLoadingAnimation(" Analysiere mit KI...", icon="💰"):
+        with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
             # Supplier analysis (if available)
             supplier_competencies = None
             if supplier:
@@ -505,9 +508,9 @@ def step5_cost_estimation():
 
             # Cost estimation
             result = cached_gpt_complete_cost_estimate(
-                description=article,
+                description=_sanitize(article),
                 lot_size=int(lot_size),
-                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies)
+                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=False)
             )
 
             if result and not result.get("_error"):
