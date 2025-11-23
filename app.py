@@ -177,9 +177,10 @@ if wizard.get_current_step() == 1:
     )
 
     if uploaded_file:
+        st.caption(f"Datei: **{uploaded_file.name}** ({uploaded_file.type or 'unbekannt'}, {uploaded_file.size} Bytes)")
         with ExcelLoadingAnimation("Excel-Datei wird analysiert..."):
             try:
-                df = pd.read_excel(uploaded_file)
+                df = pd.read_excel(uploaded_file, engine=None)
                 st.session_state.df_raw = df
                 st.session_state.uploaded_file = uploaded_file.name
 
@@ -200,6 +201,7 @@ if wizard.get_current_step() == 1:
 
             except Exception as e:
                 st.error(f"❌ Fehler beim Laden der Datei: {str(e)}")
+                st.exception(e)
 
 # ==================== STEP 2: ARTICLE SELECTION ====================
 elif wizard.get_current_step() == 2:
