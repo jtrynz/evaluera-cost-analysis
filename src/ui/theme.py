@@ -181,60 +181,89 @@ def apply_global_styles():
             background: {COLORS['gray_400']};
         }}
 
-        /* ========== INPUT FIELDS (APPLE STYLE) ========== */
-        .stTextInput > div > div > input,
-        .stNumberInput > div > div > input,
-        .stTextArea textarea,
-        .stSelectbox > div > div {{
-            background: {COLORS['surface']} !important;
-            border: 1.5px solid {COLORS['gray_300']} !important;
-            border-radius: {RADIUS['md']} !important;
-            padding: 12px 16px !important;
-            font-size: {TYPOGRAPHY['body']} !important;
-            color: {COLORS['dark_accent']} !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: {SHADOWS['xs']} !important;
-        }}
-
-        .stTextInput > div > div > input::placeholder,
-        .stNumberInput > div > div > input::placeholder,
-        .stTextArea textarea::placeholder {{
-            color: {COLORS['gray_400']} !important;
-            font-weight: 400 !important;
-        }}
-
-        /* ========== FIX 6: REMOVE RED BORDERS - APPLE FOCUS STATE ========== */
-        .stTextInput > div > div > input:focus,
-        .stNumberInput > div > div > input:focus,
-        .stTextArea textarea:focus,
-        .stSelectbox > div > div:focus-within {{
-            border-color: {COLORS['primary']} !important;
-            box-shadow: 0 0 0 4px {COLORS['light_accent']} !important;
+        /* ========== INPUT FIELDS (CLEAN EVALUERA STYLE) ========== */
+        /* Remove all default/red glows */
+        input, textarea, select {{
+            box-shadow: none !important;
             outline: none !important;
         }}
+        input:focus, input:focus-visible, input:active {{
+            outline: none !important;
+            box-shadow: none !important;
+        }}
+        input:invalid, input:invalid:focus, input:user-invalid, input:user-invalid:focus {{
+            box-shadow: none !important;
+            outline: none !important;
+            border-color: {COLORS['primary']} !important;
+        }}
 
-        /* Ensure NO red borders on invalid state */
-        .stTextInput > div > div > input:invalid,
-        .stNumberInput > div > div > input:invalid,
-        .stTextArea textarea:invalid {{
-            border-color: {COLORS['gray_300']} !important;
+        /* BaseWeb Input wrapper */
+        div[data-baseweb="input"] {{
+            border: 1.8px solid rgba(42, 79, 87, 0.35) !important;
+            border-radius: 10px !important;
+            min-height: 48px !important;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.06) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            transition: all 0.2s ease !important;
+            overflow: hidden !important;
+        }}
+
+        /* Inner padding + alignment */
+        div[data-baseweb="input"] > div {{
+            padding: 0 12px !important;
+            align-items: center !important;
+        }}
+
+        /* Actual input */
+        div[data-baseweb="input"] input {{
+            height: 46px !important;
+            padding: 0 8px !important;
+            font-size: 15px !important;
+            font-weight: 500 !important;
+            color: {COLORS['dark_accent']} !important;
+            background: transparent !important;
+            border: none !important;
             box-shadow: none !important;
         }}
 
-        .stTextInput > div > div > input:invalid:focus,
-        .stNumberInput > div > div > input:invalid:focus,
-        .stTextArea textarea:invalid:focus {{
+        /* Focus in brand color */
+        div[data-baseweb="input"]:focus-within {{
             border-color: {COLORS['primary']} !important;
-            box-shadow: 0 0 0 4px {COLORS['light_accent']} !important;
+            box-shadow:
+                0 0 0 2px rgba(42, 79, 87, 0.18),
+                0 6px 16px rgba(0, 0, 0, 0.08) !important;
+            background: rgba(255, 255, 255, 0.98) !important;
         }}
 
-        /* Remove Streamlit's dark input background */
-        .stTextInput, .stNumberInput, .stTextArea, .stSelectbox {{
-            background: transparent !important;
+        /* Labels and placeholder */
+        .stTextInput > label,
+        .stNumberInput > label,
+        .stTextArea > label,
+        .stSelectbox > label {{
+            color: {COLORS['dark_accent']} !important;
+            font-weight: 600 !important;
+            margin-bottom: 6px !important;
+        }}
+        div[data-baseweb="input"] input::placeholder {{
+            color: rgba(30, 46, 50, 0.6) !important;
+            font-weight: 400 !important;
         }}
 
-        .stTextInput > div, .stNumberInput > div, .stTextArea > div, .stSelectbox > div {{
+        /* Password eye icon: align or hide if desired */
+        button[aria-label="Show password"],
+        button[aria-label="Hide password"] {{
             background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            width: 36px !important;
+            height: 36px !important;
+            margin-right: 6px !important;
+            color: {COLORS['primary']} !important;
+        }}
+        button[aria-label="Show password"]:focus,
+        button[aria-label="Hide password"]:focus {{
+            box-shadow: none !important;
+            outline: none !important;
         }}
 
         /* ========== BUTTONS (APPLE GLASSMORPHISM) ========== */
