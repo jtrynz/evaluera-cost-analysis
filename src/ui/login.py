@@ -120,23 +120,33 @@ def render_login_screen():
             }}
 
             .block-container {{
-                padding: 32px 26px 28px 26px !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }}
+
+            .login-viewport {{
+                min-height: 100vh;
+                width: 100%;
+                display: grid;
+                place-items: center;
+                padding: 32px 16px;
+            }}
+
+            .login-card {{
                 width: 100%;
                 max-width: 520px;
-                margin-top: 0 !important;
                 background: var(--eval-glass);
                 border: 1px solid rgba(42, 79, 87, 0.18);
                 border-radius: {RADIUS['xl']};
                 box-shadow:
                     0 18px 55px rgba(0, 0, 0, 0.25),
                     0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+                padding: 32px 26px 28px 26px;
                 position: relative;
                 overflow: hidden;
-            }}
-
-            /* Entfernt evtl. leere Streifen-Container */
-            .block-container > div:empty {{
-                display: none !important;
             }}
 
             .login-header {{
