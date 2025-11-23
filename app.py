@@ -78,11 +78,11 @@ st.markdown(
         }
 
         [data-testid="stSidebar"] {
-            background: linear-gradient(180deg, rgba(76, 136, 132, 0.25) 0%, rgba(64, 120, 115, 0.35) 100%) !important;
-            backdrop-filter: blur(18px) !important;
-            -webkit-backdrop-filter: blur(18px) !important;
-            border-right: 1px solid rgba(42, 79, 87, 0.15) !important;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12) !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(231,241,239,0.94) 100%) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            border-right: 1px solid rgba(42, 79, 87, 0.08) !important;
+            box-shadow: 4px 0 14px rgba(0, 0, 0, 0.05) !important;
         }
 
         /* Sidebar buttons */
@@ -107,19 +107,19 @@ st.markdown(
         div[data-testid="stHorizontalBlock"] > div > div,
         div[data-testid="stVerticalBlock"] > div > div,
         .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
-            background: rgba(255, 255, 255, 0.9) !important;
-            border: 1px solid rgba(42, 79, 87, 0.12) !important;
+            background: rgba(255, 255, 255, 0.96) !important;
+            border: 1px solid rgba(42, 79, 87, 0.06) !important;
             border-radius: 16px !important;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.12) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.08) !important;
         }
 
         /* Progress bar */
         [data-testid="stProgressBar"] > div {
-            background: rgba(255, 255, 255, 0.35) !important;
+            background: #E7F1EF !important;
             border-radius: 9999px !important;
         }
         [data-testid="stProgressBar"] > div > div {
-            background: linear-gradient(90deg, #2A4F57 0%, #B8D4D1 100%) !important;
+            background: #2A4F57 !important;
             border-radius: 9999px !important;
             height: 10px !important;
         }
@@ -155,12 +155,12 @@ st.markdown(
         /* Sidebar nav buttons: compact, rounded, mint */
         [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"],
         [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
-            min-height: 46px !important;
+            min-height: 44px !important;
             border-radius: 10px !important;
-            background: rgba(255, 255, 255, 0.82) !important;
-            border: 1px solid rgba(42, 79, 87, 0.22) !important;
+            background: rgba(231, 241, 239, 0.8) !important;
+            border: 1px solid rgba(42, 79, 87, 0.2) !important;
             color: #1E2E32 !important;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.3), 0 6px 14px rgba(0,0,0,0.06) !important;
             font-weight: 600 !important;
         }
         [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover,
@@ -171,12 +171,12 @@ st.markdown(
         }
         [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"],
         [data-testid="stSidebar"] .stButton > button[kind="primary"] {
-            min-height: 46px !important;
+            min-height: 44px !important;
             border-radius: 10px !important;
             background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
             color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.22) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 2px rgba(255,255,255,0.28) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12), inset 0 1px 2px rgba(255,255,255,0.22) !important;
             font-weight: 700 !important;
         }
 
