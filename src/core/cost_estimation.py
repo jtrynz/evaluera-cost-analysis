@@ -73,7 +73,7 @@ def gpt_complete_cost_estimate(
         }
 
     try:
-        print(f"✅ GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
+        print(f"OK GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
     except Exception:
         pass
     client = OpenAI(api_key=key)
@@ -300,13 +300,19 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
             fab_cost = result["fab_cost_eur"] or 0.0
             result["total_cost_eur"] = mat_cost + fab_cost
 
-        print(f"✅ ALL-IN-ONE Estimate komplett - {result['_tokens_used']} Tokens")
-        print(f"   Material: {result['material_cost_eur']:.4f} € | Fertigung: {result['fab_cost_eur']:.4f} € | TOTAL: {result['total_cost_eur']:.4f} €")
+        try:
+            print(f"OK ALL-IN-ONE Estimate tokens={result.get('_tokens_used')}")
+            print(f"Material: {result.get('material_cost_eur')} | Fertigung: {result.get('fab_cost_eur')} | TOTAL: {result.get('total_cost_eur')}")
+        except Exception:
+            pass
 
         return result
 
     except Exception as e:
-        print(f"❌ ERROR in gpt_complete_cost_estimate: {e}")
+        try:
+            print(f"ERROR in gpt_complete_cost_estimate: {e}")
+        except Exception:
+            pass
         import traceback
         return {
             "material_guess": "stahl",

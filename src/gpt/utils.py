@@ -52,8 +52,11 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
         pass
 
     # Alles fehlgeschlagen
-    print(f"⚠️ JSON Parsing fehlgeschlagen!")
-    print(f"   Response (erste 300 chars): {text[:300]}")
+    try:
+        print("WARN JSON Parsing fehlgeschlagen!")
+        print(f"   Response (erste 300 chars): {text[:300]}")
+    except Exception:
+        pass
     return default
 
 
