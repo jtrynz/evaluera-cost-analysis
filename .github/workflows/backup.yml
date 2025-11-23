@@ -1,0 +1,116 @@
+name: 📦 Daily Repository Backup & Release
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual triggering
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for complete backup
+
+      - name: 🏷️ Generate version tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            VERSION="${GITHUB_REF#refs/tags/}"
+          else
+            VERSION="backup-$(date +'%Y-%m-%d-%H%M')"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📌 Version: $VERSION"
+
+      - name: 📦 Create backup archive
+        id: backup
+        run: |
+          BACKUP_NAME="evaluera-${{ steps.version.outputs.version }}"
+
+          # Create ZIP backup
+          zip -r "${BACKUP_NAME}.zip" \
+            . \
+            -x "*.git/*" \
+            -x "*__pycache__/*" \
+            -x "*.pyc" \
+            -x "*node_modules/*" \
+            -x "*.venv/*" \
+            -x "*/backups/*"
+
+          echo "backup_file=${BACKUP_NAME}.zip" >> $GITHUB_OUTPUT
+          echo "backup_name=${BACKUP_NAME}" >> $GITHUB_OUTPUT
+
+          # Get file size
+          SIZE=$(du -h "${BACKUP_NAME}.zip" | cut -f1)
+          echo "backup_size=${SIZE}" >> $GITHUB_OUTPUT
+          echo "✓ Backup created: ${BACKUP_NAME}.zip (${SIZE})"
+
+      - name: 📝 Generate changelog
+        id: changelog
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # For version tags, get commits since last tag
+            PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+            if [ -n "$PREV_TAG" ]; then
+              CHANGELOG=$(git log --pretty=format:"- %s (%an)" ${PREV_TAG}..HEAD)
+            else
+              CHANGELOG=$(git log --pretty=format:"- %s (%an)" HEAD~10..HEAD)
+            fi
+          else
+            # For daily backups, get last 5 commits
+            CHANGELOG=$(git log --pretty=format:"- %s (%an)" HEAD~5..HEAD)
+          fi
+
+          # Create changelog file
+          cat > CHANGELOG.md <<EOF
+          # EVALUERA ${{ steps.version.outputs.version }}
+
+          ## 📋 Changes
+
+          ${CHANGELOG}
+
+          ## 📊 Repository Stats
+
+          - **Date:** $(date +'%Y-%m-%d %H:%M:%S UTC')
+          - **Backup Size:** ${{ steps.backup.outputs.backup_size }}
+          - **Commit:** ${GITHUB_SHA:0:7}
+
+          ---
+          *Automated backup by EVALUERA CI/CD*
+          EOF
+
+          echo "✓ Changelog generated"
+
+      - name: 🚀 Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: "EVALUERA ${{ steps.version.outputs.version }}"
+          body_path: CHANGELOG.md
+          files: ${{ steps.backup.outputs.backup_file }}
+          draft: false
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ Backup Summary
+        run: |
+          echo "╔════════════════════════════════════════╗"
+          echo "║   EVALUERA Backup Completed           ║"
+          echo "╚════════════════════════════════════════╝"
+          echo ""
+          echo "✓ Version:    ${{ steps.version.outputs.version }}"
+          echo "✓ Archive:    ${{ steps.backup.outputs.backup_file }}"
+          echo "✓ Size:       ${{ steps.backup.outputs.backup_size }}"
+          echo "✓ Release:    Published to GitHub Releases"
+          echo ""
