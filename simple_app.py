@@ -9,28 +9,32 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# Backend-Funktionen
-from price_utils import derive_unit_price
-from cost_helpers import (
+# Business logic - Core
+from src.core.price_utils import derive_unit_price
+from src.core.cbam import (
     parse_dims,
     clamp_dims,
     gpt_rate_supplier,
     gpt_negotiation_prep,
     calculate_co2_footprint,
 )
-from negotiation_prep_enhanced import gpt_negotiation_prep_enhanced
-from gpt_engine import gpt_intelligent_article_search
-from excel_helpers import (
-    find_column,
-    get_price_series_per_unit,
-)
-from gpt_cache import (
+
+# Business logic - Negotiation & GPT/AI
+from src.negotiation.engine import gpt_negotiation_prep_enhanced
+from src.gpt.engine import gpt_intelligent_article_search
+from src.gpt.cache import (
     cached_gpt_complete_cost_estimate,
     cached_gpt_analyze_supplier,
 )
 
+# Utilities
+from src.utils.excel_helpers import (
+    find_column,
+    get_price_series_per_unit,
+)
+
 # UI-System
-from ui_theme import (
+from src.ui.theme import (
     apply_global_styles,
     section_header,
     divider,
@@ -40,15 +44,15 @@ from ui_theme import (
     RADIUS,
     SHADOWS,
 )
-from wizard_system import (
+from src.ui.wizard import (
     WizardManager,
     create_data_table,
     create_compact_kpi_row,
 )
-from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation
-from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
-from login_screen import check_login, render_login_screen, render_logout_button
-from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
+from src.ui.components_main import GPTLoadingAnimation, ExcelLoadingAnimation
+from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
+from src.ui.login import check_login, render_login_screen, render_logout_button
+from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -65,7 +69,7 @@ st.set_page_config(
 )
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-from inject_lottie_login_background import inject_lottie_background
+from src.ui.login import inject_lottie_background
 inject_lottie_background()
 
 # EVALUERA Theme Override - muss nach set_page_config kommen
