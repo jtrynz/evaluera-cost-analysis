@@ -86,235 +86,241 @@ def render_login_screen():
     # Get logo
     logo_base64 = get_logo_base64()
 
-    st.markdown(f"""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    st.markdown(
+        f"""
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        :root {{
-            --eval-primary: {COLORS['primary']};
-            --eval-secondary: {COLORS['secondary']};
-            --eval-dark: {COLORS['dark_accent']};
-            --eval-soft: rgba(255, 255, 255, 0.06);
-        }}
+            :root {{
+                --eval-primary: {COLORS['primary']};
+                --eval-secondary: {COLORS['secondary']};
+                --eval-dark: {COLORS['dark_accent']};
+                --eval-glass: rgba(16, 26, 28, 0.86);
+                --eval-soft: rgba(255, 255, 255, 0.08);
+            }}
 
-        [data-testid="stAppViewContainer"],
-        .stApp {{
-            background: transparent !important;
-        }}
+            html, body, .stApp, [data-testid="stAppViewContainer"] {{
+                background: transparent !important;
+            }}
 
-        header[data-testid="stHeader"],
-        #MainMenu,
-        footer,
-        [data-testid="stSidebar"],
-        [data-testid="stToolbar"] {{
-            display: none !important;
-        }}
+            header[data-testid="stHeader"],
+            #MainMenu,
+            footer,
+            [data-testid="stSidebar"],
+            [data-testid="stToolbar"] {{
+                display: none !important;
+            }}
 
-        section.main,
-        .main {{
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2vh 16px !important;
-            position: relative;
-            z-index: 2;
-        }}
+            section.main, .main {{
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 !important;
+                position: relative;
+                z-index: 2;
+            }}
 
-        .block-container {{
-            width: min(520px, 94vw);
-            background: rgba(14, 22, 24, 0.78);
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid rgba(184, 212, 209, 0.3);
-            border-radius: {RADIUS['xl']};
-            box-shadow:
-                0 22px 68px rgba(0, 0, 0, 0.45),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-            padding: 34px 30px 30px 30px !important;
-            position: relative;
-            overflow: hidden;
-        }}
-
-        .block-container::before {{
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 20% 25%, rgba(184, 212, 209, 0.12), transparent 40%),
-                        radial-gradient(circle at 80% 75%, rgba(231, 241, 239, 0.1), transparent 42%);
-            opacity: 0.9;
-            pointer-events: none;
-        }}
-
-        .login-header {{
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 2;
-        }}
-
-        .login-logo {{
-            width: 210px;
-            height: auto;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.45));
-        }}
-
-        .login-title {{
-            color: #EAF2F1;
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-top: 10px;
-            margin-bottom: 2px;
-        }}
-
-        .login-tagline {{
-            color: rgba(231, 241, 239, 0.85);
-            font-size: 15px;
-            font-weight: 500;
-            letter-spacing: 0.01em;
-        }}
-
-        .stTextInput > label {{
-            color: rgba(231, 241, 239, 0.9) !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.01em !important;
-            margin-bottom: 6px !important;
-        }}
-
-        .stTextInput > div > div > input {{
-            background: var(--eval-soft) !important;
-            border: 1.5px solid rgba(184, 212, 209, 0.32) !important;
-            border-radius: {RADIUS['md']} !important;
-            color: #F8FBFA !important;
-            padding: 14px 16px !important;
-            font-size: 15px !important;
-            transition: all 0.25s ease !important;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
-        }}
-
-        .stTextInput > div > div > input::placeholder {{
-            color: rgba(231, 241, 239, 0.55) !important;
-            font-weight: 400 !important;
-        }}
-
-        .stTextInput > div > div > input:focus {{
-            border-color: var(--eval-secondary) !important;
-            box-shadow:
-                0 0 0 3px rgba(184, 212, 209, 0.35),
-                0 10px 26px rgba(0,0,0,0.28) !important;
-            outline: none !important;
-            background: rgba(255, 255, 255, 0.08) !important;
-        }}
-
-        .stCheckbox > label {{
-            color: rgba(231, 241, 239, 0.88) !important;
-            font-weight: 500 !important;
-        }}
-
-        .stCheckbox input[type="checkbox"] {{
-            accent-color: var(--eval-secondary) !important;
-            width: 18px !important;
-            height: 18px !important;
-        }}
-
-        .login-divider {{
-            height: 1px;
-            width: 100%;
-            background: linear-gradient(90deg, transparent, rgba(184, 212, 209, 0.35), transparent);
-            margin: 18px 0 16px 0;
-        }}
-
-        .caps-warning {{
-            display: none;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: rgba(245, 158, 11, 0.12);
-            border: 1px solid rgba(245, 158, 11, 0.32);
-            border-radius: {RADIUS['sm']};
-            color: #FCD34D;
-            font-weight: 600;
-            font-size: 13px;
-            margin-top: 6px;
-        }}
-
-        .caps-warning.active {{
-            display: flex;
-        }}
-
-        .password-row {{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 10px;
-        }}
-
-        .hint-text {{
-            color: rgba(231, 241, 239, 0.65);
-            font-size: 12px;
-            text-align: right;
-        }}
-
-        .stButton > button {{
-            width: 100% !important;
-            background: linear-gradient(135deg, {COLORS['secondary']} 0%, {COLORS['primary']} 45%, {COLORS['dark_accent']} 100%) !important;
-            color: #F6FAF9 !important;
-            border: none !important;
-            border-radius: {RADIUS['md']} !important;
-            padding: 15px 18px !important;
-            font-size: 16px !important;
-            font-weight: 700 !important;
-            letter-spacing: 0.01em !important;
-            box-shadow:
-                0 14px 32px rgba(0, 0, 0, 0.35),
-                0 0 0 1px rgba(255,255,255,0.08) inset !important;
-            transition: all 0.22s ease !important;
-        }}
-
-        .stButton > button:hover {{
-            transform: translateY(-1px) scale(1.01) !important;
-            box-shadow:
-                0 18px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255,255,255,0.12) inset !important;
-        }}
-
-        .stButton > button:active {{
-            transform: translateY(0) scale(0.99) !important;
-        }}
-
-        .error-alert {{
-            background: rgba(239, 68, 68, 0.16) !important;
-            border: 1.5px solid rgba(239, 68, 68, 0.4) !important;
-            color: #FCA5A5 !important;
-            border-radius: {RADIUS['md']} !important;
-            padding: 12px 14px !important;
-            margin: 10px 0 8px 0 !important;
-            text-align: center;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }}
-
-        .login-footnote {{
-            text-align: center;
-            color: rgba(231, 241, 239, 0.65);
-            font-size: 12px;
-            margin-top: 12px;
-        }}
-
-        @media (max-width: 600px) {{
             .block-container {{
-                padding: 26px 22px 24px 22px !important;
+                padding: 0 !important;
+                width: 100%;
+                max-width: 520px;
+            }}
+
+            .login-shell {{
+                width: 100%;
+                padding: 32px 16px;
+                display: flex;
+                justify-content: center;
+            }}
+
+            .login-card {{
+                width: 100%;
+                background: var(--eval-glass);
+                border: 1px solid rgba(184, 212, 209, 0.35);
+                border-radius: {RADIUS['xl']};
+                box-shadow:
+                    0 25px 70px rgba(0, 0, 0, 0.5),
+                    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+                padding: 32px 26px 26px 26px;
+                position: relative;
+                overflow: hidden;
+            }}
+
+            .login-card::before {{
+                content: "";
+                position: absolute;
+                inset: -30%;
+                background: radial-gradient(circle at 20% 20%, rgba(184, 212, 209, 0.12), transparent 40%),
+                            radial-gradient(circle at 80% 80%, rgba(231, 241, 239, 0.08), transparent 45%);
+                opacity: 0.9;
+            }}
+
+            .login-inner {{
+                position: relative;
+                z-index: 2;
+            }}
+
+            .login-header {{
+                text-align: center;
+                margin-bottom: 20px;
             }}
 
             .login-logo {{
-                width: 180px;
+                width: 210px;
+                height: auto;
+                filter: drop-shadow(0 10px 30px rgba(0,0,0,0.45));
             }}
-        }}
-    </style>
-    """, unsafe_allow_html=True)
+
+            .login-title {{
+                color: #EAF2F1;
+                font-size: 24px;
+                font-weight: 800;
+                letter-spacing: -0.02em;
+                margin-top: 10px;
+                margin-bottom: 2px;
+            }}
+
+            .login-tagline {{
+                color: rgba(231, 241, 239, 0.85);
+                font-size: 15px;
+                font-weight: 500;
+                letter-spacing: 0.01em;
+            }}
+
+            .stTextInput > label {{
+                color: rgba(231, 241, 239, 0.92) !important;
+                font-weight: 600 !important;
+                letter-spacing: 0.01em !important;
+                margin-bottom: 6px !important;
+            }}
+
+            .stTextInput > div > div > input {{
+                background: var(--eval-soft) !important;
+                border: 1.5px solid rgba(184, 212, 209, 0.35) !important;
+                border-radius: {RADIUS['md']} !important;
+                color: #F8FBFA !important;
+                padding: 14px 16px !important;
+                font-size: 15px !important;
+                transition: all 0.25s ease !important;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
+            }}
+
+            .stTextInput > div > div > input::placeholder {{
+                color: rgba(231, 241, 239, 0.55) !important;
+                font-weight: 400 !important;
+            }}
+
+            .stTextInput > div > div > input:focus {{
+                border-color: var(--eval-secondary) !important;
+                box-shadow:
+                    0 0 0 3px rgba(184, 212, 209, 0.35),
+                    0 10px 26px rgba(0,0,0,0.28) !important;
+                outline: none !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+            }}
+
+            .stCheckbox > label {{
+                color: rgba(231, 241, 239, 0.9) !important;
+                font-weight: 500 !important;
+            }}
+
+            .stCheckbox input[type="checkbox"] {{
+                accent-color: var(--eval-secondary) !important;
+                width: 18px !important;
+                height: 18px !important;
+            }}
+
+            .login-divider {{
+                height: 1px;
+                width: 100%;
+                background: linear-gradient(90deg, transparent, rgba(184, 212, 209, 0.35), transparent);
+                margin: 18px 0 16px 0;
+            }}
+
+            .caps-warning {{
+                display: none;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                background: rgba(245, 158, 11, 0.12);
+                border: 1px solid rgba(245, 158, 11, 0.32);
+                border-radius: {RADIUS['sm']};
+                color: #FCD34D;
+                font-weight: 600;
+                font-size: 13px;
+                margin-top: 6px;
+            }}
+
+            .caps-warning.active {{
+                display: flex;
+            }}
+
+            .stButton > button {{
+                width: 100% !important;
+                background: linear-gradient(135deg, {COLORS['secondary']} 0%, {COLORS['primary']} 45%, {COLORS['dark_accent']} 100%) !important;
+                color: #F6FAF9 !important;
+                border: none !important;
+                border-radius: {RADIUS['md']} !important;
+                padding: 15px 18px !important;
+                font-size: 16px !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.01em !important;
+                box-shadow:
+                    0 14px 32px rgba(0, 0, 0, 0.35),
+                    0 0 0 1px rgba(255,255,255,0.08) inset !important;
+                transition: all 0.22s ease !important;
+            }}
+
+            .stButton > button:hover {{
+                transform: translateY(-1px) scale(1.01) !important;
+                box-shadow:
+                    0 18px 40px rgba(0, 0, 0, 0.4),
+                    0 0 0 1px rgba(255,255,255,0.12) inset !important;
+            }}
+
+            .stButton > button:active {{
+                transform: translateY(0) scale(0.99) !important;
+            }}
+
+            .error-alert {{
+                background: rgba(239, 68, 68, 0.16) !important;
+                border: 1.5px solid rgba(239, 68, 68, 0.4) !important;
+                color: #FCA5A5 !important;
+                border-radius: {RADIUS['md']} !important;
+                padding: 12px 14px !important;
+                margin: 10px 0 8px 0 !important;
+                text-align: center;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }}
+
+            .login-footnote {{
+                text-align: center;
+                color: rgba(231, 241, 239, 0.65);
+                font-size: 12px;
+                margin-top: 12px;
+            }}
+
+            @media (max-width: 600px) {{
+                .login-card {{
+                    padding: 26px 22px 22px 22px;
+                }}
+
+                .login-logo {{
+                    width: 180px;
+                }}
+            }}
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Layout shell
+    st.markdown('<div class="login-shell"><div class="login-card"><div class="login-inner">', unsafe_allow_html=True)
 
     # Logo & Header
     if logo_base64:
@@ -410,6 +416,7 @@ def render_login_screen():
             st.rerun()
 
     st.markdown('<div class="login-footnote">Nur für autorisierte Nutzer – Evaluera Brand Experience</div>', unsafe_allow_html=True)
+    st.markdown('</div></div></div>', unsafe_allow_html=True)
 
 
 def render_logout_button():
@@ -518,6 +525,6 @@ def inject_lottie_background():
         </style>
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         """,
-        height=0,
-        width=0,
+        height=10,
+        width=10,
     )
