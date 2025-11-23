@@ -94,7 +94,7 @@ def apply_global_styles():
         }}
 
         html, body, [data-testid="stApp"], .stApp {{
-            background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+            background: {COLORS['bg_primary']} !important;
             color: {COLORS['dark_accent']} !important;
             font-family: {TYPOGRAPHY['font_family']} !important;
             font-size: {TYPOGRAPHY['body']};
@@ -309,18 +309,16 @@ def apply_global_styles():
 
         /* ========== FILE UPLOADER (APPLE STYLE) ========== */
         .stFileUploader {{
-            background: rgba(255, 255, 255, 0.9) !important;
-            border: 2px dashed rgba(42, 79, 87, 0.28) !important;
+            background: {COLORS['surface']} !important;
+            border: 2px dashed {COLORS['gray_300']} !important;
             border-radius: {RADIUS['lg']} !important;
             padding: {SPACING['lg']} !important;
             transition: all 0.2s ease !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 10px 22px rgba(0,0,0,0.08) !important;
         }}
 
         .stFileUploader:hover {{
             border-color: {COLORS['primary']} !important;
-            background: rgba(231, 241, 239, 0.92) !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05), 0 12px 26px rgba(0,0,0,0.12) !important;
+            background: {COLORS['light_accent']} !important;
         }}
 
         .stFileUploader label {{
@@ -380,55 +378,21 @@ def apply_global_styles():
             border-left-width: 4px !important;
         }}
 
-        /* ========== PAGE CARDS / CONTAINERS ========== */
-        div[data-testid="stHorizontalBlock"] > div > div,
-        div[data-testid="stVerticalBlock"] > div > div {{
-            background: rgba(255, 255, 255, 0.9) !important;
-            border: 1px solid rgba(42, 79, 87, 0.12) !important;
-            border-radius: {RADIUS['lg']} !important;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.12) !important;
-            padding: {SPACING['lg']} !important;
-        }}
-
-        /* Progress bar */
-        [data-testid="stProgressBar"] > div {{
-            background: rgba(255, 255, 255, 0.35) !important;
-            border-radius: {RADIUS['full']} !important;
-        }}
-        [data-testid="stProgressBar"] > div > div {{
-            background: linear-gradient(90deg, {COLORS['primary']} 0%, {COLORS['secondary']} 100%) !important;
-            border-radius: {RADIUS['full']} !important;
-            height: 10px !important;
-        }}
-
         /* ========== SIDEBAR (APPLE GLASSMORPHISM) ========== */
         [data-testid="stSidebar"] {{
-            background: linear-gradient(180deg, rgba(76, 136, 132, 0.25) 0%, rgba(64, 120, 115, 0.35) 100%) !important;
-            backdrop-filter: blur(18px) !important;
-            -webkit-backdrop-filter: blur(18px) !important;
-            border-right: 1px solid rgba(42, 79, 87, 0.15) !important;
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.12) !important;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.95) 0%,
+                rgba(231, 241, 239, 0.95) 100%
+            ) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-right: 1px solid {COLORS['gray_200']} !important;
+            box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05) !important;
         }}
 
         [data-testid="stSidebar"] .stButton > button {{
             border-radius: {RADIUS['md']} !important;
-            background: rgba(255, 255, 255, 0.82) !important;
-            border: 1px solid rgba(42, 79, 87, 0.22) !important;
-            color: {COLORS['dark_accent']} !important;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
-        }}
-
-        [data-testid="stSidebar"] .stButton > button[kind="primary"],
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"] {{
-            background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['dark_accent']} 100%) !important;
-            color: #FFFFFF !important;
-            border: 1px solid rgba(255, 255, 255, 0.22) !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 2px rgba(255,255,255,0.28) !important;
-        }}
-
-        [data-testid="stSidebar"] .stButton > button:hover {{
-            transform: translateY(-1px) !important;
-            box-shadow: 0 12px 26px rgba(0,0,0,0.18), inset 0 1px 2px rgba(255,255,255,0.32) !important;
         }}
 
         /* ========== DATAFRAME/TABLE (APPLE STYLE) ========== */
