@@ -146,15 +146,6 @@ def render_login_screen():
                 overflow: hidden;
             }}
 
-            .login-card::before {{
-                content: "";
-                position: absolute;
-                inset: -30%;
-                background: radial-gradient(circle at 20% 20%, rgba(184, 212, 209, 0.18), transparent 40%),
-                            radial-gradient(circle at 80% 80%, rgba(231, 241, 239, 0.14), transparent 45%);
-                opacity: 0.7;
-            }}
-
             .login-inner {{
                 position: relative;
                 z-index: 2;
@@ -304,36 +295,6 @@ def render_login_screen():
                 margin-top: 12px;
             }}
 
-            /* Loader */
-            #eval-loader {{
-                display: flex;
-                justify-content: center;
-                margin-top: 12px;
-                transition: opacity 0.35s ease, max-height 0.35s ease;
-                opacity: 1;
-                max-height: 60px;
-            }}
-
-            #eval-loader.hidden {{
-                opacity: 0;
-                max-height: 0;
-                overflow: hidden;
-            }}
-
-            .eval-spinner {{
-                width: 42px;
-                height: 42px;
-                border: 3px solid rgba(42, 79, 87, 0.18);
-                border-top-color: {COLORS['secondary']};
-                border-radius: 50%;
-                animation: eval-spin 1s ease infinite;
-            }}
-
-            @keyframes eval-spin {{
-                from {{ transform: rotate(0deg); }}
-                to {{ transform: rotate(360deg); }}
-            }}
-
             /* Remove any visible iframe dot from Lottie component */
             iframe[title="st.components.v1.html"] {{
                 position: fixed !important;
@@ -346,6 +307,21 @@ def render_login_screen():
                 opacity: 1 !important;
                 pointer-events: none !important;
                 background: transparent !important;
+            }}
+
+            .forgot-link {{
+                margin-top: 8px;
+                text-align: right;
+            }}
+
+            .forgot-link a {{
+                color: {COLORS['primary']} !important;
+                font-weight: 600;
+                text-decoration: none;
+            }}
+
+            .forgot-link a:hover {{
+                text-decoration: underline;
             }}
 
             @media (max-width: 600px) {{
@@ -419,6 +395,15 @@ def render_login_screen():
 
     st.markdown(
         """
+        <div class="forgot-link">
+            <a href="#" aria-label="Passwort vergessen">Passwort vergessen?</a>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
         <script>
             document.addEventListener('keyup', function(e) {
                 const warning = document.getElementById('caps-warning');
@@ -445,35 +430,13 @@ def render_login_screen():
 
     if st.button("🔐  Sicher anmelden", use_container_width=True, key="login_btn"):
         if username and password:
-            if login(username, password):
-                st.session_state.login_error = False
-                st.rerun()
-            else:
-                st.session_state.login_error = True
+            with st.spinner("Authentifizierung läuft..."):
+                success = login(username, password)
+            st.session_state.login_error = not success
+            if success:
                 st.rerun()
         else:
             st.session_state.login_error = True
-            st.rerun()
-
-    # Loading indicator shown briefly on load
-    st.markdown(
-        """
-        <div id="eval-loader">
-            <div class="eval-spinner"></div>
-        </div>
-        <script>
-            const loader = document.getElementById('eval-loader');
-            if (loader) {
-                loader.classList.remove('hidden');
-                window.addEventListener('load', () => {
-                    setTimeout(() => loader.classList.add('hidden'), 800);
-                });
-                setTimeout(() => loader.classList.add('hidden'), 1800);
-            }
-        </script>
-        """,
-        unsafe_allow_html=True,
-    )
 
     st.markdown('<div class="login-footnote">Nur für autorisierte Nutzer – Evaluera Brand Experience</div>', unsafe_allow_html=True)
     st.markdown('</div></div></div>', unsafe_allow_html=True)
