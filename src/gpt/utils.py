@@ -8,7 +8,8 @@ Reduziert Code-Duplikation massiv (DRY-Prinzip).
 import json
 import re
 import unicodedata
-from typing import Dict, Any, Optional
+import traceback
+from typing import Dict, Any, Optional, Callable
 
 
 def sanitize_input(text: Any) -> str:
@@ -46,6 +47,61 @@ def safe_print(msg: str):
             print(sanitize_input(msg).encode("utf-8", errors="ignore").decode("utf-8", errors="ignore"))
         except Exception:
             pass
+
+
+def safe_gpt_request(
+    model: str,
+    messages: Any,
+    client_factory: Callable[[], Any],
+    temperature: float = 0.1,
+    max_tokens: int = 2000,
+    retries: int = 1,
+) -> Dict[str, Any]:
+    """
+    Führt einen GPT-Request robust aus (UTF-8 safe, Sanitizing, optional Retry).
+    Erwartet eine client_factory, die den OpenAI-Client liefert.
+    """
+    clean_messages = sanitize_payload_recursive(messages)
+
+    # Debug serialization (UTF-8, ensure_ascii=False)
+    try:
+        _ = json.dumps({"model": model, "messages": clean_messages}, ensure_ascii=False)[:0]
+    except Exception as ser_err:
+        return {
+            "_error": True,
+            "error": f"Serialization failed: {ser_err}",
+            "trace": traceback.format_exc(),
+            "_stage": "serialize",
+        }
+
+    last_err = None
+    for attempt in range(retries + 1):
+        try:
+            client = client_factory()
+            res = client.chat.completions.create(
+                model=model,
+                messages=clean_messages,
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return {
+                "_error": False,
+                "response": res,
+            }
+        except Exception as e:
+            last_err = e
+            if attempt >= retries:
+                return {
+                    "_error": True,
+                    "error": str(e),
+                    "trace": traceback.format_exc(),
+                    "_stage": "api_call",
+                }
+    return {
+        "_error": True,
+        "error": str(last_err) if last_err else "unknown_error",
+        "_stage": "api_call",
+    }
 
 
 def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

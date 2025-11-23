@@ -23,6 +23,7 @@ from src.gpt.utils import (
     sanitize_input,
     sanitize_payload_recursive,
     safe_print,
+    safe_gpt_request,
 )
 
 try:
@@ -269,17 +270,20 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
 
         safe_print("DEBUG cost_estimation: messages built, calling OpenAI...")
 
-        try:
-            client = OpenAI(api_key=key)
-            response = client.chat.completions.create(
-                model="gpt-4o",
-                messages=messages,
-                temperature=0.1,
-                max_tokens=2000
-            )
-        except Exception as api_err:
-            safe_print(f"ERROR OpenAI call failed: {api_err!r}")
-            raise
+        api_result = safe_gpt_request(
+            model="gpt-4o",
+            messages=messages,
+            client_factory=lambda: OpenAI(api_key=key),
+            temperature=0.1,
+            max_tokens=2000,
+            retries=1,
+        )
+
+        if api_result.get("_error"):
+            safe_print(f"ERROR in safe_gpt_request: {api_result}")
+            raise RuntimeError(api_result.get("error", "safe_gpt_request failed"))
+
+        response = api_result["response"]
 
         raw_txt = response.choices[0].message.content or ""
         txt = sanitize_input(raw_txt.strip())
