@@ -7,7 +7,7 @@ Secure login with animated background and glassmorphism
 import streamlit as st
 import os
 import json
-from src.ui_theme import COLORS, RADIUS, SPACING, SHADOWS, TYPOGRAPHY
+from src.ui.theme import COLORS, RADIUS, SPACING, SHADOWS, TYPOGRAPHY
 
 
 # ==================== CREDENTIALS ====================
