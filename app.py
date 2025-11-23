@@ -120,19 +120,15 @@ st.markdown(
         .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
             background: #FFFFFF !important;
             border: 1px solid rgba(42, 79, 87, 0.06) !important;
-            border-radius: 14px !important;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
-            padding: 18px 20px !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.07) !important;
         }
 
         /* Hide empty placeholder containers that create white bars */
         div[data-testid="stVerticalBlock"] > div > div:empty,
         div[data-testid="stHorizontalBlock"] > div > div:empty,
         div[data-testid="stVerticalBlock"] > div:empty,
-        div[data-testid="stHorizontalBlock"] > div:empty,
-        div[data-testid="column"] > div:empty,
-        div[data-testid="block-container"] > div:empty,
-        div[data-testid="block-container"] > div > div:empty {
+        div[data-testid="stHorizontalBlock"] > div:empty {
             display: none !important;
             height: 0 !important;
             padding: 0 !important;
