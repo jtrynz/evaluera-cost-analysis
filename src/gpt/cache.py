@@ -61,7 +61,16 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
     Returns:
         Komplette Kostenschätzung (Material + Fertigung)
     """
-    from src.core.cost_estimation import gpt_complete_cost_estimate
+    try:
+        from src.core.cost_estimation import gpt_complete_cost_estimate
+    except ImportError:
+        try:
+            from src.core.cost_estimation_optimized import gpt_complete_cost_estimate  # fallback
+        except ImportError as e:
+            import traceback
+            print("❌ konnte gpt_complete_cost_estimate nicht importieren:", e)
+            print(traceback.format_exc())
+            raise
 
     # Deserialize supplier_competencies
     supplier_competencies = None
@@ -69,7 +78,9 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
         clean = supplier_competencies_json.replace("\u2028", " ").replace("\u2029", " ")
         supplier_competencies = json.loads(clean)
 
-    return gpt_complete_cost_estimate(description, lot_size, supplier_competencies)
+    desc_clean = (description or "").replace("\u2028", " ").replace("\u2029", " ")
+
+    return gpt_complete_cost_estimate(desc_clean, lot_size, supplier_competencies)
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
