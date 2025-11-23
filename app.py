@@ -479,7 +479,7 @@ def step5_cost_estimation():
     )
 
     def _sanitize(text: str) -> str:
-        return "".join(ch for ch in (text or "") if ord(ch) < 128)
+        return (text or "").encode("ascii", "ignore").decode("ascii")
 
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
         with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
@@ -497,7 +497,7 @@ def step5_cost_estimation():
 
                     supplier_competencies = cached_gpt_analyze_supplier(
                         supplier_name=supplier,
-                        article_history_json=json.dumps(article_history),
+                        article_history_json=json.dumps(article_history, ensure_ascii=True),
                         country=None
                     )
                 except Exception as e:
