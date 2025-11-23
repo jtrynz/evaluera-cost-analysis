@@ -220,7 +220,16 @@ def render_login_screen():
             input:user-invalid,
             input:user-invalid:focus {{
                 outline: none !important;
-                box-shadow: none !important;
+                border-color: #2A4F57 !important;
+                box-shadow: 0 0 0 2px rgba(42, 79, 87, 0.18) !important;
+            }}
+
+            /* zusätzliche Fallbacks gegen roten Browser-Glow */
+            input:invalid,
+            input:invalid:focus,
+            input:invalid:focus-visible {{
+                border-color: #2A4F57 !important;
+                box-shadow: 0 0 0 2px rgba(42, 79, 87, 0.18) !important;
             }}
 
             .stCheckbox > label {{
