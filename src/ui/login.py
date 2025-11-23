@@ -78,8 +78,6 @@ def render_login_screen():
     """
 
     # Initialize session state
-    if "show_password" not in st.session_state:
-        st.session_state.show_password = False
     if "login_error" not in st.session_state:
         st.session_state.login_error = False
 
@@ -95,8 +93,8 @@ def render_login_screen():
                 --eval-primary: {COLORS['primary']};
                 --eval-secondary: {COLORS['secondary']};
                 --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(16, 26, 28, 0.86);
-                --eval-soft: rgba(255, 255, 255, 0.08);
+                --eval-glass: rgba(255, 255, 255, 0.94);
+                --eval-soft: #E7F1EF;
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
@@ -116,7 +114,7 @@ def render_login_screen():
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                padding: 0 !important;
+                padding: 12px 0 18px 0 !important;
                 position: relative;
                 z-index: 2;
             }}
@@ -125,6 +123,7 @@ def render_login_screen():
                 padding: 0 !important;
                 width: 100%;
                 max-width: 520px;
+                margin-top: 0 !important;
             }}
 
             .login-shell {{
@@ -137,12 +136,12 @@ def render_login_screen():
             .login-card {{
                 width: 100%;
                 background: var(--eval-glass);
-                border: 1px solid rgba(184, 212, 209, 0.35);
+                border: 1px solid rgba(42, 79, 87, 0.18);
                 border-radius: {RADIUS['xl']};
                 box-shadow:
-                    0 25px 70px rgba(0, 0, 0, 0.5),
-                    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-                padding: 32px 26px 26px 26px;
+                    0 18px 55px rgba(0, 0, 0, 0.25),
+                    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+                padding: 32px 26px 28px 26px;
                 position: relative;
                 overflow: hidden;
             }}
@@ -151,9 +150,9 @@ def render_login_screen():
                 content: "";
                 position: absolute;
                 inset: -30%;
-                background: radial-gradient(circle at 20% 20%, rgba(184, 212, 209, 0.12), transparent 40%),
-                            radial-gradient(circle at 80% 80%, rgba(231, 241, 239, 0.08), transparent 45%);
-                opacity: 0.9;
+                background: radial-gradient(circle at 20% 20%, rgba(184, 212, 209, 0.18), transparent 40%),
+                            radial-gradient(circle at 80% 80%, rgba(231, 241, 239, 0.14), transparent 45%);
+                opacity: 0.7;
             }}
 
             .login-inner {{
@@ -173,7 +172,7 @@ def render_login_screen():
             }}
 
             .login-title {{
-                color: #EAF2F1;
+                color: #1E2E32;
                 font-size: 24px;
                 font-weight: 800;
                 letter-spacing: -0.02em;
@@ -182,14 +181,14 @@ def render_login_screen():
             }}
 
             .login-tagline {{
-                color: rgba(231, 241, 239, 0.85);
+                color: rgba(30, 46, 50, 0.82);
                 font-size: 15px;
                 font-weight: 500;
                 letter-spacing: 0.01em;
             }}
 
             .stTextInput > label {{
-                color: rgba(231, 241, 239, 0.92) !important;
+                color: #1E2E32 !important;
                 font-weight: 600 !important;
                 letter-spacing: 0.01em !important;
                 margin-bottom: 6px !important;
@@ -197,31 +196,31 @@ def render_login_screen():
 
             .stTextInput > div > div > input {{
                 background: var(--eval-soft) !important;
-                border: 1.5px solid rgba(184, 212, 209, 0.35) !important;
+                border: 1.5px solid rgba(42, 79, 87, 0.35) !important;
                 border-radius: {RADIUS['md']} !important;
-                color: #F8FBFA !important;
+                color: #1E2E32 !important;
                 padding: 14px 16px !important;
                 font-size: 15px !important;
                 transition: all 0.25s ease !important;
-                box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
+                box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
             }}
 
             .stTextInput > div > div > input::placeholder {{
-                color: rgba(231, 241, 239, 0.55) !important;
+                color: rgba(30, 46, 50, 0.55) !important;
                 font-weight: 400 !important;
             }}
 
             .stTextInput > div > div > input:focus {{
                 border-color: var(--eval-secondary) !important;
                 box-shadow:
-                    0 0 0 3px rgba(184, 212, 209, 0.35),
-                    0 10px 26px rgba(0,0,0,0.28) !important;
+                    0 0 0 3px rgba(184, 212, 209, 0.45),
+                    0 10px 26px rgba(0,0,0,0.2) !important;
                 outline: none !important;
-                background: rgba(255, 255, 255, 0.12) !important;
+                background: #F6FAF9 !important;
             }}
 
             .stCheckbox > label {{
-                color: rgba(231, 241, 239, 0.9) !important;
+                color: #1E2E32 !important;
                 font-weight: 500 !important;
             }}
 
@@ -267,8 +266,8 @@ def render_login_screen():
                 font-weight: 700 !important;
                 letter-spacing: 0.01em !important;
                 box-shadow:
-                    0 14px 32px rgba(0, 0, 0, 0.35),
-                    0 0 0 1px rgba(255,255,255,0.08) inset !important;
+                    0 14px 32px rgba(0, 0, 0, 0.25),
+                    0 0 0 1px rgba(255,255,255,0.1) inset !important;
                 transition: all 0.22s ease !important;
             }}
 
@@ -303,6 +302,50 @@ def render_login_screen():
                 color: rgba(231, 241, 239, 0.65);
                 font-size: 12px;
                 margin-top: 12px;
+            }}
+
+            /* Loader */
+            #eval-loader {{
+                display: flex;
+                justify-content: center;
+                margin-top: 12px;
+                transition: opacity 0.35s ease, max-height 0.35s ease;
+                opacity: 1;
+                max-height: 60px;
+            }}
+
+            #eval-loader.hidden {{
+                opacity: 0;
+                max-height: 0;
+                overflow: hidden;
+            }}
+
+            .eval-spinner {{
+                width: 42px;
+                height: 42px;
+                border: 3px solid rgba(42, 79, 87, 0.18);
+                border-top-color: {COLORS['secondary']};
+                border-radius: 50%;
+                animation: eval-spin 1s ease infinite;
+            }}
+
+            @keyframes eval-spin {{
+                from {{ transform: rotate(0deg); }}
+                to {{ transform: rotate(360deg); }}
+            }}
+
+            /* Remove any visible iframe dot from Lottie component */
+            iframe[title="st.components.v1.html"] {{
+                position: fixed !important;
+                inset: 0 !important;
+                width: 100vw !important;
+                height: 100vh !important;
+                border: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                opacity: 1 !important;
+                pointer-events: none !important;
+                background: transparent !important;
             }}
 
             @media (max-width: 600px) {{
@@ -368,14 +411,11 @@ def render_login_screen():
 
     password = st.text_input(
         "Passwort",
-        type="default" if st.session_state.show_password else "password",
+        type="password",
         placeholder="Ihr Passwort",
         key="login_password",
         label_visibility="visible",
     )
-
-    show_pwd = st.checkbox("Passwort anzeigen", value=st.session_state.show_password, key="show_pwd_toggle")
-    st.session_state.show_password = show_pwd
 
     st.markdown(
         """
@@ -414,6 +454,26 @@ def render_login_screen():
         else:
             st.session_state.login_error = True
             st.rerun()
+
+    # Loading indicator shown briefly on load
+    st.markdown(
+        """
+        <div id="eval-loader">
+            <div class="eval-spinner"></div>
+        </div>
+        <script>
+            const loader = document.getElementById('eval-loader');
+            if (loader) {
+                loader.classList.remove('hidden');
+                window.addEventListener('load', () => {
+                    setTimeout(() => loader.classList.add('hidden'), 800);
+                });
+                setTimeout(() => loader.classList.add('hidden'), 1800);
+            }
+        </script>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.markdown('<div class="login-footnote">Nur für autorisierte Nutzer – Evaluera Brand Experience</div>', unsafe_allow_html=True)
     st.markdown('</div></div></div>', unsafe_allow_html=True)
@@ -525,6 +585,6 @@ def inject_lottie_background():
         </style>
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         """,
-        height=10,
-        width=10,
+        height=0,
+        width=0,
     )
