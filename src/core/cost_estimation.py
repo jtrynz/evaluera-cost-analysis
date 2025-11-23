@@ -15,19 +15,14 @@ NACHHER:
 
 import os
 import json
-import re
 from typing import Dict, Any, Optional
-from src.gpt.utils import parse_gpt_json, safe_float
-
-
-def _safe_print(msg: str):
-    try:
-        print(_clean(msg))
-    except Exception:
-        try:
-            print(_clean(msg).encode("utf-8", errors="ignore").decode("utf-8", errors="ignore"))
-        except Exception:
-            pass
+from src.gpt.utils import (
+    parse_gpt_json,
+    safe_float,
+    sanitize_input,
+    sanitize_payload_recursive,
+    safe_print,
+)
 
 try:
     from openai import OpenAI
@@ -59,12 +54,7 @@ def gpt_complete_cost_estimate(
     Returns:
         Dict mit allen Kosten-Informationen
     """
-    def _clean(txt: str) -> str:
-        if txt is None:
-            return ""
-        return txt.replace("\u2028", " ").replace("\u2029", " ")
-
-    description = _clean(description)
+    description = sanitize_input(description)
 
     key = os.getenv("OPENAI_API_KEY")
     if not key or OpenAI is None:
@@ -81,7 +71,7 @@ def gpt_complete_cost_estimate(
             "_fallback": True
         }
 
-    _safe_print(f"OK GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
+    safe_print(f"OK GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
     client = OpenAI(api_key=key)
 
     # Losgrössen-Kontext
@@ -103,7 +93,7 @@ def gpt_complete_cost_estimate(
         comps = supplier_competencies.get('core_competencies', [])
         if comps:
             processes = [c.get('process') for c in comps[:3]]
-            supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(_clean(p or '') for p in processes)}"
+            supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(sanitize_input(p or '') for p in processes)}"
 
     # KOMBINIERTER PROMPT - Material + Prozess + Kosten (EXTREM GÜNSTIG - WORST CASE)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in globaler Low-Cost-Beschaffung.
@@ -245,23 +235,28 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
 """
 
     try:
+        messages = sanitize_payload_recursive([
+            {
+                "role": "system",
+                "content": sanitize_input(
+                    "Du bist ein Senior Cost Engineer. Analysiere Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) präzise. Antworte NUR als JSON."
+                ),
+            },
+            {
+                "role": "user",
+                "content": sanitize_input(prompt),
+            },
+        ])
+
         response = client.chat.completions.create(
             model="gpt-4o",
-            messages=[
-                {
-                    "role": "system",
-                    "content": _clean("Du bist ein Senior Cost Engineer. Analysiere Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) präzise. Antworte NUR als JSON.")
-                },
-                {
-                    "role": "user",
-                    "content": _clean(prompt)
-                }
-            ],
+            messages=messages,
             temperature=0.1,
             max_tokens=2000
         )
 
-        txt = _clean(response.choices[0].message.content.strip())
+        raw_txt = response.choices[0].message.content or ""
+        txt = sanitize_input(raw_txt.strip())
         data = parse_gpt_json(txt, default={})
 
         # Extrahiere alle Werte mit Fallbacks
@@ -306,13 +301,13 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
             fab_cost = result["fab_cost_eur"] or 0.0
             result["total_cost_eur"] = mat_cost + fab_cost
 
-        _safe_print(f"OK ALL-IN-ONE Estimate tokens={result.get('_tokens_used')}")
-        _safe_print(f"Material: {result.get('material_cost_eur')} | Fertigung: {result.get('fab_cost_eur')} | TOTAL: {result.get('total_cost_eur')}")
+        safe_print(f"OK ALL-IN-ONE Estimate tokens={result.get('_tokens_used')}")
+        safe_print(f"Material: {result.get('material_cost_eur')} | Fertigung: {result.get('fab_cost_eur')} | TOTAL: {result.get('total_cost_eur')}")
 
         return result
 
     except Exception as e:
-        _safe_print(f"ERROR in gpt_complete_cost_estimate: {e}")
+        safe_print(f"ERROR in gpt_complete_cost_estimate: {e}")
         import traceback
         return {
             "material_guess": "stahl",

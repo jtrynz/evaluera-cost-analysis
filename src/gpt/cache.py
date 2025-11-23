@@ -5,10 +5,11 @@ Zentrales Caching für alle GPT-Calls zur massiven Token-Reduktion.
 Nutzt Streamlit's @st.cache_data für Session-übergreifendes Caching.
 """
 
-import streamlit as st
 import hashlib
 import json
 from typing import Any, Dict, List, Optional, Callable
+import streamlit as st
+from src.gpt.utils import sanitize_input, sanitize_payload_recursive
 
 
 def _make_hashable(obj: Any) -> str:
@@ -61,26 +62,19 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
     Returns:
         Komplette Kostenschätzung (Material + Fertigung)
     """
-    try:
-        from src.core.cost_estimation import gpt_complete_cost_estimate
-    except ImportError:
-        try:
-            from src.core.cost_estimation_optimized import gpt_complete_cost_estimate  # fallback
-        except ImportError as e:
-            import traceback
-            print("❌ konnte gpt_complete_cost_estimate nicht importieren:", e)
-            print(traceback.format_exc())
-            raise
+    from src.core.cost_estimation import gpt_complete_cost_estimate
 
     # Deserialize supplier_competencies
     supplier_competencies = None
     if supplier_competencies_json:
-        clean = supplier_competencies_json.replace("\u2028", " ").replace("\u2029", " ")
+        clean = sanitize_input(supplier_competencies_json)
         supplier_competencies = json.loads(clean)
 
-    desc_clean = (description or "").replace("\u2028", " ").replace("\u2029", " ")
+    desc_clean = sanitize_input(description or "")
 
-    return gpt_complete_cost_estimate(desc_clean, lot_size, supplier_competencies)
+    payload_competencies = sanitize_payload_recursive(supplier_competencies) if supplier_competencies else None
+
+    return gpt_complete_cost_estimate(desc_clean, lot_size, payload_competencies)
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
