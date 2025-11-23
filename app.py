@@ -114,35 +114,21 @@ st.markdown(
             border-color: rgba(42, 79, 87, 0.28) !important;
         }
 
-        /* Reset: no styling unless content is present */
+        /* Cards / containers */
         div[data-testid="stHorizontalBlock"] > div > div,
         div[data-testid="stVerticalBlock"] > div > div,
-        div[data-testid="column"] > div {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border-radius: 0 !important;
-        }
-
-        /* Apply card styling only when there is actual content */
-        div[data-testid="stHorizontalBlock"] > div > div:has(*),
-        div[data-testid="stVerticalBlock"] > div > div:has(*),
-        div[data-testid="column"] > div:has(*) {
+        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
             background: #FFFFFF !important;
             border: 1px solid rgba(42, 79, 87, 0.06) !important;
-            border-radius: 14px !important;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
-            padding: 14px 16px !important;
+            border-radius: 16px !important;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.07) !important;
         }
 
         /* Hide empty placeholder containers that create white bars */
         div[data-testid="stVerticalBlock"] > div > div:empty,
         div[data-testid="stHorizontalBlock"] > div > div:empty,
         div[data-testid="stVerticalBlock"] > div:empty,
-        div[data-testid="stHorizontalBlock"] > div:empty,
-        div[data-testid="column"] > div:empty {
+        div[data-testid="stHorizontalBlock"] > div:empty {
             display: none !important;
             height: 0 !important;
             padding: 0 !important;
