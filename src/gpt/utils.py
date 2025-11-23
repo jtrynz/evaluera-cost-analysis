@@ -7,7 +7,45 @@ Reduziert Code-Duplikation massiv (DRY-Prinzip).
 
 import json
 import re
+import unicodedata
 from typing import Dict, Any, Optional
+
+
+def sanitize_input(text: Any) -> str:
+    """Entfernt problematische Unicode-Zeichen (U+2028/2029, Zero-Width, Control) und normalisiert."""
+    if text is None:
+        return ""
+    if not isinstance(text, str):
+        text = str(text)
+    text = unicodedata.normalize("NFKC", text)
+    text = text.replace("\u2028", " ").replace("\u2029", " ")
+    text = re.sub(r"[\u200B-\u200F\uFEFF]", "", text)
+    text = re.sub(r"[\x00-\x1F\x7F]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def sanitize_payload_recursive(obj: Any):
+    """Sanitizes all strings (keys + values) recursively in payloads for GPT/JSON."""
+    if isinstance(obj, dict):
+        return {sanitize_input(k): sanitize_payload_recursive(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_payload_recursive(v) for v in obj]
+    if isinstance(obj, tuple):
+        return tuple(sanitize_payload_recursive(v) for v in obj)
+    if isinstance(obj, str):
+        return sanitize_input(obj)
+    return obj
+
+
+def safe_print(msg: str):
+    try:
+        print(sanitize_input(msg))
+    except Exception:
+        try:
+            print(sanitize_input(msg).encode("utf-8", errors="ignore").decode("utf-8", errors="ignore"))
+        except Exception:
+            pass
 
 
 def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -29,17 +67,16 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
         return (t or "").replace("\u2028", " ").replace("\u2029", " ")
 
     try:
-        text = _clean(text)
-        # Versuch 1: Ganzer Text ist JSON
+        text = sanitize_input(text)
         return json.loads(text)
     except Exception:
-        pass
+        pass  # continue
 
     try:
         # Versuch 2: JSON in ```json ... ``` Code-Block
         match = re.search(r'```json\s*([\s\S]*?)\s*```', text)
         if match:
-            return json.loads(_clean(match.group(1)))
+            return json.loads(sanitize_input(match.group(1)))
     except Exception:
         pass
 
@@ -47,7 +84,7 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
         # Versuch 3: Beliebiges { ... } Pattern
         match = re.search(r'\{[\s\S]*\}', text)
         if match:
-            return json.loads(_clean(match.group(0)))
+            return json.loads(sanitize_input(match.group(0)))
     except Exception:
         pass
 
