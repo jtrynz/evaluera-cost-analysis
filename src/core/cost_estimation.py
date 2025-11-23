@@ -19,6 +19,16 @@ import re
 from typing import Dict, Any, Optional
 from src.gpt.utils import parse_gpt_json, safe_float
 
+
+def _safe_print(msg: str):
+    try:
+        print(_clean(msg))
+    except Exception:
+        try:
+            print(_clean(msg).encode("utf-8", errors="ignore").decode("utf-8", errors="ignore"))
+        except Exception:
+            pass
+
 try:
     from openai import OpenAI
 except ImportError:
@@ -58,7 +68,6 @@ def gpt_complete_cost_estimate(
 
     key = os.getenv("OPENAI_API_KEY")
     if not key or OpenAI is None:
-        print("⚠️ FALLBACK: Kein API Key")
         return {
             "material_guess": "stahl",
             "mass_kg": None,
@@ -72,10 +81,7 @@ def gpt_complete_cost_estimate(
             "_fallback": True
         }
 
-    try:
-        print(f"OK GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
-    except Exception:
-        pass
+    _safe_print(f"OK GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
     client = OpenAI(api_key=key)
 
     # Losgrössen-Kontext
@@ -300,19 +306,13 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
             fab_cost = result["fab_cost_eur"] or 0.0
             result["total_cost_eur"] = mat_cost + fab_cost
 
-        try:
-            print(f"OK ALL-IN-ONE Estimate tokens={result.get('_tokens_used')}")
-            print(f"Material: {result.get('material_cost_eur')} | Fertigung: {result.get('fab_cost_eur')} | TOTAL: {result.get('total_cost_eur')}")
-        except Exception:
-            pass
+        _safe_print(f"OK ALL-IN-ONE Estimate tokens={result.get('_tokens_used')}")
+        _safe_print(f"Material: {result.get('material_cost_eur')} | Fertigung: {result.get('fab_cost_eur')} | TOTAL: {result.get('total_cost_eur')}")
 
         return result
 
     except Exception as e:
-        try:
-            print(f"ERROR in gpt_complete_cost_estimate: {e}")
-        except Exception:
-            pass
+        _safe_print(f"ERROR in gpt_complete_cost_estimate: {e}")
         import traceback
         return {
             "material_guess": "stahl",
