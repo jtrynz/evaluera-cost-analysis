@@ -77,10 +77,11 @@ st.markdown("""
 .stButton > button[data-testid="baseButton-primary"],
 button[kind="primary"],
 button[data-testid="baseButton-primary"] {
-    background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
-    color: white !important;
-    border: 2px solid #B8D4D1 !important;
-    font-weight: 600 !important;
+    background: linear-gradient(135deg, #6FBFB8 0%, #5DA59F 100%) !important;
+    color: #FFFFFF !important;
+    border: 2px solid rgba(0,0,0,0.06) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.01em;
 }
 .stButton > button[kind="primary"] p,
 .stButton > button[kind="primary"] span,
@@ -88,15 +89,15 @@ button[data-testid="baseButton-primary"] {
 button[kind="primary"] p,
 button[kind="primary"] span,
 button[kind="primary"] div {
-    color: white !important;
+    color: #FFFFFF !important;
 }
 .stButton > button[kind="primary"]:hover,
 .stButton > button[data-testid="baseButton-primary"]:hover,
 button[kind="primary"]:hover {
-    background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
-    box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
-    border: 2px solid #7BA5A0 !important;
-    color: white !important;
+    background: linear-gradient(135deg, #5DA59F 0%, #4C8B86 100%) !important;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18) !important;
+    border: 2px solid rgba(0,0,0,0.12) !important;
+    color: #FFFFFF !important;
 }
 /* Disabled Button */
 .stButton > button[kind="primary"]:disabled,
