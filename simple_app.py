@@ -9,32 +9,28 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# Business logic - Core
-from src.core.price_utils import derive_unit_price
-from src.core.cbam import (
+# Backend-Funktionen
+from price_utils import derive_unit_price
+from cost_helpers import (
     parse_dims,
     clamp_dims,
     gpt_rate_supplier,
     gpt_negotiation_prep,
     calculate_co2_footprint,
 )
-
-# Business logic - Negotiation & GPT/AI
-from src.negotiation.engine import gpt_negotiation_prep_enhanced
-from src.gpt.engine import gpt_intelligent_article_search
-from src.gpt.cache import (
+from negotiation_prep_enhanced import gpt_negotiation_prep_enhanced
+from gpt_engine import gpt_intelligent_article_search
+from excel_helpers import (
+    find_column,
+    get_price_series_per_unit,
+)
+from gpt_cache import (
     cached_gpt_complete_cost_estimate,
     cached_gpt_analyze_supplier,
 )
 
-# Utilities
-from src.utils.excel_helpers import (
-    find_column,
-    get_price_series_per_unit,
-)
-
 # UI-System
-from src.ui.theme import (
+from ui_theme import (
     apply_global_styles,
     section_header,
     divider,
@@ -44,15 +40,15 @@ from src.ui.theme import (
     RADIUS,
     SHADOWS,
 )
-from src.ui.wizard import (
+from wizard_system import (
     WizardManager,
     create_data_table,
     create_compact_kpi_row,
 )
-from src.ui.components_main import GPTLoadingAnimation, ExcelLoadingAnimation
-from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
-from src.ui.login import check_login, render_login_screen, render_logout_button
-from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
+from ui_components import GPTLoadingAnimation, ExcelLoadingAnimation, render_evaluera_logo
+from navigation_sidebar import NavigationSidebar, create_section_anchor, create_scroll_behavior
+from login_screen import check_login, render_login_screen, render_logout_button
+from liquid_glass_system import apply_liquid_glass_styles, liquid_header, glass_card
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -69,7 +65,7 @@ st.set_page_config(
 )
 
 # ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
-from src.ui.login import inject_lottie_background
+from inject_lottie_login_background import inject_lottie_background
 inject_lottie_background()
 
 # EVALUERA Theme Override - muss nach set_page_config kommen
@@ -232,10 +228,15 @@ def find_col(df, possible_names):
 
 
 # ==================== HEADER - LIQUID GLASS BRANDING ====================
-liquid_header(
-    "EVALUERA",
-    "KI-gestützte Bestellanalyse & Kostenschätzung"
-)
+# Logo statt Text-Header
+render_evaluera_logo(align="center", width=230)
+st.markdown("""
+<div style="text-align: center; margin-top: -10px; margin-bottom: 32px;">
+    <p style="font-size: 1.25rem; font-weight: 600; color: #2F4A56; letter-spacing: 0.02em;">
+        KI-gestützte Bestellanalyse & Kostenschätzung
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
