@@ -6,6 +6,7 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 
 import os
 import re
+import traceback
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
@@ -485,6 +486,17 @@ def step5_cost_estimation():
             return ""
         return re.sub(r"[\u2028\u2029]", "", text)
 
+    def _sanitize_obj(obj):
+        """Sanitize recursively to remove U+2028/U+2029 from strings inside dict/list."""
+        if isinstance(obj, str):
+            return _sanitize(obj)
+        elif isinstance(obj, list):
+            return [_sanitize_obj(v) for v in obj]
+        elif isinstance(obj, dict):
+            return {k: _sanitize_obj(v) for k, v in obj.items()}
+        else:
+            return obj
+
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
         with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
             # Supplier analysis (if available)
@@ -497,7 +509,7 @@ def step5_cost_estimation():
                     item_col = st.session_state.item_col
 
                     sup_df = idf[idf[supplier_col] == supplier]
-                    article_history = sup_df[item_col].unique().tolist()[:50]
+                    article_history = [_sanitize_obj(a) for a in sup_df[item_col].unique().tolist()[:50]]
 
                     supplier_competencies = cached_gpt_analyze_supplier(
                         supplier_name=supplier,
@@ -508,11 +520,19 @@ def step5_cost_estimation():
                     st.warning(f"Lieferanten-Analyse fehlgeschlagen: {e}")
 
             # Cost estimation
-            result = cached_gpt_complete_cost_estimate(
-                description=_sanitize(article),
-                lot_size=int(lot_size),
-                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=False)
-            )
+            try:
+                article_clean = _sanitize(article)
+                supplier_comp_clean = None if not supplier_competencies else _sanitize_obj(supplier_competencies)
+                result = cached_gpt_complete_cost_estimate(
+                    description=article_clean,
+                    lot_size=int(lot_size),
+                    supplier_competencies_json=None if not supplier_comp_clean else json.dumps(supplier_comp_clean, ensure_ascii=False)
+                )
+            except Exception as e:
+                st.error(f"❌ Kostenschätzung Exception: {e}")
+                st.error(traceback.format_exc())
+                st.info(f"Debug info: article='{article_clean}', lot_size={lot_size}, supplier_competencies_present={supplier_comp_clean is not None}")
+                return
 
             if result and not result.get("_error"):
                 material_eur = result.get('material_cost_eur')

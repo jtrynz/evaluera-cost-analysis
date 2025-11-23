@@ -49,6 +49,13 @@ def gpt_complete_cost_estimate(
     Returns:
         Dict mit allen Kosten-Informationen
     """
+    def _clean(txt: str) -> str:
+        if txt is None:
+            return ""
+        return txt.replace("\u2028", " ").replace("\u2029", " ")
+
+    description = _clean(description)
+
     key = os.getenv("OPENAI_API_KEY")
     if not key or OpenAI is None:
         print("⚠️ FALLBACK: Kein API Key")
@@ -65,7 +72,10 @@ def gpt_complete_cost_estimate(
             "_fallback": True
         }
 
-    print(f"✅ GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
+    try:
+        print(f"✅ GPT-4o ALL-IN-ONE Cost Estimate: {description} @ {lot_size:,} Stk")
+    except Exception:
+        pass
     client = OpenAI(api_key=key)
 
     # Losgrössen-Kontext
@@ -87,7 +97,7 @@ def gpt_complete_cost_estimate(
         comps = supplier_competencies.get('core_competencies', [])
         if comps:
             processes = [c.get('process') for c in comps[:3]]
-            supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(processes)}"
+            supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(_clean(p or '') for p in processes)}"
 
     # KOMBINIERTER PROMPT - Material + Prozess + Kosten (EXTREM GÜNSTIG - WORST CASE)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in globaler Low-Cost-Beschaffung.
@@ -229,9 +239,6 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
 """
 
     try:
-        def _clean(t: str) -> str:
-            return (t or "").replace("\u2028", " ").replace("\u2029", " ")
-
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
