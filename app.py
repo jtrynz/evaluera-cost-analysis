@@ -148,6 +148,58 @@ st.markdown(
         p, span, label, div {
             color: #333333 !important;
         }
+
+        /* Header spacing cleanup */
+        [data-testid="stHeader"] { margin-bottom: 0 !important; }
+
+        /* Sidebar nav buttons: compact, rounded, mint */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"],
+        [data-testid="stSidebar"] .stButton > button[kind="secondary"] {
+            min-height: 46px !important;
+            border-radius: 10px !important;
+            background: rgba(255, 255, 255, 0.82) !important;
+            border: 1px solid rgba(42, 79, 87, 0.22) !important;
+            color: #1E2E32 !important;
+            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover,
+        [data-testid="stSidebar"] .stButton > button[kind="secondary"]:hover {
+            background: rgba(231, 241, 239, 0.9) !important;
+            border-color: rgba(42, 79, 87, 0.35) !important;
+            transform: translateY(-1px) !important;
+        }
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"],
+        [data-testid="stSidebar"] .stButton > button[kind="primary"] {
+            min-height: 46px !important;
+            border-radius: 10px !important;
+            background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 2px rgba(255,255,255,0.28) !important;
+            font-weight: 700 !important;
+        }
+
+        /* Cards / containers soft glass */
+        div[data-testid="stHorizontalBlock"] > div > div,
+        div[data-testid="stVerticalBlock"] > div > div,
+        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 1px solid rgba(42, 79, 87, 0.12) !important;
+            border-radius: 16px !important;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.12) !important;
+        }
+
+        /* Progress bar */
+        [data-testid="stProgressBar"] > div {
+            background: #E7F1EF !important;
+            border-radius: 9999px !important;
+        }
+        [data-testid="stProgressBar"] > div > div {
+            background: linear-gradient(90deg, #2A4F57 0%, #B8D4D1 100%) !important;
+            border-radius: 9999px !important;
+            height: 10px !important;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -195,13 +247,12 @@ render_evaluera_logo(align="center", width=230)
 
 st.markdown(f"""
 <div style="text-align: center; margin-top: {SPACING['md']}; margin-bottom: {SPACING['xl']};">
-    <h1 style="color: {COLORS['error']}; font-weight: 700; margin: 0;">
+    <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: 0;">
         KI-gestützte Bestellanalyse & Kostenschätzung
     </h1>
-    <p style="color: {COLORS['gray_600']}; font-size: 1.1rem; margin-top: {SPACING['sm']};">
+    <p style="color: #333333; font-size: 1.05rem; margin-top: {SPACING['sm']}; font-weight: 500;">
         Professionelle Beschaffungsoptimierung mit künstlicher Intelligenz
     </p>
-</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -217,9 +268,9 @@ wizard.render_progress()
 # ==================== STEP 1: EXCEL UPLOAD ====================
 if wizard.get_current_step() == 1:
     st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">📁 Schritt 1: Bestellung hochladen</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
+    <div style="background: rgba(255,255,255,0.9); padding: {SPACING['lg']}; border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.12); border: 1px solid rgba(42,79,87,0.12); margin: {SPACING['lg']} 0;">
+        <h3 style="color: {COLORS['primary']}; margin: 0 0 {SPACING['sm']} 0; font-weight: 700;">📁 Schritt 1: Bestellung hochladen</h3>
+        <p style="color: #333333; margin: 0; font-weight: 500;">
             Laden Sie Ihre Excel-Bestellung hoch. Wir analysieren automatisch Artikel, Preise und Lieferanten.
         </p>
     </div>
