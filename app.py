@@ -186,14 +186,8 @@ if wizard.get_current_step() == 1:
 
                 st.success(f"✓ **{uploaded_file.name}** erfolgreich geladen ({len(df)} Zeilen)")
 
-                # Preview
-                st.markdown(f"**Vorschau der ersten 10 Zeilen:**")
-                if df.empty:
-                    st.info("Die Tabelle enthält keine Zeilen.")
-                else:
-                    preview = df.head(10)
-                    st.dataframe(preview, use_container_width=True)
-                    st.write(preview)
+                # Keine Preview anzeigen (Performance/Clarity)
+                # Falls gewünscht, hier wieder aktivieren.
 
                 if st.button("Weiter zu Schritt 2", type="primary", use_container_width=True):
                     wizard.next_step()
