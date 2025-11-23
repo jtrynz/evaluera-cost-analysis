@@ -66,7 +66,8 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
     # Deserialize supplier_competencies
     supplier_competencies = None
     if supplier_competencies_json:
-        supplier_competencies = json.loads(supplier_competencies_json)
+        clean = supplier_competencies_json.replace("\u2028", " ").replace("\u2029", " ")
+        supplier_competencies = json.loads(clean)
 
     return gpt_complete_cost_estimate(description, lot_size, supplier_competencies)
 
@@ -91,7 +92,10 @@ def cached_gpt_analyze_supplier(supplier_name: str, article_history_json: str,
     TTL: 1 Stunde - Lieferanten-Kompetenzen ändern sich selten!
     """
     from src.core.cbam import gpt_analyze_supplier_competencies
-    article_history = json.loads(article_history_json) if article_history_json else None
+    article_history = None
+    if article_history_json:
+        clean = article_history_json.replace("\u2028", " ").replace("\u2029", " ")
+        article_history = json.loads(clean)
     return gpt_analyze_supplier_competencies(supplier_name, article_history, country)
 
 
@@ -103,7 +107,7 @@ def cached_gpt_article_search(query: str, items_json: str) -> List[int]:
     TTL: 30 Minuten (kürzer weil sich Suche öfter ändert)
     """
     from src.gpt.engine import gpt_intelligent_article_search
-    items = json.loads(items_json)
+    items = json.loads(items_json.replace("\u2028", " ").replace("\u2029", " "))
     return gpt_intelligent_article_search(query, items)
 
 

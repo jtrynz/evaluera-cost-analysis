@@ -229,23 +229,26 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
 """
 
     try:
+        def _clean(t: str) -> str:
+            return (t or "").replace("\u2028", " ").replace("\u2029", " ")
+
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {
                     "role": "system",
-                    "content": "Du bist ein Senior Cost Engineer. Analysiere Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) präzise. Antworte NUR als JSON."
+                    "content": _clean("Du bist ein Senior Cost Engineer. Analysiere Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) präzise. Antworte NUR als JSON.")
                 },
                 {
                     "role": "user",
-                    "content": prompt
+                    "content": _clean(prompt)
                 }
             ],
             temperature=0.1,
             max_tokens=2000
         )
 
-        txt = response.choices[0].message.content.strip()
+        txt = _clean(response.choices[0].message.content.strip())
         data = parse_gpt_json(txt, default={})
 
         # Extrahiere alle Werte mit Fallbacks

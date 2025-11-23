@@ -25,7 +25,11 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
     if default is None:
         default = {}
 
+    def _clean(t: str) -> str:
+        return (t or "").replace("\u2028", " ").replace("\u2029", " ")
+
     try:
+        text = _clean(text)
         # Versuch 1: Ganzer Text ist JSON
         return json.loads(text)
     except Exception:
@@ -35,7 +39,7 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
         # Versuch 2: JSON in ```json ... ``` Code-Block
         match = re.search(r'```json\s*([\s\S]*?)\s*```', text)
         if match:
-            return json.loads(match.group(1))
+            return json.loads(_clean(match.group(1)))
     except Exception:
         pass
 
@@ -43,7 +47,7 @@ def parse_gpt_json(text: str, default: Optional[Dict[str, Any]] = None) -> Dict[
         # Versuch 3: Beliebiges { ... } Pattern
         match = re.search(r'\{[\s\S]*\}', text)
         if match:
-            return json.loads(match.group(0))
+            return json.loads(_clean(match.group(0)))
     except Exception:
         pass
 
