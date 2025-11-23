@@ -5,3 +5,4 @@
 - Hintergrund-Gradient (dark_gradient.json) weiter vollflächig hinter dem Login-Container belassen.
 - Loader unter dem Button entfernt; Spinner erscheint nur noch während des Login-Vorgangs.
 - „Passwort vergessen?“ Link ergänzt; redundante Passwort-Checkbox entfernt.
+- Liquid-Glass-Balken über dem Logo entfernt; Fokus-Ränder auf Evaluera-Farben gesetzt; Fallback-Gradient per CSS ergänzt.

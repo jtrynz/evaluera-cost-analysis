@@ -98,7 +98,7 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: transparent !important;
+                background: linear-gradient(145deg, {COLORS['dark_accent']} 0%, {COLORS['primary']} 60%, #0C1315 100%) !important;
             }}
 
             header[data-testid="stHeader"],
@@ -162,6 +162,8 @@ def render_login_screen():
                 filter: drop-shadow(0 10px 30px rgba(0,0,0,0.45));
             }}
 
+            /* Hinweis: ehemaliger liquid-glass Header bewusst entfernt (Balken über Logo) */
+
             .login-title {{
                 color: #1E2E32;
                 font-size: 24px;
@@ -202,12 +204,20 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input:focus {{
-                border-color: var(--eval-secondary) !important;
+                border-color: #2A4F57 !important;
                 box-shadow:
-                    0 0 0 3px rgba(184, 212, 209, 0.45),
-                    0 10px 26px rgba(0,0,0,0.2) !important;
+                    0 0 0 2px rgba(42, 79, 87, 0.28),
+                    0 6px 16px rgba(0,0,0,0.18) !important;
                 outline: none !important;
                 background: #F6FAF9 !important;
+            }}
+
+            .stTextInput > div > div > input:invalid,
+            .stTextInput > div > div > input:invalid:focus {{
+                border-color: #2A4F57 !important;
+                box-shadow:
+                    0 0 0 2px rgba(42, 79, 87, 0.2),
+                    0 4px 12px rgba(0,0,0,0.12) !important;
             }}
 
             .stCheckbox > label {{
@@ -548,6 +558,6 @@ def inject_lottie_background():
         </style>
         <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
         """,
-        height=0,
-        width=0,
+        height=1,
+        width=1,
     )
