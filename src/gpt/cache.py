@@ -39,7 +39,7 @@ def cached_gpt_estimate_material(description: str) -> Dict[str, Any]:
 
     DEPRECATED: Verwende cached_gpt_complete_cost_estimate() für bessere Performance!
     """
-    from cost_helpers import gpt_estimate_material
+    from src.core.cbam import gpt_estimate_material
     return gpt_estimate_material(description)
 
 
@@ -61,7 +61,7 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
     Returns:
         Komplette Kostenschätzung (Material + Fertigung)
     """
-    from cost_estimation_optimized import gpt_complete_cost_estimate
+    from src.core.cost_estimation import gpt_complete_cost_estimate
 
     # Deserialize supplier_competencies
     supplier_competencies = None
@@ -78,7 +78,7 @@ def cached_choose_process(description: str, material: str, d_mm: Optional[float]
     Gecachte Prozess-Auswahl.
     TTL: 1 Stunde
     """
-    from cost_helpers import choose_process_with_gpt
+    from src.core.cbam import choose_process_with_gpt
     return choose_process_with_gpt(description, material, d_mm, l_mm, lot_size)
 
 
@@ -90,7 +90,7 @@ def cached_gpt_analyze_supplier(supplier_name: str, article_history_json: str,
     article_history als JSON-String für Hashability.
     TTL: 1 Stunde - Lieferanten-Kompetenzen ändern sich selten!
     """
-    from cost_helpers import gpt_analyze_supplier_competencies
+    from src.core.cbam import gpt_analyze_supplier_competencies
     article_history = json.loads(article_history_json) if article_history_json else None
     return gpt_analyze_supplier_competencies(supplier_name, article_history, country)
 
@@ -102,7 +102,7 @@ def cached_gpt_article_search(query: str, items_json: str) -> List[int]:
     items als JSON-String für Hashability.
     TTL: 30 Minuten (kürzer weil sich Suche öfter ändert)
     """
-    from gpt_engine import gpt_intelligent_article_search
+    from src.gpt.engine import gpt_intelligent_article_search
     items = json.loads(items_json)
     return gpt_intelligent_article_search(query, items)
 
@@ -114,7 +114,7 @@ def cached_gpt_technical_drawing(image_hash: str, image_data: bytes, filename: s
     image_hash für eindeutige Identifikation.
     TTL: 1 Stunde
     """
-    from cost_helpers import gpt_analyze_technical_drawing
+    from src.core.cbam import gpt_analyze_technical_drawing
     return gpt_analyze_technical_drawing(image_data, filename)
 
 
@@ -126,7 +126,7 @@ def cached_gpt_rate_supplier(supplier_name: str, country: Optional[str],
     Gecachte Lieferanten-Bewertung.
     TTL: 1 Stunde
     """
-    from cost_helpers import gpt_rate_supplier
+    from src.core.cbam import gpt_rate_supplier
     return gpt_rate_supplier(supplier_name, country, price_volatility,
                            total_orders, avg_price, article_name)
 
