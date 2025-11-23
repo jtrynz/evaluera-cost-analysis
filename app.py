@@ -181,6 +181,40 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Additional cleanup: hide empty pills/containers and tighten spacing
+st.markdown(
+    """
+    <style>
+        /* Remove empty containers creating white pills */
+        div[data-testid="stHorizontalBlock"] > div > div:empty,
+        div[data-testid="stVerticalBlock"] > div > div:empty,
+        div[data-testid="stHorizontalBlock"] > div:empty,
+        div[data-testid="stVerticalBlock"] > div:empty,
+        div[data-testid="column"] > div:empty,
+        div[data-testid="block-container"] > div:empty,
+        div[data-testid="block-container"] > div > div:empty {
+            display: none !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        /* Sidebar buttons spacing/height */
+        [data-testid="stSidebar"] .stButton {
+            margin: 6px 0 !important;
+        }
+        [data-testid="stSidebar"] .stButton > button {
+            min-height: 40px !important;
+            padding: 10px 12px !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
 # ==================== NAVIGATION ====================
 nav = NavigationSidebar()
 
