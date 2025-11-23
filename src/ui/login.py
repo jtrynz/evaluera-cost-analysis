@@ -67,12 +67,24 @@ def render_login_screen():
                 --accent-2: #7b61ff;
             }}
 
+            html, body {{
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden !important;
+            }}
+            .stApp, [data-testid="stAppViewContainer"], .main, section.main, .block-container {{
+                width: 100vw !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }}
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
                 background: linear-gradient(125deg, var(--bg1), var(--bg2), var(--bg3)) !important;
                 background-size: 240% 240% !important;
                 animation: bgShift 18s ease-in-out infinite;
-                min-height: 100vh;
-                overflow: hidden;
             }}
 
             @keyframes bgShift {{
@@ -99,18 +111,21 @@ def render_login_screen():
 
             .login-stage {{
                 position: relative;
-                min-height: 100vh;
-                display: grid;
-                place-items: center;
-                padding: 24px;
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
                 isolation: isolate;
+                overflow: hidden;
             }}
 
             .login-card {{
-                width: min(480px, 92vw);
-                padding: 28px 26px 24px 26px;
+                width: min(460px, 92vw);
+                padding: 26px 24px 22px 24px;
                 border-radius: 18px;
-                background: rgba(255,255,255,0.16);
+                background: rgba(255,255,255,0.18);
                 backdrop-filter: blur(18px);
                 -webkit-backdrop-filter: blur(18px);
                 border: 1px solid rgba(255,255,255,0.28);
@@ -149,6 +164,8 @@ def render_login_screen():
             .hero-title {{ margin: 6px 0 4px 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }}
             .hero-sub {{ margin: 0 0 12px 0; color: var(--text-soft); font-weight: 500; font-size: 14px; }}
 
+            * {{ box-sizing: border-box; }}
+
             .stTextInput > label {{
                 color: var(--text-strong) !important;
                 font-weight: 600 !important;
@@ -158,9 +175,11 @@ def render_login_screen():
             .stTextInput > div > div {{
                 background: rgba(255,255,255,0.35) !important;
                 border: 1.8px solid rgba(255,255,255,0.45) !important;
-                border-radius: 12px !important;
+                border-radius: 14px !important;
                 transition: all 0.22s ease !important;
                 box-shadow: 0 8px 28px rgba(0,0,0,0.06) inset !important;
+                min-height: 48px !important;
+                overflow: visible !important;
             }}
             .stTextInput > div > div:hover {{ border-color: rgba(255,255,255,0.65) !important; }}
             .stTextInput > div > div:focus-within {{
@@ -173,8 +192,22 @@ def render_login_screen():
                 font-weight: 600 !important;
                 background: transparent !important;
                 padding: 12px 14px !important;
+                min-height: 48px !important;
+                box-shadow: none !important;
+                outline: none !important;
             }}
             .stTextInput input::placeholder {{ color: rgba(15,31,42,0.55) !important; }}
+            .stTextInput input:focus, .stTextInput input:focus-visible, .stTextInput input:active,
+            .stTextInput input:invalid, .stTextInput input:user-invalid {{
+                outline: none !important;
+                box-shadow: none !important;
+                border: none !important;
+            }}
+            input:invalid, input:invalid:focus, input:user-invalid, input:user-invalid:focus {{
+                box-shadow: none !important;
+                outline: none !important;
+                border: none !important;
+            }}
 
             .stButton > button {{
                 width: 100% !important;
@@ -237,6 +270,7 @@ def render_login_screen():
             header[data-testid="stHeader"], #MainMenu, footer, [data-testid="stSidebar"], [data-testid="stToolbar"] {{
                 display: none !important;
             }}
+            [data-testid="stSidebarNav"] {{ display: none !important; }}
 
             @media (max-width: 600px) {{
                 .login-card {{ padding: 22px 18px; }}
