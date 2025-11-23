@@ -44,7 +44,8 @@
       "Bash(done)",
       "Bash(awk:*)",
       "Bash(git log:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(git ls-tree:*)"
     ],
     "deny": [],
     "ask": []
