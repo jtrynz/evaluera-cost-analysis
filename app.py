@@ -16,25 +16,29 @@ from dotenv import load_dotenv
 # Add src to path for clean imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-# Core modules
-from src.ui_theme import apply_global_styles, COLORS, SPACING, RADIUS
-from src.components.login import check_login, render_login_screen, render_logout_button, inject_lottie_background
-from src.components.navigation import NavigationSidebar
-from src.components.wizard import WizardManager
-from src.components.cards import render_evaluera_logo, GPTLoadingAnimation, ExcelLoadingAnimation
+# UI modules
+from src.ui.theme import apply_global_styles, COLORS, SPACING, RADIUS
+from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background
+from src.ui.navigation import NavigationSidebar
+from src.ui.wizard import WizardManager
+from src.ui.cards import render_evaluera_logo, GPTLoadingAnimation, ExcelLoadingAnimation
 
-# Business logic
-from src.gpt_engine import gpt_intelligent_article_search
-from src.gpt_cache import cached_gpt_complete_cost_estimate, cached_gpt_analyze_supplier
-from src.excel_helpers import find_column, get_price_series_per_unit
-from src.cbam import (
+# Business logic - GPT/AI
+from src.gpt.engine import gpt_intelligent_article_search
+from src.gpt.cache import cached_gpt_complete_cost_estimate, cached_gpt_analyze_supplier
+
+# Business logic - Core
+from src.core.cbam import (
     parse_dims,
     clamp_dims,
     gpt_rate_supplier,
     calculate_co2_footprint,
 )
-from src.negotiation_engine import gpt_negotiation_prep_enhanced
-from src.security import derive_unit_price
+from src.negotiation.engine import gpt_negotiation_prep_enhanced
+
+# Utilities
+from src.utils.excel_helpers import find_column, get_price_series_per_unit
+from src.utils.security import derive_unit_price
 
 # ==================== CONFIGURATION ====================
 load_dotenv()
