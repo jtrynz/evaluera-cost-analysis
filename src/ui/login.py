@@ -206,11 +206,21 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input:invalid,
-            .stTextInput > div > div > input:invalid:focus {{
+            .stTextInput > div > div > input:invalid:focus,
+            .stTextInput > div > div > input:user-invalid,
+            .stTextInput > div > div > input:user-invalid:focus {{
                 border-color: #2A4F57 !important;
                 box-shadow:
-                    0 0 0 2px rgba(42, 79, 87, 0.2),
-                    0 4px 12px rgba(0,0,0,0.12) !important;
+                    0 0 0 2px rgba(42, 79, 87, 0.2) !important;
+            }}
+
+            /* Blockiere roten Browser-Invalid-Rand */
+            input:focus-visible,
+            input:focus,
+            input:user-invalid,
+            input:user-invalid:focus {{
+                outline: none !important;
+                box-shadow: none !important;
             }}
 
             .stCheckbox > label {{
