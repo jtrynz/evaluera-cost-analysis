@@ -118,25 +118,17 @@ if not st.session_state.logged_in:
     st.stop()
 
 # ==================== MAIN APP (nur wenn eingeloggt) ====================
-# Render animated waves background
-st.markdown("""
-<div class="bg-waves">
-  <div class="wave"></div>
-  <div class="wave"></div>
-  <div class="wave"></div>
-</div>
-
-<style>
-body { margin: 0 !important; overflow-x: hidden !important; }
-.bg-waves { position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; background: #bfdcdc !important; overflow: hidden !important; z-index: -1 !important; pointer-events: none !important; }
-.wave { position: absolute !important; width: 200% !important; height: 200% !important; opacity: 0.15 !important; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 60%) !important; animation: drift 18s infinite linear !important; filter: blur(60px) !important; will-change: transform !important; }
-.wave:nth-child(2) { animation-duration: 26s !important; opacity: 0.12 !important; }
-.wave:nth-child(3) { animation-duration: 34s !important; opacity: 0.10 !important; }
-@keyframes drift { 0% { transform: translate(-30%, -30%) scale(1); } 50% { transform: translate(10%, 10%) scale(1.1); } 100% { transform: translate(-30%, -30%) scale(1); } }
-.main { background: transparent !important; }
-.block-container { background: transparent !important; }
-</style>
-""", unsafe_allow_html=True)
+# Ruhiger Hintergrund ohne Wellen (verhindert flackernde Mint-Overlays)
+st.markdown(
+    """
+    <style>
+    body, .stApp, [data-testid="stAppViewContainer"], .main, .block-container {
+        background: #FFFFFF !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 apply_global_styles()
 apply_liquid_glass_styles()
@@ -490,7 +482,7 @@ def step5_cost_estimation():
     )
 
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
-        with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
+        with GPTLoadingAnimation(" Analysiere mit KI...", icon="💰"):
             # Supplier analysis (if available)
             supplier_competencies = None
             if supplier:
@@ -538,7 +530,10 @@ def step5_cost_estimation():
                 wizard.complete_step(5)
                 st.success("✅ Schätzung abgeschlossen!")
             else:
-                st.error("❌ Schätzung fehlgeschlagen")
+                msg = "Unbekannter Fehler"
+                if result:
+                    msg = result.get("message") or result.get("error") or result.get("_error") or msg
+                st.error(f"❌ Schätzung fehlgeschlagen: {msg}")
 
     # Show results
     if "cost_result" in st.session_state:
