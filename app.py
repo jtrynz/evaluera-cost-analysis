@@ -1,10 +1,7 @@
 """
 🎯 EVALUERA - KI-gestützte Kostenanalyse
 ==========================================
-Professional cost analysis platform with AI-powered insights
-
-Entry point for the Streamlit application.
-All modules are cleanly organized under src/ directory.
+Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 """
 
 import os
@@ -14,40 +11,54 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 
-# Add src to path for clean imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Pfad für src-Module
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
 
-# UI modules
-from src.ui.theme import apply_global_styles, COLORS, SPACING, RADIUS
-from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
-from src.ui.navigation import NavigationSidebar
-from src.ui.wizard import WizardManager
-from src.ui.cards import render_evaluera_logo, GPTLoadingAnimation, ExcelLoadingAnimation
-
-# Business logic - GPT/AI
-from src.gpt.engine import gpt_intelligent_article_search
-from src.gpt.cache import cached_gpt_complete_cost_estimate, cached_gpt_analyze_supplier
-
-# Business logic - Core
+# Backend-Funktionen
+from src.core.price_utils import derive_unit_price
 from src.core.cbam import (
     parse_dims,
     clamp_dims,
     gpt_rate_supplier,
     calculate_co2_footprint,
-    gpt_analyze_supplier_competencies,
 )
 from src.negotiation.engine import gpt_negotiation_prep_enhanced
+from src.gpt.engine import gpt_intelligent_article_search
+from src.utils.excel_helpers import (
+    find_column,
+    get_price_series_per_unit,
+)
+from src.gpt.cache import (
+    cached_gpt_complete_cost_estimate,
+    cached_gpt_analyze_supplier,
+)
 
-# Utilities
-from src.utils.excel_helpers import find_column, get_price_series_per_unit
-from src.core.price_utils import derive_unit_price
+# UI-System
+from src.ui.theme import (
+    apply_global_styles,
+    section_header,
+    divider,
+    status_badge,
+    COLORS,
+    SPACING,
+    RADIUS,
+    SHADOWS,
+)
+from src.ui.wizard import (
+    WizardManager,
+    create_data_table,
+    create_compact_kpi_row,
+)
+from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation
+from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
+from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
+from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
 
-# ==================== CONFIGURATION ====================
+# ==================== SETUP ====================
 load_dotenv()
 
 st.set_page_config(
     page_title="EVALUERA - Kostenanalyse",
-    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
     menu_items={
@@ -57,664 +68,628 @@ st.set_page_config(
     }
 )
 
-# ==================== AUTHENTICATION ====================
-# Inject Lottie background for login screen
+# ==================== GLOBAL PERMANENT BACKGROUND (LOGIN ONLY) ====================
 inject_lottie_background()
 
-# Check authentication
+# Theme Override (Buttons)
+st.markdown("""
+<style>
+/* Primary Button Override - EVALUERA Blaugrau */
+.stButton > button[kind="primary"],
+.stButton > button[data-testid="baseButton-primary"],
+button[kind="primary"],
+button[data-testid="baseButton-primary"] {
+background: linear-gradient(135deg, #2F4A56 0%, #3D5A68 100%) !important;
+color: white !important;
+border: 2px solid #B8D4D1 !important;
+font-weight: 600 !important;
+}
+.stButton > button[kind="primary"] p,
+.stButton > button[kind="primary"] span,
+.stButton > button[kind="primary"] div,
+button[kind="primary"] p,
+button[kind="primary"] span,
+button[kind="primary"] div {
+color: white !important;
+}
+.stButton > button[kind="primary"]:hover,
+.stButton > button[data-testid="baseButton-primary"]:hover,
+button[kind="primary"]:hover {
+background: linear-gradient(135deg, #3D5A68 0%, #4B6A78 100%) !important;
+box-shadow: 0 4px 12px rgba(47, 74, 86, 0.3) !important;
+border: 2px solid #7BA5A0 !important;
+color: white !important;
+}
+.stButton > button[kind="primary"]:disabled,
+.stButton > button[data-testid="baseButton-primary"]:disabled {
+background: #E5E7EB !important;
+color: #9CA3AF !important;
+border: 2px solid #D1D5DB !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ==================== LOGIN CHECK ====================
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
 if not check_login():
     render_login_screen()
     st.stop()
 
-# ==================== GLOBAL STYLING ====================
-apply_global_styles()
-
-st.markdown(
-    """
-    <style>
-html, body, .stApp, [data-testid="stAppViewContainer"], .main {background: #FFFFFF !important;}
-.block-container {max-width:1300px!important; margin:0 auto!important; padding-left:1.25rem!important; padding-right:1.25rem!important; padding-top:0!important;}
-[data-testid="stSidebar"] {background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(245,248,247,0.96) 100%) !important; backdrop-filter: blur(10px)!important; -webkit-backdrop-filter: blur(10px)!important; border-right:1px solid rgba(42,79,87,0.08)!important; box-shadow:4px 0 12px rgba(0,0,0,0.04)!important;}
-[data-testid="stSidebar"] .stButton > button {min-height:42px!important; border-radius:10px!important; padding:10px 12px!important;}
-[data-testid="stSidebar"] button[data-testid=\"baseButton-primary\"], [data-testid=\"stSidebar\"] button[kind=\"primary\"] {background:#2A4F57!important; color:#FFFFFF!important; border:1px solid rgba(42,79,87,0.3)!important; box-shadow:0 6px 14px rgba(0,0,0,0.1)!important; font-weight:700!important;}
-[data-testid=\"stSidebar\"] button[data-testid=\"baseButton-secondary\"], [data-testid=\"stSidebar\"] button[kind=\"secondary\"] {background:rgba(255,255,255,0.92)!important; border:1px solid rgba(42,79,87,0.18)!important; color:#1E2E32!important; box-shadow:0 4px 12px rgba(0,0,0,0.05)!important; font-weight:600!important; margin:6px 0!important;}
-/* Remove ghost containers / spacers */
-div[data-testid=\"stHorizontalBlock\"], div[data-testid=\"stVerticalBlock\"], div[data-testid=\"column\"], div[data-testid=\"block-container\"], div[data-testid=\"element-container\"],
-div[data-testid=\"stHorizontalBlock\"] > div, div[data-testid=\"stVerticalBlock\"] > div, div[data-testid=\"column\"] > div, div[data-testid=\"block-container\"] > div {
-    background: transparent!important; border: none!important; box-shadow: none!important; padding: 0!important; margin:0!important;}
-div[data-testid=\"stHorizontalBlock\"] > div > div, div[data-testid=\"stVerticalBlock\"] > div > div, div[data-testid=\"column\"] > div > div, div[data-testid=\"block-container\"] > div > div {
-    background: transparent!important; border: none!important; box-shadow: none!important; padding:0!important; margin:0!important; border-radius:0!important;}
-div[data-testid=\"stHorizontalBlock\"] > div > div:empty, div[data-testid=\"stVerticalBlock\"] > div > div:empty, div[data-testid=\"stHorizontalBlock\"] > div:empty, div[data-testid=\"stVerticalBlock\"] > div:empty,
-div[data-testid=\"column\"] > div:empty, div[data-testid=\"block-container\"] > div:empty, div:empty {display:none!important; height:0!important; padding:0!important; margin:0!important; border:none!important; box-shadow:none!important; background:transparent!important;}
-/* Essentials */
-[data-testid=\"stProgressBar\"] > div {background:#E7F1EF!important; border-radius:9999px!important;}
-[data-testid=\"stProgressBar\"] > div > div {background:#2A4F57!important; border-radius:9999px!important; height:10px!important;}
-.stFileUploader {background:#FFFFFF!important; border:1.5px dashed rgba(42,79,87,0.18)!important; border-radius:16px!important; box-shadow:0 6px 14px rgba(0,0,0,0.06)!important;}
-.stFileUploader:hover {border-color:#2A4F57!important; background:rgba(231,241,239,0.94)!important;}
-.stFileUploader label {color:#1E2E32!important; font-weight:600!important;}
-h1, h2, h3, h4 {color:#2A4F57!important;} p, span, label, div {color:#333333!important;}
-hr, div[role=\"separator\"] {display:none!important; height:0!important; border:none!important; margin:0!important; padding:0!important; background:transparent!important;}
-#wizard-next-fixed-container {position:fixed!important; right:2.4rem!important; bottom:2.0rem!important; z-index:9999!important;}
-@media(max-width:900px){#wizard-next-fixed-container {right:50%!important; transform:translateX(50%);}}
-div[data-baseweb=\"input\"]:focus-within {border-color:#1F3C45!important; box-shadow:0 0 0 2px rgba(31,60,69,0.18), 0 6px 16px rgba(0,0,0,0.08)!important;}
-.stButton > button, button[kind=\"primary\"] {background:#1F3C45!important; color:#FFFFFF!important; border:none!important;}
-.css-18e3th9, .css-1v0mbdj, .css-1dp5vir, .css-1kyxreq, .css-ocqkz7, .css-hg7snz, .css-ffhzg2 {display:none!important; height:0!important; padding:0!important; margin:0!important; box-shadow:none!important; background:transparent!important; border:none!important;}
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ==================== NAVIGATION ====================
-nav = NavigationSidebar()
-
-# ==================== SESSION STATE INITIALIZATION ====================
-def init_session_state():
-    """Initialize all required session state variables"""
-    defaults = {
-        'wizard_step': 1,
-        'uploaded_file': None,
-        'df_raw': None,
-        'selected_row': None,
-        'article_name': '',
-        'supplier_name': '',
-        'material': '',
-        'dimensions': '',
-        'lot_size': 1,
-        'process': '',
-        'cost_estimate': None,
-        'supplier_analysis': None,
-        'negotiation_prep': None,
-        'co2_data': None,
-        # New: Store article search results
-        'article_matches': None,
-        'supplier_competencies': None,
-        'reference_articles': None,
-    }
-
-    for key, value in defaults.items():
-        if key not in st.session_state:
-            st.session_state[key] = value
-
-init_session_state()
-
-# ==================== MAIN APP HEADER ====================
-st.markdown(f"""
-<div style="text-align: center; padding: {SPACING['xl']} 0 {SPACING['md']} 0;">
-    <img src="data:image/png;base64,{get_logo_base64()}" alt="EVALUERA" style="height: 48px; object-fit: contain;" />
-    <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: {SPACING['md']} 0 {SPACING['sm']} 0;">
-        KI-gestützte Bestellanalyse & Kostenschätzung
-    </h1>
-    <p style="color: #333333; font-size: 1.05rem; margin-top: 0; font-weight: 500;">
-        Professionelle Beschaffungsoptimierung mit künstlicher Intelligenz
-    </p>
+# ==================== MAIN APP (nur wenn eingeloggt) ====================
+# Hintergrund
+st.markdown("""
+<div class="bg-waves">
+  <div class="wave"></div>
+  <div class="wave"></div>
+  <div class="wave"></div>
 </div>
+<style>
+body { margin: 0 !important; overflow-x: hidden !important; }
+.bg-waves { position: fixed !important; top:0; left:0; width:100vw; height:100vh; background:#bfdcdc; overflow:hidden; z-index:-1; pointer-events:none; }
+.wave { position:absolute; width:200%; height:200%; opacity:0.15; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.6), transparent 60%); animation: drift 18s infinite linear; filter: blur(60px); will-change: transform; }
+.wave:nth-child(2){ animation-duration:26s; opacity:0.12; }
+.wave:nth-child(3){ animation-duration:34s; opacity:0.10; }
+@keyframes drift { 0% {transform: translate(-30%,-30%) scale(1);} 50% {transform: translate(10%,10%) scale(1.1);} 100% {transform: translate(-30%,-30%) scale(1);} }
+.main { background: transparent !important; }
+.block-container { background: transparent !important; }
+</style>
 """, unsafe_allow_html=True)
 
-# Logout button in top right
-col1, col2 = st.columns([6, 1])
-with col2:
-    render_logout_button()
-
-# ==================== WIZARD NAVIGATION ====================
+apply_global_styles()
+apply_liquid_glass_styles()
+create_scroll_behavior()
 wizard = WizardManager()
+nav = NavigationSidebar()
+
+# ==================== API KEY ====================
+def get_api_key(key_name, default=None):
+    try:
+        if hasattr(st, 'secrets') and key_name in st.secrets:
+            return st.secrets[key_name]
+    except (FileNotFoundError, KeyError):
+        pass
+    return os.getenv(key_name) or default
+
+openai_key = get_api_key("OPENAI_API_KEY")
+if openai_key:
+    os.environ["OPENAI_API_KEY"] = openai_key
+else:
+    st.error("🚨 OpenAI API Key fehlt! Bitte in Streamlit Secrets konfigurieren.")
+
+# ==================== HELPER FUNCTIONS ====================
+def normalize_columns(df):
+    df_norm = df.copy()
+    df_norm.columns = [c.strip().lower() for c in df.columns]
+    return df_norm
+
+
+def find_col(df, possible_names):
+    df_norm_cols = [c.strip().lower() for c in df.columns]
+    for name in possible_names:
+        if name in df_norm_cols:
+            return df.columns[df_norm_cols.index(name)]
+    return None
+
+# ==================== HEADER ====================
+liquid_header(
+    "EVALUERA",
+    "KI-gestützte Bestellanalyse & Kostenschätzung"
+)
+
+nav.render()
+render_logout_button()
+
+# Navigation ↔ Wizard Sync
+nav_to_wizard = {
+    "upload": 1,
+    "artikel": 2,
+    "preis": 3,
+    "lieferanten": 4,
+    "kosten": 5,
+    "nachhaltigkeit": 6
+}
+if st.session_state.nav_active_section in nav_to_wizard:
+    wizard_step = nav_to_wizard[st.session_state.nav_active_section]
+    if wizard_step != st.session_state.wizard_current_step:
+        wizard.set_step(wizard_step)
+
 wizard.render_progress()
 
-# ==================== STEP 1: EXCEL UPLOAD ====================
-if wizard.get_current_step() == 1:
-    st.markdown(f"""
-    <div style="background: rgba(255,255,255,0.9); padding: {SPACING['lg']}; border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,0.12); border: 1px solid rgba(42,79,87,0.12); margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['primary']}; margin: 0 0 {SPACING['sm']} 0; font-weight: 700;">📁 Schritt 1: Bestellung hochladen</h3>
-        <p style="color: #333333; margin: 0; font-weight: 500;">
-            Laden Sie Ihre Excel-Bestellung hoch. Wir analysieren automatisch Artikel, Preise und Lieferanten.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+# ==================== STEP 1: UPLOAD ====================
+def step1_upload():
+    section_header("Daten hochladen", "Excel- oder CSV-Datei mit Bestelldaten")
 
     uploaded_file = st.file_uploader(
-        "Excel-Datei auswählen",
-        type=["xlsx", "xls"],
-        help="Unterstützte Formate: .xlsx, .xls"
+        "Datei auswählen",
+        type=["csv", "xlsx"],
+        key="file_upload",
     )
 
     if uploaded_file:
-        st.caption(f"Datei: **{uploaded_file.name}** ({uploaded_file.type or 'unbekannt'}, {uploaded_file.size} Bytes)")
-        progress = st.progress(0, text="Lade Excel...")
-        with ExcelLoadingAnimation("Excel-Datei wird analysiert..."):
+        st.success(f"✅ Datei: {uploaded_file.name}")
+        try:
+            with ExcelLoadingAnimation(f"📂 Analysiere {uploaded_file.name}", icon="📊"):
+                if uploaded_file.name.endswith('.csv'):
+                    df = pd.read_csv(uploaded_file, sep=None, engine="python")
+                else:
+                    df = pd.read_excel(uploaded_file)
+
+                st.session_state.df = df
+                st.session_state.uploaded_file_name = uploaded_file.name
+                wizard.complete_step(1)
+
+                with st.expander("📊 Datenvorschau", expanded=False):
+                    st.write(f"**{len(df):,} Zeilen × {len(df.columns)} Spalten**")
+                    st.dataframe(df.head(10), use_container_width=True)
+
+        except Exception as e:
+            st.error(f"❌ Fehler: {e}")
+    else:
+        st.info("👆 Bitte Datei hochladen")
+
+
+# ==================== STEP 2: ARTIKEL-SUCHE ====================
+def step2_article_search():
+    section_header("Artikel suchen", "Intelligente Suche in Ihren Bestelldaten")
+
+    if "df" not in st.session_state:
+        st.warning("⚠️ Bitte zuerst Datei in Schritt 1 hochladen")
+        return
+
+    df = st.session_state.df
+    item_col = find_col(df, ["item", "artikel", "bezeichnung", "produkt", "artikelnummer", "artnr"])
+
+    if not item_col:
+        st.error("❌ Keine Artikel-Spalte gefunden")
+        return
+
+    st.session_state.item_col = item_col
+
+    query = st.text_input(
+        "Suche",
+        placeholder="z.B. 'DIN 933 M8'",
+        key="article_search"
+    )
+
+    if query and query.strip():
+        with GPTLoadingAnimation("🔍 Suche Artikel...", icon="🤖"):
+            all_items = df[item_col].unique().tolist()
+
+            matched_indices = gpt_intelligent_article_search(query, all_items)
+            matched_items = set([all_items[i] for i in matched_indices]) if matched_indices else set()
+
+            query_tokens = query.lower().split()
+            for item in all_items:
+                if all(token in str(item).lower() for token in query_tokens):
+                    matched_items.add(item)
+
+            if matched_items:
+                idf = df[df[item_col].isin(matched_items)].copy()
+                st.session_state.idf = idf
+
+                supplier_col = find_col(df, ["supplier", "lieferant", "vendor"])
+                st.session_state.supplier_col = supplier_col
+
+                num_suppliers = idf[supplier_col].nunique() if supplier_col else 1
+                create_compact_kpi_row([
+                    {"label": "Einträge", "value": str(len(idf)), "icon": "📦"},
+                    {"label": "Artikel-Varianten", "value": str(idf[item_col].nunique()), "icon": "🔍"},
+                    {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
+                ])
+
+                unique_items = sorted(idf[item_col].unique().tolist())
+                if len(unique_items) > 1:
+                    selected = st.selectbox(
+                        "Artikel wählen",
+                        unique_items,
+                        key="article_selector"
+                    )
+                else:
+                    selected = unique_items[0]
+                st.success(f"**Artikel:** {selected}")
+
+                st.session_state.selected_article = selected
+                wizard.complete_step(2)
+
+            else:
+                st.warning(f"❌ Keine Ergebnisse für '{query}'")
+    else:
+        st.info("💡 Suchbegriff eingeben")
+
+
+# ==================== STEP 3: PREISÜBERSICHT ====================
+def step3_price_overview():
+    section_header("Preisübersicht", "Statistische Auswertung")
+
+    if "idf" not in st.session_state:
+        st.warning("⚠️ Bitte zuerst Artikel in Schritt 2 suchen")
+        return
+
+    idf = st.session_state.idf
+    item_col = st.session_state.item_col
+    supplier_col = st.session_state.get("supplier_col")
+
+    try:
+        avg, mn, mx, qty_col, _src = derive_unit_price(idf)
+
+        price_range = ((mx - mn) / mn * 100) if (mn and mx and mn > 0) else None
+
+        create_compact_kpi_row([
+            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": "💰"},
+            {"label": "Min", "value": f"{mn:,.4f} €" if mn else "N/A", "icon": "📉"},
+            {"label": "Max", "value": f"{mx:,.4f} €" if mx else "N/A", "icon": "📈"},
+            {"label": "Range", "value": f"{price_range:,.1f}%" if price_range else "N/A", "icon": "📊"},
+        ])
+
+        st.session_state.avg_price = avg
+        st.session_state.qty_col = qty_col
+        wizard.complete_step(3)
+
+        if supplier_col and supplier_col in idf.columns:
+            with st.expander("📋 Breakdown nach Lieferant"):
+                price_series = get_price_series_per_unit(idf, qty_col)
+                if price_series is not None:
+                    temp = idf.copy()
+                    temp['_price'] = price_series
+                    breakdown = temp.groupby(supplier_col).agg({
+                        '_price': ['mean', 'min', 'max', 'count']
+                    }).round(4)
+                    breakdown.columns = ['Ø Preis', 'Min', 'Max', 'Anzahl']
+                    breakdown = breakdown.sort_values('Ø Preis')
+                    st.dataframe(
+                        breakdown.style.highlight_min(subset=['Ø Preis'], color='lightgreen'),
+                        use_container_width=True
+                    )
+
+    except Exception as e:
+        st.error(f"❌ Preisberechnung fehlgeschlagen: {e}")
+
+
+# ==================== STEP 4: LIEFERANTEN ====================
+def step4_suppliers():
+    section_header("Lieferant auswählen", "Wählen Sie einen Lieferanten für die Kostenschätzung")
+
+    if "idf" not in st.session_state:
+        st.warning("⚠️ Bitte zuerst Artikel suchen")
+        return
+
+    idf = st.session_state.idf
+    supplier_col = st.session_state.get("supplier_col")
+    qty_col = st.session_state.get("qty_col")
+
+    if not supplier_col or supplier_col not in idf.columns:
+        st.info("ℹ️ Keine Lieferanten-Spalte gefunden")
+        wizard.complete_step(4)
+        return
+
+    suppliers = sorted(idf[supplier_col].dropna().unique().tolist())
+
+    if len(suppliers) == 0:
+        st.warning("⚠️ Keine Lieferanten gefunden")
+        return
+
+    st.info(f"📦 **{len(suppliers)} Lieferanten** verfügbar")
+
+    supplier_data = []
+    price_series = get_price_series_per_unit(idf, qty_col) if qty_col else None
+
+    for sup in suppliers:
+        sup_df = idf[idf[supplier_col] == sup]
+
+        if price_series is not None:
+            avg_price = price_series.loc[sup_df.index].mean()
+        else:
             try:
-                df = pd.read_excel(uploaded_file, engine=None)
-                progress.progress(100, text="Upload abgeschlossen")
-                st.session_state.df_raw = df
-                st.session_state.uploaded_file = uploaded_file.name
-
-                st.success(f"✓ **{uploaded_file.name}** erfolgreich geladen ({len(df)} Zeilen)")
-
-                # Keine Preview anzeigen (Performance/Clarity)
-                # Falls gewünscht, hier wieder aktivieren.
-
-                if st.button("Weiter zu Schritt 2", type="primary", use_container_width=True):
-                    wizard.next_step()
-                    st.rerun()
-
-            except Exception as e:
-                st.error(f"❌ Fehler beim Laden der Datei: {str(e)}")
-                st.exception(e)
-            finally:
-                progress.empty()
-
-# ==================== STEP 2: ARTICLE SELECTION ====================
-elif wizard.get_current_step() == 2:
-    st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">🔍 Schritt 2: Artikel auswählen</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
-            Wählen Sie einen Artikel zur Analyse oder verwenden Sie die KI-Suche.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    if st.session_state.df_raw is not None:
-        df = st.session_state.df_raw
-
-        # API-Key Check für KI-Suche
-        if not (os.getenv("OPENAI_API_KEY") or os.environ.get("OPENAI_API_KEY")):
-            try:
-                _ = st.secrets["OPENAI_API_KEY"]
+                avg_price, _, _, _, _ = derive_unit_price(sup_df)
             except Exception:
-                st.warning("⚠️ Kein OPENAI_API_KEY gefunden. KI-Suche ist deaktiviert.", icon="⚠️")
+                avg_price = None
 
-        # AI-powered search
-        search_query = st.text_input(
-            "🤖 KI-Artikelsuche",
-            placeholder="z.B. 'Zylinderschraube M8x30' oder 'Edelstahlblech 2mm'",
-            help="Beschreiben Sie den gesuchten Artikel - die KI findet passende Einträge"
-        )
+        supplier_data.append({
+            "Lieferant": sup,
+            "Einträge": len(sup_df),
+            "Ø Preis (€)": f"{avg_price:,.4f}" if avg_price else "N/A",
+        })
 
-        matches_df = None
-        if search_query:
-            st.session_state.article_matches = None
-            st.session_state.selected_row = None
-            with GPTLoadingAnimation("KI analysiert Ihre Suchanfrage..."):
+    df_suppliers = pd.DataFrame(supplier_data)
+    st.dataframe(df_suppliers, use_container_width=True, hide_index=True)
+
+    if "selected_supplier_name" not in st.session_state:
+        st.session_state.selected_supplier_name = None
+
+    supplier_options = ["(Bitte wählen...)"] + suppliers
+    default_idx = 0
+    if st.session_state.selected_supplier_name in suppliers:
+        default_idx = supplier_options.index(st.session_state.selected_supplier_name)
+
+    selected = st.selectbox(
+        "Lieferant wählen",
+        options=supplier_options,
+        index=default_idx,
+        key="supplier_dropdown"
+    )
+
+    if selected != "(Bitte wählen...)":
+        st.session_state.selected_supplier_name = selected
+        st.success(f"✅ **{selected}** ausgewählt")
+        wizard.complete_step(4)
+    else:
+        st.session_state.selected_supplier_name = None
+
+
+# ==================== STEP 5: KOSTENSCHÄTZUNG ====================
+def step5_cost_estimation():
+    section_header("KI-Kostenschätzung", "Material- und Fertigungskosten")
+
+    if "selected_article" not in st.session_state:
+        st.warning("⚠️ Bitte zuerst Artikel auswählen")
+        return
+
+    article = st.session_state.selected_article
+    avg_price = st.session_state.get("avg_price")
+    supplier = st.session_state.get("selected_supplier_name")
+
+    lot_size = st.number_input(
+        "Losgröße",
+        min_value=1,
+        max_value=1_000_000,
+        value=1000,
+        step=100,
+        key="lot_size"
+    )
+
+    if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
+        with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
+            supplier_competencies = None
+            if supplier:
                 try:
-                    # Find item column
-                    item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
-                    if item_col:
-                        # WICHTIG: Kein dropna() - sonst stimmen Indizes nicht!
-                        item_values = df[item_col].tolist()
-                        matching_indices = gpt_intelligent_article_search(search_query, item_values)
+                    idf = st.session_state.idf
+                    supplier_col = st.session_state.get("supplier_col")
+                    item_col = st.session_state.item_col
 
-                        if matching_indices and len(matching_indices) > 0:
-                            # GPT hat was gefunden
-                            matches_df = df.iloc[matching_indices].copy()
-                            st.session_state.article_matches = matches_df
-                            st.session_state.article_name = search_query
-                            st.success(f"✓ {len(matches_df)} passende Artikel gefunden (KI-Suche)")
-                            st.dataframe(matches_df, use_container_width=True)
-                        else:
-                            # FALLBACK: String-basierte Suche (wie vorher!)
-                            st.info("🔍 KI fand nichts - verwende erweiterte Suche...")
-                            search_mask = df[item_col].astype(str).str.lower().str.contains(
-                                search_query.lower(), na=False, regex=False
-                            )
-                            matches_df = df[search_mask].copy()
+                    sup_df = idf[idf[supplier_col] == supplier]
+                    article_history = sup_df[item_col].unique().tolist()[:50]
 
-                            if len(matches_df) > 0:
-                                st.session_state.article_matches = matches_df
-                                st.session_state.article_name = search_query
-                                st.success(f"✓ {len(matches_df)} passende Artikel gefunden (String-Suche)")
-                                st.dataframe(matches_df, use_container_width=True)
-                            else:
-                                st.warning("⚠️ Keine passenden Artikel gefunden. Versuchen Sie andere Suchbegriffe.")
-                    else:
-                        st.error("❌ Keine Artikel-Spalte gefunden in der Excel-Datei")
+                    supplier_competencies = cached_gpt_analyze_supplier(
+                        supplier_name=supplier,
+                        article_history_json=json.dumps(article_history),
+                        country=None
+                    )
                 except Exception as e:
-                    st.error(f"⚠️ KI-Suche fehlgeschlagen: {str(e)}")
-                    # FALLBACK bei Fehler: String-Suche
-                    item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
-                    if item_col:
-                        st.info("🔄 Verwende Fallback-Suche...")
-                        search_mask = df[item_col].astype(str).str.lower().str.contains(
-                            search_query.lower(), na=False, regex=False
-                        )
-                        matches_df = df[search_mask].copy()
-                        if len(matches_df) > 0:
-                            st.session_state.article_matches = matches_df
-                            st.session_state.article_name = search_query
-                            st.success(f"✓ {len(matches_df)} Artikel gefunden")
-                            st.dataframe(matches_df, use_container_width=True)
+                    st.warning(f"Lieferanten-Analyse fehlgeschlagen: {e}")
 
-        # Manual selection (fallback) without preselection
-        if not search_query:
-            st.markdown("**Oder wählen Sie manuell:**")
-            placeholder = "— Bitte eine Zeile auswählen —"
-            options = [placeholder] + list(range(len(df)))
-            choice = st.selectbox(
-                "Zeile auswählen",
-                options=options,
-                format_func=lambda x: placeholder if x == placeholder else f"Zeile {x+1}: {df.iloc[x, 0] if len(df.columns) > 0 else 'N/A'}",
-                index=0,
+            result = cached_gpt_complete_cost_estimate(
+                description=article,
+                lot_size=int(lot_size),
+                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies)
             )
 
-            if choice != placeholder:
-                st.session_state.selected_row = df.iloc[choice]
-                st.session_state.article_matches = df.iloc[[choice]].copy()
+            if result and not result.get("_error"):
+                material_eur = result.get('material_cost_eur')
+                fab_eur = result.get('fab_cost_eur')
+                target = (material_eur or 0) + (fab_eur or 0)
+                delta = (avg_price - target) if avg_price else None
+
+                st.session_state.cost_result = {
+                    "material_eur": material_eur,
+                    "fab_eur": fab_eur,
+                    "target": target,
+                    "delta": delta,
+                    "material": result.get('material_guess'),
+                    "process": result.get('process'),
+                    "confidence": result.get('confidence'),
+                    "mass_kg": result.get('mass_kg', 0.023),
+                    "lot_size": lot_size,
+                }
+
+                wizard.complete_step(5)
+                st.success("✅ Schätzung abgeschlossen!")
             else:
-                st.session_state.selected_row = None
-                st.session_state.article_matches = None
+                st.error("❌ Schätzung fehlgeschlagen")
 
-        # Navigation buttons
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("← Zurück", use_container_width=True):
-                wizard.previous_step()
-                st.rerun()
-        with col2:
-            # Only allow progression if articles were found
-            can_proceed = (st.session_state.article_matches is not None and
-                          len(st.session_state.article_matches) > 0)
-            if st.button("Weiter zu Schritt 3 →", type="primary", use_container_width=True,
-                        disabled=not can_proceed):
-                if can_proceed:
-                    wizard.next_step()
-                    st.rerun()
+    if "cost_result" in st.session_state:
+        res = st.session_state.cost_result
 
-# ==================== STEP 3: ARTICLE DETAILS ====================
-elif wizard.get_current_step() == 3:
-    st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">📝 Schritt 3: Artikeldetails eingeben</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
-            Präzisieren Sie die technischen Details für eine genaue Kostenschätzung.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+        delta_trend = None
+        if res['delta'] is not None:
+            delta_trend = "negative" if res['delta'] > 0 else "positive"
 
-    # Check if we have article matches from step 2
-    if st.session_state.article_matches is None or len(st.session_state.article_matches) == 0:
-        st.warning("⚠️ Keine Artikel ausgewählt. Bitte gehen Sie zurück zu Schritt 2.")
-        if st.button("← Zurück zu Schritt 2", use_container_width=True):
-            wizard.previous_step()
-            st.rerun()
-    else:
-        matches_df = st.session_state.article_matches
+        create_compact_kpi_row([
+            {"label": "Material €/Stk", "value": f"{res['material_eur']:,.4f} €" if res['material_eur'] else "N/A", "icon": "💎"},
+            {"label": "Fertigung €/Stk", "value": f"{res['fab_eur']:,.4f} €" if res['fab_eur'] else "N/A", "icon": "⚙️"},
+            {"label": "Zielkosten (KI-Optimiert)", "value": f"{res['target']:,.4f} €" if res['target'] else "N/A", "icon": "🎯", "help": "Minimal realistisch mögliche Kosten"},
+            {"label": "Delta (Aktuell - Ziel)", "value": f"{res['delta']:+,.4f} €" if res['delta'] else "N/A", "icon": "📊", "trend": delta_trend, "help": "Positiv = Einsparungspotenzial, Negativ = unter Zielkosten"},
+        ])
 
-        # Display reference articles from Excel
-        st.markdown("### 📋 Referenz-Artikel aus Bestellhistorie")
-        st.markdown(f"Basierend auf Ihrer Suche: **{st.session_state.article_name}**")
+        with st.expander("📋 Details"):
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Material", res.get('material', 'N/A'))
+            col2.metric("Prozess", res.get('process', 'N/A'))
+            col3.metric("Confidence", res.get('confidence', 'N/A'))
 
-        # Show matches in expandable section
-        with st.expander("🔍 Gefundene Artikel anzeigen", expanded=True):
-            st.dataframe(matches_df, use_container_width=True)
 
-        st.markdown("---")
+# ==================== STEP 6: NACHHALTIGKEIT ====================
+def step6_sustainability():
+    section_header("Nachhaltigkeit & Verhandlung", "CBAM, CO₂-Analyse und Verhandlungstipps")
 
-        # STEP 1: Select Supplier (Dropdown from Excel data)
-        st.markdown("### 1️⃣ Lieferant auswählen")
+    if "selected_article" not in st.session_state:
+        st.warning("⚠️ Bitte zuerst Analyse abschließen")
+        return
 
-        # Extract unique suppliers from matches
-        supplier_col = find_column(matches_df, ["supplier", "lieferant", "anbieter", "vendor"])
-        if supplier_col:
-            suppliers = matches_df[supplier_col].dropna().unique().tolist()
+    st.markdown("### 🌱 CBAM (Carbon Border Adjustment Mechanism)")
+    st.info("""
+    - EU-Klimaabgabe auf CO₂-intensive Importe
+    - Betrifft: Stahl, Aluminium, Zement, Dünger, Wasserstoff
+    - Ab 2026: Verpflichtende CO₂-Zertifikate
+    """)
 
-            if len(suppliers) > 0:
-                selected_supplier = st.selectbox(
-                    "Lieferant",
-                    options=suppliers,
-                    index=suppliers.index(st.session_state.supplier_name) if st.session_state.supplier_name in suppliers else 0,
-                    help="Wählen Sie einen Lieferanten aus, der diesen Artikel bereits geliefert hat"
-                )
+    if st.button("🌍 CO₂-Fußabdruck berechnen", use_container_width=True):
+        if "cost_result" in st.session_state:
+            res = st.session_state.cost_result
+            material = res.get('material', 'steel')
 
-                st.session_state.supplier_name = selected_supplier
+            supplier_data = st.session_state.get("selected_supplier")
+            supplier_country = "CN"
+            if supplier_data and "Land" in supplier_data:
+                country_map = {
+                    "China": "CN",
+                    "Deutschland": "DE",
+                    "Germany": "DE",
+                    "Italien": "IT",
+                    "Italy": "IT",
+                    "Polen": "PL",
+                    "Poland": "PL",
+                    "Tschechien": "CZ",
+                    "Czech Republic": "CZ",
+                    "Österreich": "AT",
+                    "Austria": "AT"
+                }
+                supplier_country = country_map.get(supplier_data.get("Land"), "CN")
 
-                # Show supplier articles
-                supplier_articles = matches_df[matches_df[supplier_col] == selected_supplier]
-                item_col = find_column(supplier_articles, ["item", "artikel", "bezeichnung", "produkt"])
-
-                if item_col:
-                    article_list = supplier_articles[item_col].tolist()
-                    st.info(f"📦 **{selected_supplier}** hat {len(supplier_articles)} dieser Artikel geliefert")
-
-                    # STEP 2: Analyze Supplier Competencies (Automatic)
-                    st.markdown("### 2️⃣ Lieferanten-Kompetenzen analysieren")
-
-                    if st.session_state.supplier_competencies is None or \
-                       st.session_state.supplier_competencies.get('supplier_name') != selected_supplier:
-                        if st.button("🔍 Lieferanten-Kompetenzen analysieren", type="primary"):
-                            with GPTLoadingAnimation("KI analysiert Lieferanten-Kompetenzen..."):
-                                try:
-                                    # Analyze supplier competencies based on article history
-                                    competencies = gpt_analyze_supplier_competencies(
-                                        supplier_name=selected_supplier,
-                                        article_history=article_list,
-                                        country=None  # Could extract from Excel if available
-                                    )
-
-                                    st.session_state.supplier_competencies = competencies
-                                    st.rerun()
-
-                                except Exception as e:
-                                    st.error(f"❌ Fehler bei Kompetenz-Analyse: {str(e)}")
-                    else:
-                        # Display competencies
-                        comp = st.session_state.supplier_competencies
-
-                        if not comp.get('_error') and not comp.get('_fallback'):
-                            st.success("✓ Lieferanten-Kompetenzen analysiert")
-
-                            # Core competencies
-                            core_comps = comp.get('core_competencies', [])
-                            if core_comps:
-                                st.markdown("**🏭 Hauptkompetenzen:**")
-                                for c in core_comps[:3]:  # Top 3
-                                    process_name = c.get('process', 'Unknown')
-                                    capability = c.get('capability_level', 'unknown')
-                                    confidence = c.get('confidence', 'unknown')
-                                    st.markdown(f"- **{process_name}** (Level: {capability}, Confidence: {confidence})")
-
-                            # Material expertise
-                            mat_exp = comp.get('material_expertise', [])
-                            if mat_exp:
-                                st.markdown("**🔩 Material-Expertise:**")
-                                materials = [m.get('material', 'Unknown') for m in mat_exp[:3]]
-                                st.markdown(f"- {', '.join(materials)}")
-
-                            # STEP 3: Determine Process (Automatic from competencies)
-                            st.markdown("### 3️⃣ Fertigungsverfahren (automatisch ermittelt)")
-
-                            # Get primary process from competencies
-                            if core_comps:
-                                primary_process = core_comps[0].get('process', 'turning')
-                                process_display = primary_process.replace('_', ' ').title()
-
-                                st.session_state.process = primary_process
-                                st.info(f"🎯 **Empfohlenes Verfahren:** {process_display}")
-                                st.caption(f"Basierend auf Lieferanten-Kompetenz: {core_comps[0].get('capability_level', 'proficient')}")
-                            else:
-                                st.warning("⚠️ Kein primäres Fertigungsverfahren ermittelt")
-
-                            # STEP 4: Material & Dimensions (User input with suggestions)
-                            st.markdown("### 4️⃣ Material & Abmessungen")
-
-                            col1, col2 = st.columns(2)
-
-                            with col1:
-                                # Suggest material based on competencies
-                                suggested_materials = []
-                                if mat_exp:
-                                    suggested_materials = [m.get('material', '') for m in mat_exp[:3] if m.get('material')]
-
-                                material_hint = f"z.B. {', '.join(suggested_materials)}" if suggested_materials else "z.B. Stahl, Edelstahl, Aluminium"
-
-                                material = st.text_input(
-                                    "Material",
-                                    value=st.session_state.material,
-                                    placeholder=material_hint,
-                                    help="KI wird das Material basierend auf Artikel-Kontext weiter präzisieren"
-                                )
-                                st.session_state.material = material
-
-                            with col2:
-                                dimensions = st.text_input(
-                                    "Abmessungen",
-                                    value=st.session_state.dimensions,
-                                    placeholder="z.B. M8x30, 100x50x2mm",
-                                    help="Optional - wird aus Artikel extrahiert falls nicht angegeben"
-                                )
-                                st.session_state.dimensions = dimensions
-
-                            # STEP 5: Lot Size
-                            st.markdown("### 5️⃣ Losgröße")
-
-                            # Get average lot size from history
-                            qty_col = find_column(supplier_articles, ["quantity", "menge", "qty", "anzahl"])
-                            avg_qty = 1
-
-                            if qty_col:
-                                quantities = pd.to_numeric(supplier_articles[qty_col], errors='coerce').dropna()
-                                if len(quantities) > 0:
-                                    avg_qty = int(quantities.mean())
-                                    st.caption(f"📊 Durchschnittliche Bestellmenge: {avg_qty} Stück")
-
-                            lot_size = st.number_input(
-                                "Losgröße",
-                                min_value=1,
-                                value=max(avg_qty, st.session_state.lot_size) if st.session_state.lot_size > 1 else avg_qty,
-                                help="Anzahl der zu produzierenden Teile"
-                            )
-                            st.session_state.lot_size = lot_size
-
-                            # Summary before proceeding
-                            st.markdown("---")
-                            st.markdown("### ✅ Zusammenfassung")
-
-                            summary_cols = st.columns(3)
-                            with summary_cols[0]:
-                                st.markdown(f"""
-                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
-                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Lieferant</p>
-                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{selected_supplier}</p>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                            with summary_cols[1]:
-                                st.markdown(f"""
-                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
-                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Fertigungsverfahren</p>
-                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{st.session_state.process.replace('_', ' ').title() if st.session_state.process else 'N/A'}</p>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                            with summary_cols[2]:
-                                st.markdown(f"""
-                                <div style="background: {COLORS['surface']}; padding: {SPACING['md']}; border-radius: {RADIUS['md']}; border-left: 3px solid {COLORS['primary']};">
-                                    <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.8rem;">Losgröße</p>
-                                    <p style="color: {COLORS['error']}; margin: 0; font-weight: 600;">{lot_size:,} Stück</p>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                        else:
-                            st.warning("⚠️ Lieferanten-Kompetenzen konnten nicht analysiert werden. Bitte klicken Sie auf 'Analysieren'.")
-
-            else:
-                st.error("❌ Keine Lieferanten in den gefundenen Artikeln")
-        else:
-            st.error("❌ Keine Lieferanten-Spalte in der Excel-Datei gefunden")
-
-        # Navigation
-        st.markdown("---")
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("← Zurück", use_container_width=True):
-                wizard.previous_step()
-                st.rerun()
-        with col2:
-            # Can only proceed if supplier competencies are analyzed
-            can_proceed = (st.session_state.supplier_competencies is not None and
-                          st.session_state.supplier_name and
-                          st.session_state.process)
-
-            if st.button("Weiter zu Schritt 4 →", type="primary", use_container_width=True,
-                        disabled=not can_proceed):
-                if can_proceed:
-                    wizard.next_step()
-                    st.rerun()
+            mass_kg = res.get('mass_kg')
+            if mass_kg is None or mass_kg <= 0:
+                d_mm = res.get('d_mm', 0)
+                l_mm = res.get('l_mm', 0)
+                if d_mm and l_mm and d_mm > 0 and l_mm > 0:
+                    volume_cm3 = 3.14159 * ((d_mm/2)**2) * l_mm / 1000
+                    mass_kg = (volume_cm3 * 7.85) / 1000
+                    st.info(f"ℹ️ Masse aus Geometrie berechnet: {mass_kg*1000:.1f}g (Ø{d_mm}mm × {l_mm}mm)")
                 else:
-                    st.warning("⚠️ Bitte analysieren Sie zuerst die Lieferanten-Kompetenzen")
+                    mass_kg = 0.023
+                    st.warning(f"⚠️ Keine Geometrie - verwende Standard: {mass_kg*1000:.0f}g")
 
-# ==================== STEP 4: COST ESTIMATION ====================
-elif wizard.get_current_step() == 4:
-    st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">💰 Schritt 4: KI-Kostenschätzung</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
-            Unsere KI berechnet den minimal möglichen Zielpreis basierend auf Marktdaten.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+            with GPTLoadingAnimation("🌱 Berechne CO₂-Fußabdruck...", icon="🌍"):
+                try:
+                    co2_result = calculate_co2_footprint(
+                        material=material,
+                        mass_kg=mass_kg,
+                        supplier_country=supplier_country
+                    )
+                    if co2_result:
+                        total_co2 = co2_result.get('total_co2_kg', 0) or co2_result.get('co2_total_kg', 0)
+                        production_co2 = co2_result.get('co2_production_kg', 0)
+                        transport_co2 = co2_result.get('co2_transport_kg', 0)
+                        cbam_cost = co2_result.get('cbam_cost_eur', 0)
+                        cbam_cost_per_unit = co2_result.get('cbam_cost_eur', 0)
 
-    if st.button("🚀 Kostenschätzung starten", type="primary", use_container_width=True):
-        with GPTLoadingAnimation("KI berechnet optimale Kosten..."):
-            try:
-                # Build complete description from available data
-                description_parts = [st.session_state.article_name]
-                if st.session_state.material:
-                    description_parts.append(f"Material: {st.session_state.material}")
-                if st.session_state.dimensions:
-                    description_parts.append(f"Abmessungen: {st.session_state.dimensions}")
-                if st.session_state.process:
-                    description_parts.append(f"Verfahren: {st.session_state.process}")
+                        if total_co2 == 0 and (production_co2 > 0 or transport_co2 > 0):
+                            total_co2 = production_co2 + transport_co2
 
-                full_description = " | ".join(description_parts)
+                        lot_size = st.session_state.get('lot_size', 1000)
+                        if 'cost_result' in st.session_state:
+                            lot_size = st.session_state.cost_result.get('lot_size', lot_size)
 
-                # Serialize supplier competencies for caching
-                supplier_comp_json = None
-                if st.session_state.supplier_competencies:
-                    supplier_comp_json = json.dumps(st.session_state.supplier_competencies)
+                        cbam_cost_total = cbam_cost_per_unit * lot_size if cbam_cost_per_unit else 0
 
-                # Call optimized cost estimation with supplier context
-                result = cached_gpt_complete_cost_estimate(
-                    description=full_description,
-                    lot_size=st.session_state.lot_size,
-                    supplier_competencies_json=supplier_comp_json
-                )
+                        st.session_state.co2_result = {
+                            'total_co2_kg': total_co2,
+                            'co2_production_kg': production_co2,
+                            'co2_transport_kg': transport_co2,
+                            'cbam_cost_eur': cbam_cost,
+                            'cbam_cost_eur_per_unit': cbam_cost_per_unit,
+                            'cbam_cost_eur_total': cbam_cost_total,
+                            'lot_size': lot_size,
+                            'material': material,
+                            'mass_kg': mass_kg
+                        }
 
-                st.session_state.cost_estimate = result
-                st.success("✓ Kostenschätzung abgeschlossen!")
+                        st.success(f"✅ CO₂-Fußabdruck: ~{total_co2:.3f} kg CO₂e pro Stück ({mass_kg*1000:.1f}g Masse)")
 
-            except Exception as e:
-                st.error(f"❌ Fehler bei der Kostenschätzung: {str(e)}")
+                        create_compact_kpi_row([
+                            {"label": "Produktion", "value": f"{production_co2:.3f} kg", "icon": "🏭"},
+                            {"label": "Transport", "value": f"{transport_co2:.3f} kg", "icon": "🚢"},
+                            {"label": f"CBAM 2026 ({lot_size:,} Stk)", "value": f"{cbam_cost_total:.2f} €", "icon": "💰"},
+                        ])
+                    else:
+                        st.error("❌ CO₂-Berechnung fehlgeschlagen: calculate_co2_footprint returned None")
+                except Exception as e:
+                    st.error(f"❌ CO₂-Berechnung fehlgeschlagen: {e}")
 
-    if st.session_state.cost_estimate:
-        result = st.session_state.cost_estimate
+    divider()
 
-        # Display results in professional cards
-        col1, col2, col3 = st.columns(3)
+    st.markdown("### 💼 Verhandlungsvorbereitung")
 
-        with col1:
-            st.markdown(f"""
-            <div style="background: {COLORS['surface']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border: 2px solid {COLORS['primary']}; text-align: center;">
-                <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.9rem;">Materialkosten</p>
-                <h2 style="color: {COLORS['primary']}; margin: {SPACING['sm']} 0;">€ {result.get('material_cost_min', 0):.2f}</h2>
-            </div>
-            """, unsafe_allow_html=True)
+    if st.button("📋 Verhandlungsstrategie generieren", type="primary", use_container_width=True):
+        article = st.session_state.get("selected_article")
+        avg_price = st.session_state.get("avg_price")
+        supplier = st.session_state.get("selected_supplier_name")
+        cost_result = st.session_state.get("cost_result")
 
-        with col2:
-            st.markdown(f"""
-            <div style="background: {COLORS['surface']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border: 2px solid {COLORS['primary']}; text-align: center;">
-                <p style="color: {COLORS['gray_600']}; margin: 0; font-size: 0.9rem;">Fertigungskosten</p>
-                <h2 style="color: {COLORS['primary']}; margin: {SPACING['sm']} 0;">€ {result.get('fabrication_cost_min', 0):.2f}</h2>
-            </div>
-            """, unsafe_allow_html=True)
+        supplier_data = st.session_state.get("selected_supplier")
+        supplier_competencies = st.session_state.get("supplier_competencies")
+        commodity_analysis = st.session_state.get("commodity_analysis")
+        price_stats = st.session_state.get("price_stats", {})
 
-        with col3:
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, {COLORS['primary']} 0%, {COLORS['primary_dark']} 100%); padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-                <p style="color: white; margin: 0; font-size: 0.9rem; opacity: 0.9;">🎯 Zielpreis (minimal)</p>
-                <h2 style="color: white; margin: {SPACING['sm']} 0; font-size: 2rem;">€ {result.get('target_price_min', 0):.2f}</h2>
-            </div>
-            """, unsafe_allow_html=True)
+        target_price = None
+        if cost_result:
+            target_price = cost_result.get("target")
 
-        st.markdown(f"**Konfidenz:** {result.get('confidence', 'N/A')}")
-        st.markdown(f"**Methodik:** {result.get('method_info', 'N/A')}")
+        if article and supplier:
+            with GPTLoadingAnimation("🤖 Generiere Strategie...", icon="💼"):
+                try:
+                    tips = gpt_negotiation_prep_enhanced(
+                        supplier_name=supplier,
+                        article_name=article,
+                        avg_price=avg_price,
+                        target_price=target_price,
+                        country=supplier_data.get("Land") if supplier_data else None,
+                        rating=supplier_data.get("Rating") if supplier_data else None,
+                        strengths=supplier_data.get("strengths", []) if supplier_data else None,
+                        weaknesses=supplier_data.get("weaknesses", []) if supplier_data else None,
+                        total_orders=supplier_data.get("total_orders") if supplier_data else None,
+                        supplier_competencies=supplier_competencies,
+                        min_price=price_stats.get("min"),
+                        max_price=price_stats.get("max"),
+                        commodity_analysis=commodity_analysis,
+                        cost_result=cost_result
+                    )
 
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("← Zurück", use_container_width=True):
-                wizard.previous_step()
-                st.rerun()
-        with col2:
-            if st.button("Weiter zu Schritt 5 →", type="primary", use_container_width=True):
-                wizard.next_step()
-                st.rerun()
+                    if tips and not tips.get("_error"):
+                        st.session_state.negotiation_tips = tips
+                        st.success("✅ Strategie erstellt")
+                    else:
+                        st.error("❌ Verhandlungsstrategie konnte nicht generiert werden")
+                except Exception as e:
+                    st.error(f"❌ Fehler: {e}")
+        else:
+            st.warning("⚠️ Bitte Artikel und Lieferant auswählen")
 
-# ==================== STEP 5: SUPPLIER ANALYSIS ====================
-elif wizard.get_current_step() == 5:
-    st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">🏭 Schritt 5: Lieferanten-Analyse</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
-            Detaillierte Bewertung der Lieferantenfähigkeiten und Standortfaktoren.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    wizard.complete_step(6)
 
-    if st.button("🔍 Lieferanten-Analyse starten", type="primary", use_container_width=True):
-        with GPTLoadingAnimation("KI analysiert Lieferanten..."):
-            try:
-                analysis = cached_gpt_analyze_supplier(
-                    supplier=st.session_state.supplier_name,
-                    material=st.session_state.material,
-                    process=st.session_state.process
-                )
 
-                st.session_state.supplier_analysis = analysis
-                st.success("✓ Lieferanten-Analyse abgeschlossen!")
+# ==================== RENDER WIZARD ====================
+wizard.render_step_content(1, step1_upload)
+wizard.render_step_content(2, step2_article_search)
+wizard.render_step_content(3, step3_price_overview)
+wizard.render_step_content(4, step4_suppliers)
+wizard.render_step_content(5, step5_cost_estimation)
+wizard.render_step_content(6, step6_sustainability)
 
-            except Exception as e:
-                st.error(f"❌ Fehler bei der Lieferanten-Analyse: {str(e)}")
+divider()
 
-    if st.session_state.supplier_analysis:
-        st.markdown("### Analyse-Ergebnis")
-        st.json(st.session_state.supplier_analysis)
+current_step = wizard.get_current_step()
+next_disabled = False
 
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("← Zurück", use_container_width=True):
-                wizard.previous_step()
-                st.rerun()
-        with col2:
-            if st.button("Weiter zu Schritt 6 →", type="primary", use_container_width=True):
-                wizard.next_step()
-                st.rerun()
+if current_step == 1:
+    next_disabled = "df" not in st.session_state
+elif current_step == 2:
+    next_disabled = "selected_article" not in st.session_state
+elif current_step == 3:
+    next_disabled = "avg_price" not in st.session_state
+elif current_step == 4:
+    next_disabled = "selected_supplier_name" not in st.session_state and "df" in st.session_state
+elif current_step == 5:
+    next_disabled = "cost_result" not in st.session_state
 
-# ==================== STEP 6: NEGOTIATION STRATEGY ====================
-elif wizard.get_current_step() == 6:
-    st.markdown(f"""
-    <div style="background: {COLORS['surface_tint']}; padding: {SPACING['lg']}; border-radius: {RADIUS['lg']}; border-left: 4px solid {COLORS['primary']}; margin: {SPACING['lg']} 0;">
-        <h3 style="color: {COLORS['error']}; margin: 0 0 {SPACING['sm']} 0;">🎯 Schritt 6: Verhandlungsstrategie</h3>
-        <p style="color: {COLORS['gray_700']}; margin: 0;">
-            KI-generierte Verhandlungsstrategie mit Marktanalyse und Taktiken.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+wizard.render_navigation(next_disabled=next_disabled)
 
-    if st.button("🚀 Strategie generieren", type="primary", use_container_width=True):
-        with GPTLoadingAnimation("KI erstellt Verhandlungsstrategie..."):
-            try:
-                strategy = gpt_negotiation_prep_enhanced(
-                    article=st.session_state.article_name,
-                    current_price=100.0,  # From Excel if available
-                    target_price=st.session_state.cost_estimate.get('target_price_min', 50.0) if st.session_state.cost_estimate else 50.0,
-                    supplier=st.session_state.supplier_name,
-                    material=st.session_state.material,
-                    lot_size=st.session_state.lot_size
-                )
-
-                st.session_state.negotiation_prep = strategy
-                st.success("✓ Verhandlungsstrategie erstellt!")
-
-            except Exception as e:
-                st.error(f"❌ Fehler bei Strategieerstellung: {str(e)}")
-
-    if st.session_state.negotiation_prep:
-        st.markdown("### 📋 Verhandlungsstrategie")
-        st.json(st.session_state.negotiation_prep)
-
-        col1, col2 = st.columns([1, 4])
-        with col1:
-            if st.button("← Zurück", use_container_width=True):
-                wizard.previous_step()
-                st.rerun()
-        with col2:
-            if st.button("✓ Analyse abschließen", type="primary", use_container_width=True):
-                st.balloons()
-                st.success("🎉 Analyse erfolgreich abgeschlossen!")
-
-# ==================== SIDEBAR NAVIGATION ====================
-nav.render()
-
-# ==================== FOOTER ====================
-st.markdown(f"""
-<div style="text-align: center; padding: {SPACING['xl']} 0; color: {COLORS['gray_500']}; font-size: 0.85rem; border-top: 1px solid {COLORS['primary_light']}; margin-top: {SPACING['xxl']};">
-    <p>EVALUERA © 2024 | KI-gestützte Kostenanalyse</p>
-</div>
-""", unsafe_allow_html=True)
+with st.expander("🔧 Developer Mode", expanded=False):
+    st.json({
+        "current_step": wizard.get_current_step(),
+        "completed_steps": list(st.session_state.get("wizard_completed_steps", set())),
+        "has_data": "df" in st.session_state,
+        "has_article": "selected_article" in st.session_state,
+        "has_supplier": "selected_supplier_name" in st.session_state,
+        "has_results": "cost_result" in st.session_state,
+    })
