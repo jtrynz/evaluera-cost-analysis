@@ -110,10 +110,11 @@ st.markdown(
             margin: 6px 0 !important;
             padding: 10px 12px !important;
         }
-        /* strip ghost containers */
+        /* strip ghost containers: make all wrappers flat/transparent */
         div[data-testid="stHorizontalBlock"] > div > div,
         div[data-testid="stVerticalBlock"] > div > div,
-        div[data-testid="column"] > div {
+        div[data-testid="column"] > div,
+        div[data-testid="block-container"] > div {
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
@@ -121,20 +122,12 @@ st.markdown(
             margin: 0 !important;
             border-radius: 0 !important;
         }
-        div[data-testid="stHorizontalBlock"] > div > div:has(*),
-        div[data-testid="stVerticalBlock"] > div > div:has(*),
-        div[data-testid="column"] > div:has(*) {
-            background: #FFFFFF !important;
-            border: 1px solid rgba(42, 79, 87, 0.06) !important;
-            border-radius: 14px !important;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.06) !important;
-            padding: 14px 16px !important;
-        }
         div[data-testid="stHorizontalBlock"] > div > div:empty,
         div[data-testid="stVerticalBlock"] > div > div:empty,
         div[data-testid="stHorizontalBlock"] > div:empty,
         div[data-testid="stVerticalBlock"] > div:empty,
         div[data-testid="column"] > div:empty,
+        div[data-testid="block-container"] > div:empty,
         div:empty {
             display: none !important;
             height: 0 !important;
@@ -170,10 +163,12 @@ st.markdown(
         h1, h2, h3, h4 { color: #2A4F57 !important; }
         p, span, label, div { color: #333333 !important; }
         hr, div[role="separator"] {
+            display: none !important;
+            height: 0 !important;
             border: none !important;
-            height: 1px !important;
-            background: rgba(42, 79, 87, 0.1) !important;
-            margin: 8px 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: transparent !important;
         }
         #wizard-next-fixed-container {
            position: fixed !important;
