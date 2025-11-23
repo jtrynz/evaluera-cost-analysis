@@ -7,8 +7,8 @@ Eliminiert Code-Duplikation in simple_app.py.
 
 import pandas as pd
 from typing import Optional, Tuple, List
-from ui_components import GPTLoadingAnimation
-from gpt_cache import cached_gpt_article_search
+from src.ui.components_main import GPTLoadingAnimation
+from src.gpt.cache import cached_gpt_article_search
 import json
 
 

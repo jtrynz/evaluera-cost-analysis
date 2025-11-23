@@ -5,7 +5,7 @@ Clean step-by-step workflow for cost analysis
 """
 
 import streamlit as st
-from ui_theme import wizard_step, section_header, divider, COLORS, SPACING, RADIUS
+from src.ui.theme import wizard_step, section_header, divider, COLORS, SPACING, RADIUS
 
 
 class WizardManager:
