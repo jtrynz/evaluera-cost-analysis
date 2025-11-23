@@ -173,9 +173,20 @@ def find_col(df, possible_names):
     return None
 
 # ==================== HEADER ====================
-liquid_header(
-    "EVALUERA",
-    "KI-gestützte Bestellanalyse & Kostenschätzung"
+logo_b64 = get_logo_base64()
+st.markdown(
+    f"""
+    <div style="text-align: center; padding: {SPACING['xl']} 0 {SPACING['md']} 0;">
+        {"<img src='data:image/png;base64," + logo_b64 + "' alt='EVALUERA' style='height: 80px; object-fit: contain; margin-bottom: 18px;' />" if logo_b64 else "<h1 style='margin-bottom:12px; color:#1F3C45; font-weight:800;'>EVALUERA</h1>"}
+        <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: 0 0 10px 0; font-size: 2.6rem;">
+            KI-gestützte Bestellanalyse & Kostenschätzung
+        </h1>
+        <p style="color: #1E2E32; font-size: 1.05rem; margin-top: 0; font-weight: 500;">
+            Professionelle Beschaffungsoptimierung mit künstlicher Intelligenz
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 nav.render()
