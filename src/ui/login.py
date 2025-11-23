@@ -97,13 +97,8 @@ def render_login_screen():
                 --eval-soft: #E7F1EF;
             }}
 
-            .login-bg,
-            html.login-bg,
-            body.login-bg,
-            .login-bg .stApp,
-            .login-bg [data-testid="stAppViewContainer"] {{
-                background: linear-gradient(160deg, #6FBFB8 0%, #86D1C9 40%, #5DA59F 100%) !important;
-                background-attachment: fixed !important;
+            html, body, .stApp, [data-testid="stAppViewContainer"] {{
+                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
             }}
 
             header[data-testid="stHeader"],
@@ -361,13 +356,6 @@ def render_login_screen():
                 }}
             }}
         </style>
-        <script>
-            const doc = window.document;
-            doc.documentElement.classList.add('login-bg');
-            doc.body.classList.add('login-bg');
-            const appRoot = doc.querySelector('.stApp');
-            if (appRoot) appRoot.classList.add('login-bg');
-        </script>
         """,
         unsafe_allow_html=True,
     )

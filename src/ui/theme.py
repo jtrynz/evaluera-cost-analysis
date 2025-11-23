@@ -82,17 +82,6 @@ SHADOWS = {
 # ==================== GLOBAL APPLE-LIKE STYLES ====================
 def apply_global_styles():
     """Apply Apple-inspired global CSS theme"""
-    st.markdown(
-        """
-        <script>
-            document.documentElement.classList.remove('login-bg');
-            document.body.classList.remove('login-bg');
-            const appRoot = document.querySelector('.stApp');
-            if (appRoot) appRoot.classList.remove('login-bg');
-        </script>
-        """,
-        unsafe_allow_html=True,
-    )
     st.markdown(f"""
     <style>
         /* ========== IMPORT APPLE FONTS ========== */
