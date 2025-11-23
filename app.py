@@ -269,21 +269,24 @@ elif wizard.get_current_step() == 2:
                             st.success(f"✓ {len(matches_df)} Artikel gefunden")
                             st.dataframe(matches_df, use_container_width=True)
 
-        # Manual selection (fallback)
+        # Manual selection (fallback) without preselection
         if not search_query:
             st.markdown("**Oder wählen Sie manuell:**")
-            selected_idx = st.selectbox(
+            placeholder = "— Bitte eine Zeile auswählen —"
+            options = [placeholder] + list(range(len(df)))
+            choice = st.selectbox(
                 "Zeile auswählen",
-                options=range(len(df)),
-                format_func=lambda x: f"Zeile {x+1}: {df.iloc[x, 0] if len(df.columns) > 0 else 'N/A'}"
+                options=options,
+                format_func=lambda x: placeholder if x == placeholder else f"Zeile {x+1}: {df.iloc[x, 0] if len(df.columns) > 0 else 'N/A'}",
+                index=0,
             )
 
-            if selected_idx is not None:
-                st.session_state.selected_row = df.iloc[selected_idx]
-                st.session_state.article_matches = df.iloc[[selected_idx]].copy()
-
-                st.markdown("**Ausgewählter Artikel:**")
-                st.json(st.session_state.selected_row.to_dict())
+            if choice != placeholder:
+                st.session_state.selected_row = df.iloc[choice]
+                st.session_state.article_matches = df.iloc[[choice]].copy()
+            else:
+                st.session_state.selected_row = None
+                st.session_state.article_matches = None
 
         # Navigation buttons
         col1, col2 = st.columns([1, 4])
