@@ -5,6 +5,7 @@ Moderne Wizard-basierte Oberfläche für intelligente Beschaffung
 """
 
 import os
+import re
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
@@ -479,7 +480,10 @@ def step5_cost_estimation():
     )
 
     def _sanitize(text: str) -> str:
-        return (text or "").encode("ascii", "ignore").decode("ascii")
+        """Entfernt Steuerzeichen wie U+2028/U+2029, behält aber Unicode bei."""
+        if not text:
+            return ""
+        return re.sub(r"[\u2028\u2029]", "", text)
 
     if st.button("🚀 Kosten schätzen", type="primary", use_container_width=True):
         with GPTLoadingAnimation("🤖 Analysiere mit KI...", icon="💰"):
@@ -497,7 +501,7 @@ def step5_cost_estimation():
 
                     supplier_competencies = cached_gpt_analyze_supplier(
                         supplier_name=supplier,
-                        article_history_json=json.dumps(article_history, ensure_ascii=True),
+                        article_history_json=json.dumps(article_history, ensure_ascii=False),
                         country=None
                     )
                 except Exception as e:
@@ -507,7 +511,7 @@ def step5_cost_estimation():
             result = cached_gpt_complete_cost_estimate(
                 description=_sanitize(article),
                 lot_size=int(lot_size),
-                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=True)
+                supplier_competencies_json=None if not supplier_competencies else json.dumps(supplier_competencies, ensure_ascii=False)
             )
 
             if result and not result.get("_error"):
