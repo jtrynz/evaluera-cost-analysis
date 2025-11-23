@@ -229,14 +229,6 @@ elif wizard.get_current_step() == 2:
             help="Beschreiben Sie den gesuchten Artikel - die KI findet passende Einträge"
         )
 
-        # Kombiniere mehrere Spalten zu einem Suchtext, damit GPT mehr Kontext hat
-        search_cols = ["item", "artikel", "bezeichnung", "produkt", "article", "name", "cluster", "din", "iso", "material", "oberfläche 1", "oberfläche", "festigkeit"]
-        present_cols = [c for c in df.columns if str(c).strip().lower() in [s.lower() for s in search_cols]]
-        combined_texts = df.apply(
-            lambda row: " | ".join([str(row[c]) for c in present_cols if pd.notna(row[c])]),
-            axis=1
-        ) if present_cols else df.iloc[:,0].astype(str)
-
         matches_df = None
         if search_query:
             st.session_state.article_matches = None
@@ -246,7 +238,9 @@ elif wizard.get_current_step() == 2:
                     # Find item column
                     item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
                     if item_col:
-                        matching_indices = gpt_intelligent_article_search(search_query, combined_texts.tolist())
+                        # WICHTIG: Kein dropna() - sonst stimmen Indizes nicht!
+                        item_values = df[item_col].tolist()
+                        matching_indices = gpt_intelligent_article_search(search_query, item_values)
 
                         if matching_indices and len(matching_indices) > 0:
                             # GPT hat was gefunden
@@ -256,12 +250,37 @@ elif wizard.get_current_step() == 2:
                             st.success(f"✓ {len(matches_df)} passende Artikel gefunden (KI-Suche)")
                             st.dataframe(matches_df, use_container_width=True)
                         else:
-                            st.warning("⚠️ KI-Suche fand keine passenden Artikel. Bitte Suchbegriff anpassen.")
+                            # FALLBACK: String-basierte Suche (wie vorher!)
+                            st.info("🔍 KI fand nichts - verwende erweiterte Suche...")
+                            search_mask = df[item_col].astype(str).str.lower().str.contains(
+                                search_query.lower(), na=False, regex=False
+                            )
+                            matches_df = df[search_mask].copy()
+
+                            if len(matches_df) > 0:
+                                st.session_state.article_matches = matches_df
+                                st.session_state.article_name = search_query
+                                st.success(f"✓ {len(matches_df)} passende Artikel gefunden (String-Suche)")
+                                st.dataframe(matches_df, use_container_width=True)
+                            else:
+                                st.warning("⚠️ Keine passenden Artikel gefunden. Versuchen Sie andere Suchbegriffe.")
                     else:
-                        st.error("❌ Keine erkennbare Artikel-Spalte in der Excel-Datei gefunden. Bitte Spaltennamen prüfen (item/artikel/bezeichnung/produkt/article).")
+                        st.error("❌ Keine Artikel-Spalte gefunden in der Excel-Datei")
                 except Exception as e:
                     st.error(f"⚠️ KI-Suche fehlgeschlagen: {str(e)}")
-                    st.warning("⚠️ KI-Suche konnte nicht ausgeführt werden. Bitte erneut versuchen oder Eingabe prüfen.")
+                    # FALLBACK bei Fehler: String-Suche
+                    item_col = find_column(df, ["item", "artikel", "bezeichnung", "produkt", "article"])
+                    if item_col:
+                        st.info("🔄 Verwende Fallback-Suche...")
+                        search_mask = df[item_col].astype(str).str.lower().str.contains(
+                            search_query.lower(), na=False, regex=False
+                        )
+                        matches_df = df[search_mask].copy()
+                        if len(matches_df) > 0:
+                            st.session_state.article_matches = matches_df
+                            st.session_state.article_name = search_query
+                            st.success(f"✓ {len(matches_df)} Artikel gefunden")
+                            st.dataframe(matches_df, use_container_width=True)
 
         # Manual selection (fallback) without preselection
         if not search_query:
@@ -286,7 +305,7 @@ elif wizard.get_current_step() == 2:
         col1, col2 = st.columns([1, 4])
         with col1:
             if st.button("← Zurück", use_container_width=True):
-                wizard.prev_step()
+                wizard.previous_step()
                 st.rerun()
         with col2:
             # Only allow progression if articles were found
@@ -313,7 +332,7 @@ elif wizard.get_current_step() == 3:
     if st.session_state.article_matches is None or len(st.session_state.article_matches) == 0:
         st.warning("⚠️ Keine Artikel ausgewählt. Bitte gehen Sie zurück zu Schritt 2.")
         if st.button("← Zurück zu Schritt 2", use_container_width=True):
-            wizard.prev_step()
+            wizard.previous_step()
             st.rerun()
     else:
         matches_df = st.session_state.article_matches
@@ -505,7 +524,7 @@ elif wizard.get_current_step() == 3:
         col1, col2 = st.columns([1, 4])
         with col1:
             if st.button("← Zurück", use_container_width=True):
-                wizard.prev_step()
+                wizard.previous_step()
                 st.rerun()
         with col2:
             # Can only proceed if supplier competencies are analyzed
@@ -600,7 +619,7 @@ elif wizard.get_current_step() == 4:
         col1, col2 = st.columns([1, 4])
         with col1:
             if st.button("← Zurück", use_container_width=True):
-                wizard.prev_step()
+                wizard.previous_step()
                 st.rerun()
         with col2:
             if st.button("Weiter zu Schritt 5 →", type="primary", use_container_width=True):
@@ -640,7 +659,7 @@ elif wizard.get_current_step() == 5:
         col1, col2 = st.columns([1, 4])
         with col1:
             if st.button("← Zurück", use_container_width=True):
-                wizard.prev_step()
+                wizard.previous_step()
                 st.rerun()
         with col2:
             if st.button("Weiter zu Schritt 6 →", type="primary", use_container_width=True):
@@ -683,7 +702,7 @@ elif wizard.get_current_step() == 6:
         col1, col2 = st.columns([1, 4])
         with col1:
             if st.button("← Zurück", use_container_width=True):
-                wizard.prev_step()
+                wizard.previous_step()
                 st.rerun()
         with col2:
             if st.button("✓ Analyse abschließen", type="primary", use_container_width=True):
