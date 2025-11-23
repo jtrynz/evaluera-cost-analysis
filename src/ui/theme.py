@@ -258,6 +258,36 @@ def apply_global_styles():
             outline: none !important;
         }}
 
+        /* Ultimate override: kill any red glow/outline */
+        input,
+        input:focus,
+        input:focus-visible,
+        input:active,
+        input:invalid,
+        input:invalid:focus,
+        input:user-invalid,
+        input:user-invalid:focus,
+        div[data-baseweb="input"],
+        div[data-baseweb="input"]:focus-within,
+        div[data-baseweb="input"] * {{
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            -moz-box-shadow: none !important;
+        }}
+
+        input,
+        input:focus,
+        input:focus-visible,
+        input:active,
+        input:invalid,
+        input:invalid:focus,
+        input:user-invalid,
+        input:user-invalid:focus {{
+            border-color: {COLORS['primary']} !important;
+            border-width: 2px !important;
+        }}
+
         /* Labels and placeholder */
         .stTextInput > label,
         .stNumberInput > label,
