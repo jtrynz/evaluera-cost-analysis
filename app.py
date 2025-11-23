@@ -38,7 +38,7 @@ from src.negotiation.engine import gpt_negotiation_prep_enhanced
 
 # Utilities
 from src.utils.excel_helpers import find_column, get_price_series_per_unit
-from src.utils.security import derive_unit_price
+from src.core.price_utils import derive_unit_price
 
 # ==================== CONFIGURATION ====================
 load_dotenv()
