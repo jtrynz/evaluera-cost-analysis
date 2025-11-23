@@ -71,10 +71,20 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
         supplier_competencies = json.loads(clean)
 
     desc_clean = sanitize_input(description or "")
-
     payload_competencies = sanitize_payload_recursive(supplier_competencies) if supplier_competencies else None
 
-    return gpt_complete_cost_estimate(desc_clean, lot_size, payload_competencies)
+    try:
+        return gpt_complete_cost_estimate(desc_clean, lot_size, payload_competencies)
+    except Exception as e:
+        import traceback
+        # Rückgabe eines Debug-Dicts statt harter Exception, damit UI weiterläuft
+        return {
+            "_error": True,
+            "error": str(e),
+            "error_trace": traceback.format_exc(),
+            "debug_desc": desc_clean,
+            "debug_has_competencies": payload_competencies is not None,
+        }
 
 
 @st.cache_data(ttl=3600, show_spinner=False)

@@ -267,8 +267,11 @@ Fertigung/Stk = (Rüstkosten/Stk + Variable Kosten) × (1 + overhead_pct)
         _debug_unicode("description", description)
         _debug_unicode("supplier_context", supplier_context)
 
+        safe_print("DEBUG cost_estimation: messages built, calling OpenAI...")
+
         try:
-            response = OpenAI(api_key=key).chat.completions.create(
+            client = OpenAI(api_key=key)
+            response = client.chat.completions.create(
                 model="gpt-4o",
                 messages=messages,
                 temperature=0.1,
