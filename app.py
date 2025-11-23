@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 # UI modules
 from src.ui.theme import apply_global_styles, COLORS, SPACING, RADIUS
-from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background
+from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
 from src.ui.navigation import NavigationSidebar
 from src.ui.wizard import WizardManager
 from src.ui.cards import render_evaluera_logo, GPTLoadingAnimation, ExcelLoadingAnimation
