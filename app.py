@@ -56,6 +56,81 @@ def set_selected_article(article_value: str):
         st.session_state.selected_article = None
     st.write(f"DEBUG set_selected_article -> {st.session_state.selected_article}")
 
+
+def render_negotiation_tips(tips: dict):
+    """UI-freundliche Darstellung der Verhandlungsstrategie."""
+    if not tips:
+        st.info("Keine Verhandlungsstrategie verfügbar.")
+        return
+
+    def show_list(title, items, icon="•"):
+        if items:
+            st.markdown(f"**{title}**")
+            for it in items:
+                st.markdown(f"- {icon} {it}")
+
+    st.markdown("#### 🏭 Lieferantenanalyse")
+    sa = tips.get("supplier_analysis", {})
+    show_list("Produktionskompetenzen", sa.get("production_competencies", []))
+    if sa.get("scaling_capabilities"):
+        st.markdown(f"**Skalierung:** {sa['scaling_capabilities']}")
+    show_list("Zertifizierungen", sa.get("certifications", []))
+    show_list("Standortvorteile", sa.get("location_advantages", []), icon="✅")
+    show_list("Standortnachteile", sa.get("location_disadvantages", []), icon="⚠️")
+    show_list("Supply-Chain-Risiken", sa.get("supply_chain_risks", []), icon="🚨")
+
+    st.markdown("#### 📊 Marktanalyse")
+    ma = tips.get("market_analysis", {})
+    raw = ma.get("raw_material_trends", {})
+    if raw:
+        st.markdown(f"- **Material:** {raw.get('material','')} | Aktuell: {raw.get('current_price_eur_kg','')} €/kg | Trend 12M: {raw.get('price_trend_12mo','')}")
+    show_list("Konkurrenzangebote", ma.get("competitor_offers", []))
+    cr = ma.get("country_risks", {})
+    if cr:
+        st.markdown(f"- **Zölle:** {cr.get('tariffs','')} | CBAM: {cr.get('cbam_costs','')} | Transport: {cr.get('transport_costs','')}")
+    if ma.get("expected_price_development"):
+        st.markdown(f"- **Erwartete Preisentwicklung:** {ma['expected_price_development']}")
+
+    st.markdown("#### 🧭 Strategie")
+    so = tips.get("strategy_overview", {})
+    if so:
+        st.markdown(f"- **Ansatz:** {so.get('main_approach','')} | Machtbalance: {so.get('negotiation_power_balance','')} | Erfolg: {so.get('estimated_success_probability','')}")
+        show_list("Hebelpunkte", so.get("key_leverage_points", []))
+
+    st.markdown("#### 🎯 Ziele")
+    obj = tips.get("objectives", {})
+    if obj:
+        st.markdown(f"- **Primär:** {obj.get('primary_goal','')}")
+        show_list("Sekundär", obj.get("secondary_goals", []))
+        if obj.get("minimum_acceptable_outcome"):
+            st.markdown(f"- **Minimum:** {obj['minimum_acceptable_outcome']}")
+        if obj.get("batna"):
+            st.markdown(f"- **BATNA:** {obj['batna']}")
+
+    st.markdown("#### 📝 Kernargumente")
+    for idx, arg in enumerate(tips.get("key_arguments", []), 1):
+        st.markdown(f"**Argument {idx}:** {arg.get('argument','')}")
+        show_list("Fakten", arg.get("supporting_facts", []))
+        if arg.get("expected_counter"):
+            st.markdown(f"- Erwarteter Einwand: {arg['expected_counter']}")
+        if arg.get("our_response"):
+            st.markdown(f"- Unsere Antwort: {arg['our_response']}")
+
+    show_list("🎭 Taktiken", tips.get("tactics", []))
+
+    st.markdown("#### 🤝 Zugeständnisse")
+    for conc in tips.get("concessions", []):
+        st.markdown(f"- Wir bieten: {conc.get('what_we_offer','')} | Wir fordern: {conc.get('what_we_want','')} | Wert: {conc.get('trade_off_value','')}")
+
+    show_list("🚨 Red Flags", tips.get("red_flags", []))
+
+    if tips.get("opening_statement") or tips.get("closing_statement"):
+        st.markdown("#### 💬 Formulierungen")
+        if tips.get("opening_statement"):
+            st.info(f"Eröffnung: {tips['opening_statement']}")
+        if tips.get("closing_statement"):
+            st.success(f"Abschluss: {tips['closing_statement']}")
+
 # Backend-Funktionen (angepasste src-Pfade)
 from src.core.price_utils import derive_unit_price
 from src.core.cbam import (
@@ -828,13 +903,19 @@ def step6_sustainability():
                     if tips and not tips.get("_error"):
                         st.session_state.negotiation_tips = tips
 
-                        # Minimal Anzeige (Details nach Bedarf erweiterbar)
-                        st.json(tips)
+                        render_negotiation_tips(tips)
                     else:
                         st.error("❌ Verhandlungsstrategie konnte nicht generiert werden")
                 except Exception as e:
                     st.error(f"❌ Fehler: {e}")
         else:
+            st.warning("⚠️ Bitte Artikel und Lieferant auswählen")
+    else:
+        # Falls schon vorhanden, anzeigen
+        if st.session_state.get("negotiation_tips"):
+            render_negotiation_tips(st.session_state.get("negotiation_tips"))
+        else:
+            st.warning("⚠️ Bitte Artikel und Lieferant auswählen")
             st.warning("⚠️ Bitte Artikel und Lieferant auswählen")
 
     wizard.complete_step(6)
