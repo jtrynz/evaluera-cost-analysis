@@ -46,6 +46,16 @@ def ensure_selection_state():
 
 ensure_selection_state()
 
+
+def set_selected_article(article_value: str):
+    """Zentraler Setter für die Artikelauswahl."""
+    ensure_selection_state()
+    if article_value:
+        st.session_state.selected_article = sanitize_input(article_value)
+    else:
+        st.session_state.selected_article = None
+    st.write(f"DEBUG set_selected_article -> {st.session_state.selected_article}")
+
 # Backend-Funktionen (angepasste src-Pfade)
 from src.core.price_utils import derive_unit_price
 from src.core.cbam import (
@@ -347,12 +357,12 @@ def step2_article_search():
                     key="article_selector"
                 )
                 if choice != "(Bitte wählen...)":
-                    st.session_state.selected_article = sanitize_input(choice)
+                    set_selected_article(choice)
                     st.success(f"**Artikel:** {st.session_state.selected_article}")
                     st.write(f"DEBUG selected_article = {st.session_state.selected_article}")
                     wizard.complete_step(2)
                 else:
-                    st.session_state.selected_article = None
+                    set_selected_article(None)
 
             else:
                 st.warning(f"❌ Keine Ergebnisse für '{query}'")
