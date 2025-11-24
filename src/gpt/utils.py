@@ -97,7 +97,6 @@ def safe_gpt_request(
     model: str,
     messages: Any,
     client_factory: Callable[[], Any],
-    headers: Optional[Dict[str, Any]] = None,
     retries: int = 0,
     **kwargs,
 ) -> Dict[str, Any]:
@@ -113,7 +112,6 @@ def safe_gpt_request(
     clean_model = sanitize_input(model)
     clean_messages = sanitize_payload_recursive(messages)
     clean_kwargs = sanitize_options(kwargs)
-    clean_headers = sanitize_headers(headers or {})
 
     # Debug-Serialisierung
     try:
@@ -126,11 +124,6 @@ def safe_gpt_request(
             "_stage": "serialize",
         }
 
-    # Finaler Header-Check
-    for hk, hv in list(clean_headers.items()):
-        if "\u2028" in hv or "\u2029" in hv:
-            clean_headers[hk] = sanitize_input(hv)
-
     last_err = None
     for attempt in range(retries + 1):
         try:
@@ -138,7 +131,6 @@ def safe_gpt_request(
             res = client.chat.completions.create(
                 model=clean_model,
                 messages=clean_messages,
-                headers=clean_headers if clean_headers else None,
                 **clean_kwargs,
             )
             return {"_error": False, "response": res}
