@@ -350,10 +350,20 @@ def step2_article_search():
                 # Auswahl nur per Nutzerklick (kein Default)
                 unique_items = sorted(idf[item_col].unique().tolist())
                 options = ["(Bitte wählen...)"] + unique_items
+
+                # Wenn noch nichts gewählt, automatisch erstes Ergebnis setzen
+                default_idx = 0
+                if st.session_state.selected_article in unique_items:
+                    default_idx = options.index(st.session_state.selected_article)
+                elif unique_items:
+                    default_idx = 1
+                    set_selected_article(unique_items[0])
+                    st.info(f"Automatisch erster KI-Treffer gewählt: {st.session_state.selected_article}")
+
                 choice = st.selectbox(
                     "Artikel wählen",
                     options=options,
-                    index=0,
+                    index=default_idx,
                     key="article_selector"
                 )
                 if choice != "(Bitte wählen...)":
