@@ -11,6 +11,7 @@ import sys
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
+from src.gpt.utils import sanitize_input
 
 # Sicherstellen, dass das Projekt-Root und das src-Paket im Python-Pfad liegen
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -18,6 +19,32 @@ SRC_DIR = os.path.join(BASE_DIR, "src")
 for path in (BASE_DIR, SRC_DIR):
     if path not in sys.path:
         sys.path.insert(0, path)
+
+# Zentrale Sicherung der Auswahl-States
+def ensure_selection_state():
+    """Initialisiert und säubert zentrale Auswahl-Keys."""
+    defaults = {
+        "selected_article": None,
+        "selected_supplier_name": None,
+        "selected_supplier": None,
+    }
+    for k, v in defaults.items():
+        if k not in st.session_state:
+            st.session_state[k] = v
+
+    # Sanitize vorhandene Werte
+    if st.session_state.get("selected_article"):
+        st.session_state.selected_article = sanitize_input(st.session_state.selected_article)
+    if st.session_state.get("selected_supplier_name"):
+        st.session_state.selected_supplier_name = sanitize_input(st.session_state.selected_supplier_name)
+    if st.session_state.get("selected_supplier"):
+        sup = st.session_state.selected_supplier
+        if isinstance(sup, dict):
+            st.session_state.selected_supplier = {sanitize_input(k): sanitize_input(v) for k, v in sup.items()}
+        else:
+            st.session_state.selected_supplier = {"name": sanitize_input(str(sup))}
+
+ensure_selection_state()
 
 # Backend-Funktionen (angepasste src-Pfade)
 from src.core.price_utils import derive_unit_price
@@ -320,8 +347,9 @@ def step2_article_search():
                     key="article_selector"
                 )
                 if choice != "(Bitte wählen...)":
-                    st.session_state.selected_article = choice
-                    st.success(f"**Artikel:** {choice}")
+                    st.session_state.selected_article = sanitize_input(choice)
+                    st.success(f"**Artikel:** {st.session_state.selected_article}")
+                    st.write(f"DEBUG selected_article = {st.session_state.selected_article}")
                     wizard.complete_step(2)
                 else:
                     st.session_state.selected_article = None
@@ -457,11 +485,15 @@ def step4_suppliers():
     )
 
     if selected != "(Bitte wählen...)":
-        st.session_state.selected_supplier_name = selected
-        st.success(f"✅ **{selected}** ausgewählt")
+        st.session_state.selected_supplier_name = sanitize_input(selected)
+        # Speichere auch Supplier-Daten (minimal)
+        st.session_state.selected_supplier = {"name": st.session_state.selected_supplier_name}
+        st.success(f"✅ **{st.session_state.selected_supplier_name}** ausgewählt")
+        st.write(f"DEBUG selected_supplier_name = {st.session_state.selected_supplier_name}")
         wizard.complete_step(4)
     else:
         st.session_state.selected_supplier_name = None
+        st.session_state.selected_supplier = None
 
 
 # ==================== STEP 5: KOSTENSCHÄTZUNG ====================
@@ -735,6 +767,7 @@ def step6_sustainability():
     st.markdown("### 💼 Verhandlungsvorbereitung")
 
     if st.button("📋 Verhandlungsstrategie generieren", type="primary", use_container_width=True):
+        ensure_selection_state()
         article = st.session_state.get("selected_article")
         avg_price = st.session_state.get("avg_price")
         supplier = st.session_state.get("selected_supplier_name")
@@ -748,6 +781,9 @@ def step6_sustainability():
         target_price = None
         if cost_result:
             target_price = cost_result.get("target")
+
+        st.write(f"DEBUG selected_article = {article}")
+        st.write(f"DEBUG selected_supplier = {supplier}")
 
         if article and supplier:
             with GPTLoadingAnimation("🤖 Generiere Strategie...", icon="💼"):
