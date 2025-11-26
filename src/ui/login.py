@@ -83,6 +83,31 @@ def render_login_screen():
 
     # Get logo
     logo_base64 = get_logo_base64()
+    
+    # Load background image
+    bg_base64 = ""
+    try:
+        # Construct absolute path to assets/login_bg.png
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg.png')
+        with open(bg_path, "rb") as f:
+            bg_base64 = base64.b64encode(f.read()).decode()
+    except Exception as e:
+        print(f"Error loading background: {e}")
+        pass
+
+    # CSS for background
+    if bg_base64:
+        background_css = f"""
+            background-image: url("data:image/png;base64,{bg_base64}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        """
+    else:
+        # Fallback gradient
+        background_css = """
+            background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%);
+        """
 
     st.markdown(
         f"""
@@ -98,7 +123,9 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+                {background_css}
+                height: 100vh;
+                overflow: hidden;
             }}
 
             header[data-testid="stHeader"],
