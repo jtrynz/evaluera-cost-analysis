@@ -467,7 +467,7 @@ def render_login_screen():
 def render_logout_button():
     """Render premium logout button in sidebar"""
     with st.sidebar:
-        st.markdown("---")
+        # Divider removed to allow custom layout in app.py
         st.markdown(f"""
         <div style="
             padding: 18px;

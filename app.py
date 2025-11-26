@@ -306,7 +306,24 @@ st.markdown(
 # Sidebar Navigation - Apple-ähnliche Navigation
 nav.render()
 
-# Logout Button
+# Sidebar Footer (Technical Drawing + Logout)
+with st.sidebar:
+    st.markdown("---")
+    
+    # Technical Drawing Button (Standalone)
+    is_drawing_active = st.session_state.nav_active_section == "drawing_analysis"
+    if st.button(
+        "📐  Technische Zeichnung",
+        key="nav_drawing_analysis",
+        use_container_width=True,
+        type="primary" if is_drawing_active else "secondary"
+    ):
+        st.session_state.nav_active_section = "drawing_analysis"
+        st.rerun()
+        
+    st.write("") # Spacer
+
+# Logout Button (Divider removed in login.py)
 render_logout_button()
 
 # Synchronize Navigation with Wizard Steps
