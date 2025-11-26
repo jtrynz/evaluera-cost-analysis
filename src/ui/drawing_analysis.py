@@ -59,7 +59,7 @@ def render_drawing_analysis_page():
                         
                         if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
                              st.session_state.drawing_analysis_result = result
-                             st.success("✅ Analyse erfolgreich!")
+                             st.rerun()  # Immediately hide button and show results
                         else:
                             st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
                     
@@ -120,8 +120,88 @@ def render_drawing_analysis_page():
                             break
                 
                 if selected_item:
-                    # Hide cost estimation inputs if results exist
-                    if "drawing_cost_result" not in st.session_state:
+                    # Show loading animation OR input fields, not both
+                    if st.session_state.get("show_cost_loading", False):
+                        with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
+                            try:
+                                if is_total_package:
+                                    total_mat = 0.0
+                                    total_fab = 0.0
+                                    details = []
+                                    
+                                    for item in items:
+                                        # Parse quantity
+                                        try:
+                                            qty = float(str(item.get('quantity', 1)).replace(',', '.').split()[0])
+                                        except:
+                                            qty = 1.0
+                                        
+                                        # Prepare description
+                                        desc = item.get('description', '')
+                                        mat = item.get('material', '')
+                                        dims = f"{item.get('diameter_mm', '')}x{item.get('length_mm', '')}"
+                                        full_desc = f"{desc} {mat} {dims}".strip()
+                                        
+                                        # Calculate effective lot size for this item
+                                        item_lot_size = int(lot_size * qty)
+                                        
+                                        # Call Cost Estimation
+                                        res = cached_gpt_complete_cost_estimate(
+                                            description=full_desc,
+                                            lot_size=item_lot_size,
+                                            technical_drawing_context_json=json.dumps(result)
+                                        )
+                                        
+                                        if res and not res.get("_error"):
+                                            # Add to totals (cost per unit * quantity per set)
+                                            mat_cost = res.get('material_cost_eur', 0) * qty
+                                            fab_cost = res.get('fab_cost_eur', 0) * qty
+                                            total_mat += mat_cost
+                                            total_fab += fab_cost
+                                            
+                                            details.append({
+                                                "position": item.get('position'),
+                                                "description": desc,
+                                                "quantity": qty,
+                                                "unit_cost": res.get('material_cost_eur', 0) + res.get('fab_cost_eur', 0),
+                                                "total_cost": mat_cost + fab_cost
+                                            })
+                                    
+                                    cost_res = {
+                                        "material_cost_eur": total_mat,
+                                        "fab_cost_eur": total_fab,
+                                        "details": details,
+                                        "is_package": True
+                                    }
+                                    
+                                else:
+                                    # Single item logic
+                                    # Prepare description from analysis
+                                    desc = selected_item.get('description', '')
+                                    mat = selected_item.get('material', '')
+                                    dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
+                                    full_desc = f"{desc} {mat} {dims}".strip()
+                                    
+                                    # Call Cost Estimation
+                                    cost_res = cached_gpt_complete_cost_estimate(
+                                        description=full_desc,
+                                        lot_size=lot_size,
+                                        technical_drawing_context_json=json.dumps(result)
+                                    )
+                                
+                                if cost_res and not cost_res.get("_error"):
+                                    st.session_state.drawing_cost_result = cost_res
+                                    st.rerun()
+                                else:
+                                    st.error("❌ Kalkulation fehlgeschlagen.")
+                                    
+                            except Exception as e:
+                                st.error(f"❌ Fehler bei Kalkulation: {e}")
+                            finally:
+                                st.session_state.show_cost_loading = False
+                    
+                    # Hide cost estimation inputs if results exist or loading
+                    elif "drawing_cost_result" not in st.session_state:
                         col_lot, col_btn = st.columns([1, 2])
                         with col_lot:
                             lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100)
@@ -132,86 +212,6 @@ def render_drawing_analysis_page():
                             if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
                                 st.session_state.show_cost_loading = True
                                 st.rerun()
-
-                if st.session_state.get("show_cost_loading", False):
-                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
-                                        try:
-                                            if is_total_package:
-                                                total_mat = 0.0
-                                                total_fab = 0.0
-                                                details = []
-                                                
-                                                for item in items:
-                                                    # Parse quantity
-                                                    try:
-                                                        qty = float(str(item.get('quantity', 1)).replace(',', '.').split()[0])
-                                                    except:
-                                                        qty = 1.0
-                                                    
-                                                    # Prepare description
-                                                    desc = item.get('description', '')
-                                                    mat = item.get('material', '')
-                                                    dims = f"{item.get('diameter_mm', '')}x{item.get('length_mm', '')}"
-                                                    full_desc = f"{desc} {mat} {dims}".strip()
-                                                    
-                                                    # Calculate effective lot size for this item
-                                                    item_lot_size = int(lot_size * qty)
-                                                    
-                                                    # Call Cost Estimation
-                                                    res = cached_gpt_complete_cost_estimate(
-                                                        description=full_desc,
-                                                        lot_size=item_lot_size,
-                                                        technical_drawing_context_json=json.dumps(result)
-                                                    )
-                                                    
-                                                    if res and not res.get("_error"):
-                                                        # Add to totals (cost per unit * quantity per set)
-                                                        mat_cost = res.get('material_cost_eur', 0) * qty
-                                                        fab_cost = res.get('fab_cost_eur', 0) * qty
-                                                        total_mat += mat_cost
-                                                        total_fab += fab_cost
-                                                        
-                                                        details.append({
-                                                            "position": item.get('position'),
-                                                            "description": desc,
-                                                            "quantity": qty,
-                                                            "unit_cost": res.get('material_cost_eur', 0) + res.get('fab_cost_eur', 0),
-                                                            "total_cost": mat_cost + fab_cost
-                                                        })
-                                                
-                                                cost_res = {
-                                                    "material_cost_eur": total_mat,
-                                                    "fab_cost_eur": total_fab,
-                                                    "details": details,
-                                                    "is_package": True
-                                                }
-                                                
-                                            else:
-                                                # Single item logic
-                                                # Prepare description from analysis
-                                                desc = selected_item.get('description', '')
-                                                mat = selected_item.get('material', '')
-                                                dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
-                                                full_desc = f"{desc} {mat} {dims}".strip()
-                                                
-                                                # Call Cost Estimation
-                                                cost_res = cached_gpt_complete_cost_estimate(
-                                                    description=full_desc,
-                                                    lot_size=lot_size,
-                                                    technical_drawing_context_json=json.dumps(result)
-                                                )
-                                            
-                                            if cost_res and not cost_res.get("_error"):
-                                                st.session_state.drawing_cost_result = cost_res
-                                                st.success("✅ Kalkulation abgeschlossen!")
-                                                st.rerun()
-                                            else:
-                                                st.error("❌ Kalkulation fehlgeschlagen.")
-                                                
-                                        except Exception as e:
-                                            st.error(f"❌ Fehler bei Kalkulation: {e}")
-                                        finally:
-                                            st.session_state.show_cost_loading = False
 
         else:
             st.info("Keine Bauteile in der Zeichnung erkannt.")
