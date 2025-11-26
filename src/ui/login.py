@@ -103,7 +103,7 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+                background: #0f172a !important; /* Dark fallback */
             }}
 
             header[data-testid="stHeader"],
@@ -334,6 +334,7 @@ def render_login_screen():
                 opacity: 1 !important;
                 pointer-events: none !important;
                 background: transparent !important;
+                z-index: 0 !important;
             }}
 
             .forgot-link {{
