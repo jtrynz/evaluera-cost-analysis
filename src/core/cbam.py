@@ -680,9 +680,12 @@ Suche nach:
    - Sei PRÄZISE! Nicht nur "verzinkt".
    - Suche nach: "Geomet", "Dacromet", "Zink-Lamelle", "flZn", "ZnNi", "Zink-Nickel", "phosphatiert", "brüniert", "eloxiert", "passiviert", "Dickschichtpassivierung".
    - Übernimm die GENAUE Bezeichnung aus der Zeichnung (z.B. "Geomet 500A", "A2K", "galv. verzinkt gelb").
-5. **Toleranzen** (ISO, DIN)
-6. **Stückzahlen** (falls Stückliste vorhanden)
-7. **Zeichnungsnummer**, **Revision**, **Datum**
+5. **Verzahnung / Rippen (Sperrfunktion)**
+   - Suche nach "Verzahnung", "Sperrverzahnung", "Rippen", "Sperrrippen", "Rippen unter Kopf", "Flansch mit Verzahnung".
+   - Das ist ein wichtiges Merkmal für die Kosten!
+6. **Toleranzen** (ISO, DIN)
+7. **Stückzahlen** (falls Stückliste vorhanden)
+8. **Zeichnungsnummer**, **Revision**, **Datum**
 
 Antworte NUR als kompaktes JSON:
 {
@@ -698,6 +701,8 @@ Antworte NUR als kompaktes JSON:
       "diameter_mm": 10,
       "length_mm": 30,
       "surface_treatment": "Geomet 500A",
+      "has_serration": true,
+      "serration_type": "Sperrverzahnung unter Kopf",
       "tolerances": "ISO 4017",
       "weight_g": 15.3
     },
@@ -708,7 +713,8 @@ Antworte NUR als kompaktes JSON:
       "material": "Stahl",
       "is_tempered": false,
       "diameter_mm": 10.5,
-      "surface_treatment": "galv. verzinkt"
+      "surface_treatment": "galv. verzinkt",
+      "has_serration": false
     }
   ],
   "total_items": 2,
