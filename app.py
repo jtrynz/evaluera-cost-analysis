@@ -167,7 +167,7 @@ from src.ui.wizard import (
     create_data_table,
     create_compact_kpi_row,
 )
-from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation
+from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation, get_icon_path, load_image_as_base64
 from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
 from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
@@ -312,14 +312,33 @@ with st.sidebar:
     
     # Technical Drawing Button (Standalone)
     is_drawing_active = st.session_state.nav_active_section == "drawing_analysis"
-    if st.button(
-        "📐  Technische Zeichnung",
-        key="nav_drawing_analysis",
-        use_container_width=True,
-        type="primary" if is_drawing_active else "secondary"
-    ):
-        st.session_state.nav_active_section = "drawing_analysis"
-        st.rerun()
+    
+    col_draw_icon, col_draw_text = st.columns([0.2, 0.8])
+    with col_draw_icon:
+        icon_path = get_icon_path("eye")
+        if icon_path:
+            b64_img = load_image_as_base64(icon_path)
+            if b64_img:
+                st.markdown(
+                    f'<div style="display: flex; align-items: center; justify-content: center; height: 42px;">'
+                    f'<img src="data:image/png;base64,{b64_img}" style="width: 28px; height: 28px; object-fit: contain;">'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown('<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">📐</div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">📐</div>', unsafe_allow_html=True)
+
+    with col_draw_text:
+        if st.button(
+            "Technische Zeichnung",
+            key="nav_drawing_analysis",
+            use_container_width=True,
+            type="primary" if is_drawing_active else "secondary"
+        ):
+            st.session_state.nav_active_section = "drawing_analysis"
+            st.rerun()
         
     st.write("") # Spacer
 
@@ -437,8 +456,8 @@ def step2_article_search():
                 num_suppliers = idf[supplier_col].nunique() if supplier_col else 1
                 create_compact_kpi_row([
                     {"label": "Einträge", "value": str(len(idf)), "icon": "📦"},
-                    {"label": "Artikel-Varianten", "value": str(idf[item_col].nunique()), "icon": "🔍"},
-                    {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
+                    {"label": "Artikel-Varianten", "value": str(idf[item_col].nunique()), "icon": get_icon_path("search") or "🔍"},
+                    {"label": "Lieferanten", "value": str(num_suppliers), "icon": get_icon_path("factory") or "🏭"},
                 ])
 
                 # Auswahl nur per Nutzerklick (kein Default)
@@ -496,7 +515,7 @@ def step3_price_overview():
         price_range = ((mx - mn) / mn * 100) if (mn and mx and mn > 0) else None
 
         create_compact_kpi_row([
-            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": "💰"},
+            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": get_icon_path("money") or "💰"},
             {"label": "Min", "value": f"{mn:,.4f} €" if mn else "N/A", "icon": "📉"},
             {"label": "Max", "value": f"{mx:,.4f} €" if mx else "N/A", "icon": "📈"},
             {"label": "Range", "value": f"{price_range:,.1f}%" if price_range else "N/A", "icon": "📊"},

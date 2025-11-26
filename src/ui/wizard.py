@@ -6,6 +6,8 @@ Clean step-by-step workflow for cost analysis
 
 import streamlit as st
 from src.ui.theme import wizard_step, section_header, divider, COLORS, SPACING, RADIUS
+from src.ui.cards import get_icon_path, load_image_as_base64
+import os
 
 
 class WizardManager:
@@ -335,6 +337,12 @@ def create_compact_kpi_row(kpis):
             trend = kpi.get('trend')
 
             icon_html = f"<span style='font-size: 1.5rem; margin-right: 0.75rem;'>{icon}</span>" if icon else ""
+            
+            # Check if icon is a path to an image
+            if icon and isinstance(icon, str) and (icon.endswith('.png') or icon.endswith('.jpg')) and os.path.exists(icon):
+                b64_img = load_image_as_base64(icon)
+                if b64_img:
+                    icon_html = f"<img src='data:image/png;base64,{b64_img}' style='width: 24px; height: 24px; object-fit: contain; margin-right: 0.75rem;'>"
             help_html = f"<div style='font-size: 0.75rem; color: {COLORS['gray_400']}; margin-top: 0.25rem;'>{help_text}</div>" if help_text else ""
 
             trend_html = ""
