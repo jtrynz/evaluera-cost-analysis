@@ -8,7 +8,8 @@ import streamlit as st
 import pandas as pd
 from src.ui.theme import section_header, card, COLORS
 from src.ui.cards import GPTLoadingAnimation
-from src.core.cbam import gpt_analyze_technical_drawing, gpt_analyze_pdf_drawing, gpt_estimate_material, cached_gpt_complete_cost_estimate
+from src.core.cbam import gpt_analyze_technical_drawing, gpt_analyze_pdf_drawing, gpt_estimate_material
+from src.gpt.cache import cached_gpt_complete_cost_estimate
 from src.ui.wizard import create_compact_kpi_row
 import json
 
