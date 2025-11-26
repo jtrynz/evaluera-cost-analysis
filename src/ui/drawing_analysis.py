@@ -35,25 +35,26 @@ def render_drawing_analysis_page():
     if uploaded_file:
         st.success(f"✅ Datei geladen: {uploaded_file.name}")
         
-        # Button to start analysis
-        if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
-            with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
-                try:
-                    file_bytes = uploaded_file.getvalue()
+        # Button to start analysis (hide if results exist)
+        if "drawing_analysis_result" not in st.session_state:
+            if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
+                with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
+                    try:
+                        file_bytes = uploaded_file.getvalue()
+                        
+                        if uploaded_file.type == "application/pdf":
+                            result = gpt_analyze_pdf_drawing(file_bytes)
+                        else:
+                            result = gpt_analyze_technical_drawing(file_bytes, filename=uploaded_file.name)
+                        
+                        if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
+                             st.session_state.drawing_analysis_result = result
+                             st.success("✅ Analyse erfolgreich!")
+                        else:
+                            st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
                     
-                    if uploaded_file.type == "application/pdf":
-                        result = gpt_analyze_pdf_drawing(file_bytes)
-                    else:
-                        result = gpt_analyze_technical_drawing(file_bytes, filename=uploaded_file.name)
-                    
-                    if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
-                         st.session_state.drawing_analysis_result = result
-                         st.success("✅ Analyse erfolgreich!")
-                    else:
-                        st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
-                
-                except Exception as e:
-                    st.error(f"❌ Ein Fehler ist aufgetreten: {str(e)}")
+                    except Exception as e:
+                        st.error(f"❌ Ein Fehler ist aufgetreten: {str(e)}")
 
     # 3. Results Display
     if "drawing_analysis_result" in st.session_state:
@@ -109,16 +110,18 @@ def render_drawing_analysis_page():
                             break
                 
                 if selected_item:
-                    col_lot, col_btn = st.columns([1, 2])
-                    with col_lot:
-                        lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100)
-                    
-                    with col_btn:
-                        st.write("") # Spacer
-                        st.write("") # Spacer
-                        if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                            st.session_state.show_cost_loading = True
-                            st.rerun()
+                    # Hide cost estimation inputs if results exist
+                    if "drawing_cost_result" not in st.session_state:
+                        col_lot, col_btn = st.columns([1, 2])
+                        with col_lot:
+                            lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100)
+                        
+                        with col_btn:
+                            st.write("") # Spacer
+                            st.write("") # Spacer
+                            if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
+                                st.session_state.show_cost_loading = True
+                                st.rerun()
 
                 if st.session_state.get("show_cost_loading", False):
                     with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
