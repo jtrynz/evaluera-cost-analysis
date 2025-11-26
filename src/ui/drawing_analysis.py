@@ -36,24 +36,26 @@ def render_drawing_analysis_page():
         st.success(f"✅ Datei geladen: {uploaded_file.name}")
         
         # Button to start analysis
-        if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
-            with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
-                try:
-                    file_bytes = uploaded_file.getvalue()
+        if "drawing_analysis_result" not in st.session_state:
+            if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
+                with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
+                    try:
+                        file_bytes = uploaded_file.getvalue()
+                        
+                        if uploaded_file.type == "application/pdf":
+                            result = gpt_analyze_pdf_drawing(file_bytes)
+                        else:
+                            result = gpt_analyze_technical_drawing(file_bytes, filename=uploaded_file.name)
+                        
+                        if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
+                             st.session_state.drawing_analysis_result = result
+                             st.success("✅ Analyse erfolgreich!")
+                             st.rerun() # Rerun to hide button
+                        else:
+                            st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
                     
-                    if uploaded_file.type == "application/pdf":
-                        result = gpt_analyze_pdf_drawing(file_bytes)
-                    else:
-                        result = gpt_analyze_technical_drawing(file_bytes, filename=uploaded_file.name)
-                    
-                    if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
-                         st.session_state.drawing_analysis_result = result
-                         st.success("✅ Analyse erfolgreich!")
-                    else:
-                        st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
-                
-                except Exception as e:
-                    st.error(f"❌ Ein Fehler ist aufgetreten: {str(e)}")
+                    except Exception as e:
+                        st.error(f"❌ Ein Fehler ist aufgetreten: {str(e)}")
 
     # 3. Results Display
     if "drawing_analysis_result" in st.session_state:
@@ -107,28 +109,31 @@ def render_drawing_analysis_page():
                         st.write("") # Spacer
                         st.write("") # Spacer
                         if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                            with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
-                                try:
-                                    # Prepare description from analysis
-                                    desc = selected_item.get('description', '')
-                                    mat = selected_item.get('material', '')
-                                    dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
-                                    full_desc = f"{desc} {mat} {dims}".strip()
-                                    
-                                    # Call Cost Estimation
-                                    cost_res = cached_gpt_complete_cost_estimate(
-                                        description=full_desc,
-                                        lot_size=lot_size
-                                    )
-                                    
-                                    if cost_res and not cost_res.get("_error"):
-                                        st.session_state.drawing_cost_result = cost_res
-                                        st.success("✅ Kalkulation abgeschlossen!")
-                                    else:
-                                        st.error("❌ Kalkulation fehlgeschlagen.")
+                            # Center animation using columns
+                            col_anim_1, col_anim_2, col_anim_3 = st.columns([1, 2, 1])
+                            with col_anim_2:
+                                with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
+                                    try:
+                                        # Prepare description from analysis
+                                        desc = selected_item.get('description', '')
+                                        mat = selected_item.get('material', '')
+                                        dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
+                                        full_desc = f"{desc} {mat} {dims}".strip()
                                         
-                                except Exception as e:
-                                    st.error(f"❌ Fehler bei Kalkulation: {e}")
+                                        # Call Cost Estimation
+                                        cost_res = cached_gpt_complete_cost_estimate(
+                                            description=full_desc,
+                                            lot_size=lot_size
+                                        )
+                                        
+                                        if cost_res and not cost_res.get("_error"):
+                                            st.session_state.drawing_cost_result = cost_res
+                                            st.success("✅ Kalkulation abgeschlossen!")
+                                        else:
+                                            st.error("❌ Kalkulation fehlgeschlagen.")
+                                            
+                                    except Exception as e:
+                                        st.error(f"❌ Fehler bei Kalkulation: {e}")
 
         else:
             st.info("Keine Bauteile in der Zeichnung erkannt.")
