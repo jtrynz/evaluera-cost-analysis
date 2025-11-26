@@ -529,14 +529,17 @@ def inject_lottie_background():
                         body, html {{
                             margin: 0;
                             padding: 0;
-                            width: 100%;
-                            height: 100%;
+                            width: 100vw;
+                            height: 100vh;
                             overflow: hidden;
-                            background: transparent;
+                            background-color: #0f172a; /* Match app background */
                         }}
                         lottie-player {{
-                            width: 100%;
-                            height: 100%;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100vw;
+                            height: 100vh;
                             display: block;
                         }}
                     </style>
@@ -554,7 +557,8 @@ def inject_lottie_background():
                 </body>
             </html>
             """,
-            height=100, # Height doesn't matter due to fixed CSS, but needs to be non-zero to render
+            height=800, # Increased height to ensure initial render space
+            scrolling=False
         )
     except Exception as e:
         # Fail silently if file not found or error, to not break login
