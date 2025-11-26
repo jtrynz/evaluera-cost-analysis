@@ -83,6 +83,15 @@ def render_login_screen():
 
     # Get logo
     logo_base64 = get_logo_base64()
+    
+    # Load background image
+    bg_image_path = "/Users/johntrynz/.gemini/antigravity/brain/4560d86f-7bb5-460a-ad84-8d4df721496b/login_background_mesh_1764200205503.png"
+    bg_base64 = ""
+    try:
+        with open(bg_image_path, "rb") as f:
+            bg_base64 = base64.b64encode(f.read()).decode()
+    except Exception:
+        pass
 
     st.markdown(
         f"""
@@ -93,33 +102,25 @@ def render_login_screen():
                 --eval-primary: {COLORS['primary']};
                 --eval-secondary: {COLORS['secondary']};
                 --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(255, 255, 255, 0.65); /* More transparent for better glass effect */
+                --eval-glass: rgba(255, 255, 255, 0.15); /* Ultra-modern glass */
                 --eval-soft: #E7F1EF;
             }}
 
-            /* DYNAMIC BACKGROUND ANIMATION */
-            @keyframes gradient-animation {{
-                0% {{ background-position: 0% 50%; }}
-                50% {{ background-position: 100% 50%; }}
-                100% {{ background-position: 0% 50%; }}
+            /* DYNAMIC BACKGROUND */
+            html, body, .stApp, [data-testid="stAppViewContainer"] {{
+                background-image: url("data:image/png;base64,{bg_base64}");
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                height: 100vh;
+                overflow: hidden;
             }}
 
             @keyframes float {{
                 0% {{ transform: translateY(0px); }}
-                50% {{ transform: translateY(-10px); }}
+                50% {{ transform: translateY(-8px); }}
                 100% {{ transform: translateY(0px); }}
             }}
-
-            html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: linear-gradient(-45deg, #2A4F57, #1E2E32, #2A4F57, #477a78);
-                background-size: 400% 400%;
-                animation: gradient-animation 15s ease infinite;
-                height: 100vh;
-                overflow: hidden;
-            }}
-            
-            /* Add some "orbs" for the fluid feel (pseudo-elements on body won't work easily in Streamlit iframe, 
-               so we use the gradient above for the main effect and maybe a subtle overlay) */
 
             header[data-testid="stHeader"],
             #MainMenu,
@@ -140,25 +141,25 @@ def render_login_screen():
             }}
 
             .block-container {{
-                padding: 40px 32px !important;
+                padding: 48px 40px !important;
                 width: 100%;
-                max-width: 480px;
+                max-width: 460px;
                 margin-top: 0 !important;
                 
-                /* Enhanced Glassmorphism */
-                background: rgba(255, 255, 255, 0.75);
-                backdrop-filter: blur(20px) saturate(180%);
-                -webkit-backdrop-filter: blur(20px) saturate(180%);
-                border: 1px solid rgba(255, 255, 255, 0.8);
+                /* PREMIUM GLASSMORPHISM */
+                background: rgba(255, 255, 255, 0.65);
+                backdrop-filter: blur(24px) saturate(180%);
+                -webkit-backdrop-filter: blur(24px) saturate(180%);
+                border: 1px solid rgba(255, 255, 255, 0.5);
                 
-                border-radius: 24px;
+                border-radius: 28px;
                 box-shadow:
-                    0 20px 60px rgba(0, 0, 0, 0.3),
-                    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+                    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
                 
                 position: relative;
                 overflow: hidden;
-                animation: float 6s ease-in-out infinite; /* Playful floating */
+                animation: float 8s ease-in-out infinite;
             }}
 
             /* Entfernt evtl. leere Streifen-Container */
@@ -168,58 +169,58 @@ def render_login_screen():
 
             .login-header {{
                 text-align: center;
-                margin-bottom: 30px;
+                margin-bottom: 32px;
             }}
 
             .login-logo {{
-                width: 180px;
+                width: 190px;
                 height: auto;
-                filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
-                margin-bottom: 16px;
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+                margin-bottom: 12px;
             }}
 
             .login-title {{
                 color: #1E2E32;
-                font-size: 26px;
+                font-size: 24px;
                 font-weight: 700;
-                letter-spacing: -0.03em;
-                margin-bottom: 6px;
+                letter-spacing: -0.02em;
+                margin-bottom: 4px;
             }}
 
             .login-tagline {{
-                color: rgba(30, 46, 50, 0.7);
-                font-size: 15px;
+                color: rgba(30, 46, 50, 0.75);
+                font-size: 14px;
                 font-weight: 500;
             }}
 
             .stTextInput > label {{
                 color: #2A4F57 !important;
                 font-weight: 600 !important;
-                font-size: 14px !important;
-                letter-spacing: 0.02em !important;
-                margin-bottom: 8px !important;
+                font-size: 13px !important;
+                letter-spacing: 0.03em !important;
+                margin-bottom: 6px !important;
                 text-transform: uppercase;
             }}
 
             .stTextInput > div > div > input {{
-                background: rgba(255, 255, 255, 0.6) !important;
-                border: 1.5px solid rgba(42, 79, 87, 0.15) !important;
+                background: rgba(255, 255, 255, 0.5) !important;
+                border: 1px solid rgba(42, 79, 87, 0.2) !important;
                 border-radius: 12px !important;
                 color: #1E2E32 !important;
                 padding: 12px 16px !important;
-                font-size: 16px !important;
-                min-height: 48px !important;
-                transition: all 0.3s ease !important;
+                font-size: 15px !important;
+                min-height: 46px !important;
+                transition: all 0.2s ease !important;
             }}
 
             .stTextInput > div > div > input::placeholder {{
-                color: rgba(30, 46, 50, 0.4) !important;
+                color: rgba(30, 46, 50, 0.45) !important;
             }}
 
             .stTextInput > div > div > input:focus {{
                 background: #FFFFFF !important;
                 border-color: #2A4F57 !important;
-                box-shadow: 0 4px 20px rgba(42, 79, 87, 0.1) !important;
+                box-shadow: 0 0 0 3px rgba(42, 79, 87, 0.1) !important;
                 transform: translateY(-1px);
             }}
 
@@ -230,17 +231,18 @@ def render_login_screen():
                 color: #FFFFFF !important;
                 border: none !important;
                 border-radius: 12px !important;
-                padding: 16px !important;
+                padding: 14px !important;
                 font-size: 16px !important;
                 font-weight: 600 !important;
-                box-shadow: 0 10px 25px rgba(42, 79, 87, 0.25) !important;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                margin-top: 10px !important;
+                letter-spacing: 0.01em !important;
+                box-shadow: 0 4px 12px rgba(42, 79, 87, 0.2) !important;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+                margin-top: 12px !important;
             }}
 
             .stButton > button:hover {{
-                transform: translateY(-2px) scale(1.02) !important;
-                box-shadow: 0 15px 35px rgba(42, 79, 87, 0.35) !important;
+                transform: translateY(-2px) !important;
+                box-shadow: 0 8px 20px rgba(42, 79, 87, 0.3) !important;
             }}
 
             .stButton > button:active {{
@@ -250,19 +252,19 @@ def render_login_screen():
             .login-divider {{
                 height: 1px;
                 width: 100%;
-                background: linear-gradient(90deg, transparent, rgba(42, 79, 87, 0.2), transparent);
+                background: linear-gradient(90deg, transparent, rgba(42, 79, 87, 0.15), transparent);
                 margin: 24px 0;
             }}
 
             .error-alert {{
-                background: rgba(239, 68, 68, 0.1) !important;
+                background: rgba(239, 68, 68, 0.08) !important;
                 border: 1px solid rgba(239, 68, 68, 0.2) !important;
                 color: #EF4444 !important;
-                border-radius: 12px !important;
-                padding: 12px !important;
+                border-radius: 10px !important;
+                padding: 10px !important;
                 margin-bottom: 20px !important;
                 text-align: center;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 500;
                 display: flex;
                 align-items: center;
@@ -272,11 +274,12 @@ def render_login_screen():
 
             .login-footnote {{
                 text-align: center;
-                color: rgba(255, 255, 255, 0.6);
-                font-size: 12px;
-                margin-top: 20px;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 11px;
+                margin-top: 24px;
                 font-weight: 500;
                 letter-spacing: 0.05em;
+                text-transform: uppercase;
             }}
             
             .forgot-link {{
@@ -286,9 +289,9 @@ def render_login_screen():
             
             .forgot-link a {{
                 color: #2A4F57;
-                font-size: 13px;
+                font-size: 12px;
                 text-decoration: none;
-                font-weight: 500;
+                font-weight: 600;
                 opacity: 0.8;
                 transition: opacity 0.2s;
             }}
@@ -298,6 +301,15 @@ def render_login_screen():
                 text-decoration: underline;
             }}
 
+            @media (max-width: 600px) {{
+                .login-card {{
+                    padding: 26px 22px 22px 22px;
+                }}
+
+                .login-logo {{
+                    width: 160px;
+                }}
+            }}
         </style>
         """,
         unsafe_allow_html=True,
