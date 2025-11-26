@@ -115,8 +115,23 @@ def gpt_complete_cost_estimate(
     # Technische Zeichnung Kontext (falls vorhanden)
     drawing_context_str = ""
     if technical_drawing_context:
-        # Extrahiere relevante Infos (Oberfläche, Toleranzen, etc.)
+        # Extrahiere relevante Infos (Oberfläche, Toleranzen, Extras, Verzahnung)
+        # WICHTIG: Wir übergeben das GANZE Objekt, damit GPT alle Details hat!
         drawing_context_str = f"\n**TECHNISCHE ZEICHNUNG INFOS:** {json.dumps(technical_drawing_context, ensure_ascii=False)}"
+        
+        # Expliziter Hinweis auf Extras für Kosten
+        extras = []
+        if isinstance(technical_drawing_context, dict):
+             items = technical_drawing_context.get("items", [])
+             if items and isinstance(items, list):
+                 # Nehme Extras vom ersten Item (Hauptteil)
+                 extras = items[0].get("extras", [])
+                 serration = items[0].get("serration_details", "")
+                 if serration:
+                     extras.append(f"Verzahnung: {serration}")
+
+        if extras:
+            drawing_context_str += f"\n**EXTRAS & BESONDERHEITEN (KOSTENTREIBER!):** {', '.join(extras)}"
 
     # KOMBINIERTER PROMPT - Material + Prozess + Kosten (EXTREM GÜNSTIG - WORST CASE)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in globaler Low-Cost-Beschaffung.

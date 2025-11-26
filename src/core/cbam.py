@@ -682,7 +682,8 @@ Suche nach:
    - Übernimm die GENAUE Bezeichnung aus der Zeichnung (z.B. "Geomet 500A", "A2K", "galv. verzinkt gelb").
 5. **Verzahnung / Rippen (Sperrfunktion)**
    - Suche nach "Verzahnung", "Sperrverzahnung", "Rippen", "Sperrrippen", "Rippen unter Kopf", "Flansch mit Verzahnung".
-   - Das ist ein wichtiges Merkmal für die Kosten!
+   - **ACHTUNG BEI MENGEN:** "24x" bei einer Verzahnung bedeutet oft "24 Zähne", NICHT "24 Stück Schrauben"!
+   - Unterscheide: "Quantity" (Stückzahl zu fertigen) vs. "Feature Count" (Anzahl Zähne/Rippen).
 6. **Extras / Besonderheiten**
    - Fasse hier ALLE speziellen Merkmale zusammen, die den Preis beeinflussen (außer Standard-Maßen).
    - Dazu gehören: Spezielle Oberflächen, Verzahnungen, Sicherungen (Tuflok, Kleber), 100% Prüfung, besondere Toleranzen.
@@ -699,7 +700,7 @@ Antworte NUR als kompaktes JSON:
     {
       "position": "1",
       "description": "DIN933 M10x30 10.9 Geomet",
-      "quantity": 4,
+      "quantity": 1,
       "material": "Stahl vergütet",
       "is_tempered": true,
       "diameter_mm": 10,
@@ -707,7 +708,8 @@ Antworte NUR als kompaktes JSON:
       "surface_treatment": "Geomet 500A",
       "has_serration": true,
       "serration_type": "Sperrverzahnung unter Kopf",
-      "extras": ["Vergütet 10.9", "Geomet 500A", "Sperrverzahnung"],
+      "serration_details": "24 Zähne",
+      "extras": ["Vergütet 10.9", "Geomet 500A", "Sperrverzahnung (24 Zähne)"],
       "tolerances": "ISO 4017",
       "weight_g": 15.3
     },
@@ -730,7 +732,7 @@ Antworte NUR als kompaktes JSON:
 
 Wichtig:
 - Extrahiere ALLE Positionen aus der Stückliste
-- Wenn keine Stückliste: Identifiziere Hauptteil
+- Wenn keine Stückliste: Identifiziere Hauptteil (Quantity = 1, wenn nicht anders angegeben)
 - Wenn unklar: "confidence": "low" setzen
 - Realistische Schätzungen für Gewicht/Maße"""
 
