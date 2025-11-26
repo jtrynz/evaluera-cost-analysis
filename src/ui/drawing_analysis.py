@@ -13,6 +13,15 @@ from src.gpt.cache import cached_gpt_complete_cost_estimate
 from src.ui.wizard import create_compact_kpi_row
 import json
 
+def clear_analysis_results():
+    """Clear analysis and cost results when new file is uploaded"""
+    if "drawing_analysis_result" in st.session_state:
+        del st.session_state.drawing_analysis_result
+    if "drawing_cost_result" in st.session_state:
+        del st.session_state.drawing_cost_result
+    if "show_cost_loading" in st.session_state:
+        del st.session_state.show_cost_loading
+
 def render_drawing_analysis_page():
     """Renders the Technical Drawing Analysis page"""
     section_header(
@@ -24,7 +33,8 @@ def render_drawing_analysis_page():
     uploaded_file = st.file_uploader(
         "Zeichnung hochladen",
         type=["pdf", "png", "jpg", "jpeg"],
-        key="drawing_upload"
+        key="drawing_upload",
+        on_change=clear_analysis_results
     )
 
     if not uploaded_file:
