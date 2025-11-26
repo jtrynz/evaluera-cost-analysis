@@ -340,8 +340,9 @@ if st.session_state.nav_active_section in nav_to_wizard:
     if wizard_step != st.session_state.wizard_current_step:
         wizard.set_step(wizard_step)
 
-# Progress Bar
-wizard.render_progress()
+# Progress Bar (Hide on Drawing Analysis Page)
+if st.session_state.nav_active_section != "drawing_analysis":
+    wizard.render_progress()
 
 
 # ==================== STEP 1: UPLOAD ====================
