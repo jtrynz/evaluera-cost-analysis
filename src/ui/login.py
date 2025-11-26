@@ -147,20 +147,25 @@ def render_login_screen():
             }}
 
             section.main, .main {{
+                height: 100vh;
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 0 18px 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 position: relative;
                 z-index: 2;
             }}
 
+            /* Force the block container to be centered and remove Streamlit's default top padding */
             .block-container {{
                 padding: 48px 40px !important;
                 width: 100%;
                 max-width: 460px;
-                margin-top: 0 !important;
+                margin: auto !important; /* Key for centering in some Streamlit layouts */
+                flex: 0 0 auto !important;
                 
                 /* PREMIUM GLASSMORPHISM */
                 background: rgba(255, 255, 255, 0.65);
