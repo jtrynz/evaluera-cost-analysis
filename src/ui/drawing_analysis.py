@@ -122,6 +122,9 @@ def render_drawing_analysis_page():
                 if selected_item:
                     # Show loading animation OR input fields, not both
                     if st.session_state.get("show_cost_loading", False):
+                        # Retrieve lot_size from session_state
+                        lot_size = st.session_state.get("drawing_lot_size", 1000)
+                        
                         with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
                             try:
                                 if is_total_package:
@@ -204,7 +207,7 @@ def render_drawing_analysis_page():
                     elif "drawing_cost_result" not in st.session_state:
                         col_lot, col_btn = st.columns([1, 2])
                         with col_lot:
-                            lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100)
+                            lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100, key="drawing_lot_size")
                         
                         with col_btn:
                             st.write("") # Spacer
