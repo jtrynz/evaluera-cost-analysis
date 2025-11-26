@@ -8,6 +8,19 @@ import streamlit as st
 import time
 import os
 
+def get_icon_path(icon_name):
+    """
+    Returns the absolute path to a custom icon.
+    Args:
+        icon_name: Name of the icon (e.g., 'rocket', 'eye')
+    Returns:
+        Absolute path to the icon file or None if not found.
+    """
+    icon_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'icons', f'{icon_name}.png')
+    if os.path.exists(icon_path):
+        return icon_path
+    return None
+
 
 def render_evaluera_logo(align="center", width=230):
     """
