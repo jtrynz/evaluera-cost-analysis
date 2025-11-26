@@ -4,6 +4,7 @@
 Apple-ähnliche Navigation mit Accordion-Struktur
 """
 
+import streamlit as st
 from src.ui.theme import COLORS, SPACING, RADIUS, SHADOWS
 
 
