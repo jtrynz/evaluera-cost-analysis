@@ -522,15 +522,37 @@ def inject_lottie_background():
             
         components.html(
             f"""
-            <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-            <lottie-player
-                src='{json.dumps(lottie_json)}'
-                background="transparent"
-                speed="1"
-                style="width: 100vw; height: 100vh; overflow: hidden;"
-                loop
-                autoplay
-            ></lottie-player>
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <style>
+                        body, html {{
+                            margin: 0;
+                            padding: 0;
+                            width: 100%;
+                            height: 100%;
+                            overflow: hidden;
+                            background: transparent;
+                        }}
+                        lottie-player {{
+                            width: 100%;
+                            height: 100%;
+                            display: block;
+                        }}
+                    </style>
+                    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                </head>
+                <body>
+                    <lottie-player
+                        src='{json.dumps(lottie_json)}'
+                        background="transparent"
+                        speed="1"
+                        loop
+                        autoplay
+                        preserveAspectRatio="xMidYMid slice"
+                    ></lottie-player>
+                </body>
+            </html>
             """,
             height=100, # Height doesn't matter due to fixed CSS, but needs to be non-zero to render
         )
