@@ -171,6 +171,7 @@ from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation
 from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
 from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
+from src.ui.drawing_analysis import render_drawing_analysis_page
 
 # ==================== SETUP ====================
 load_dotenv()
@@ -921,13 +922,23 @@ def step6_sustainability():
     wizard.complete_step(6)
 
 
-# ==================== RENDER WIZARD ====================
-wizard.render_step_content(1, step1_upload)
-wizard.render_step_content(2, step2_article_search)
-wizard.render_step_content(3, step3_price_overview)
-wizard.render_step_content(4, step4_suppliers)
-wizard.render_step_content(5, step5_cost_estimation)
-wizard.render_step_content(6, step6_sustainability)
+# ==================== MAIN ROUTING ====================
+if st.session_state.nav_active_section == "drawing_analysis":
+    render_drawing_analysis_page()
+elif st.session_state.nav_active_section == "upload":
+    step1_upload()
+elif st.session_state.nav_active_section == "artikel":
+    step2_article_search()
+elif st.session_state.nav_active_section == "preis":
+    step3_price_overview()
+elif st.session_state.nav_active_section == "lieferanten":
+    step4_suppliers()
+elif st.session_state.nav_active_section == "kosten":
+    step5_cost_estimation()
+elif st.session_state.nav_active_section == "nachhaltigkeit":
+    step6_sustainability()
+else:
+    step1_upload()
 
 # Navigation with conditional "Weiter" button
 divider()

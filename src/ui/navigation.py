@@ -41,6 +41,11 @@ class NavigationSidebar:
             "title": "Nachhaltigkeit & Verhandlung",
             "icon": "♻️",
             "subsections": []
+        },
+        "drawing_analysis": {
+            "title": "Technische Zeichnung",
+            "icon": "📐",
+            "subsections": []
         }
     }
 
