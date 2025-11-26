@@ -672,8 +672,14 @@ def gpt_analyze_technical_drawing(image_data: bytes, filename: str = "drawing") 
 Suche nach:
 1. **Artikelbezeichnungen** (z.B. "DIN933 M10x30", "Schraube", "Mutter M8")
 2. **Maße** (Durchmesser, Länge, Breite, Höhe, Gewinde)
-3. **Material** (Stahl, Edelstahl, A2, A4, Aluminium, Messing)
-4. **Oberflächenbehandlung** (verzinkt, VZ, galvanisiert, beschichtet)
+3. **Material**
+   - Unterscheide genau: Stahl, Edelstahl (A2/A4), Messing, etc.
+   - **WICHTIG:** Achte auf Zusätze wie "vergütet", "vergüteter Stahl", "QT", "heat treated", "10.9", "12.9".
+   - Wenn "vergütet" oder hohe Festigkeitsklasse (8.8, 10.9, 12.9) erwähnt wird, setze "is_tempered": true.
+4. **Oberflächenbehandlung**
+   - Sei PRÄZISE! Nicht nur "verzinkt".
+   - Suche nach: "Geomet", "Dacromet", "Zink-Lamelle", "flZn", "ZnNi", "Zink-Nickel", "phosphatiert", "brüniert", "eloxiert", "passiviert", "Dickschichtpassivierung".
+   - Übernimm die GENAUE Bezeichnung aus der Zeichnung (z.B. "Geomet 500A", "A2K", "galv. verzinkt gelb").
 5. **Toleranzen** (ISO, DIN)
 6. **Stückzahlen** (falls Stückliste vorhanden)
 7. **Zeichnungsnummer**, **Revision**, **Datum**
@@ -685,26 +691,28 @@ Antworte NUR als kompaktes JSON:
   "items": [
     {
       "position": "1",
-      "description": "DIN933 M10x30 8.8 verzinkt",
+      "description": "DIN933 M10x30 10.9 Geomet",
       "quantity": 4,
-      "material": "stahl",
+      "material": "Stahl vergütet",
+      "is_tempered": true,
       "diameter_mm": 10,
       "length_mm": 30,
-      "surface_treatment": "verzinkt",
+      "surface_treatment": "Geomet 500A",
       "tolerances": "ISO 4017",
       "weight_g": 15.3
     },
     {
       "position": "2",
-      "description": "DIN934 M10 verzinkt",
+      "description": "Scheibe DIN125",
       "quantity": 4,
-      "material": "stahl",
-      "diameter_mm": 10,
-      "thread": "M10"
+      "material": "Stahl",
+      "is_tempered": false,
+      "diameter_mm": 10.5,
+      "surface_treatment": "galv. verzinkt"
     }
   ],
   "total_items": 2,
-  "notes": ["Alle Teile nach DIN-Norm", "Oberflächenbehandlung: verzinkt"],
+  "notes": ["Alle Teile nach DIN-Norm", "Oberfläche: Geomet 500A"],
   "confidence": "high|medium|low"
 }
 
