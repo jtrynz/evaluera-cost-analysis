@@ -683,9 +683,13 @@ Suche nach:
 5. **Verzahnung / Rippen (Sperrfunktion)**
    - Suche nach "Verzahnung", "Sperrverzahnung", "Rippen", "Sperrrippen", "Rippen unter Kopf", "Flansch mit Verzahnung".
    - Das ist ein wichtiges Merkmal für die Kosten!
-6. **Toleranzen** (ISO, DIN)
-7. **Stückzahlen** (falls Stückliste vorhanden)
-8. **Zeichnungsnummer**, **Revision**, **Datum**
+6. **Extras / Besonderheiten**
+   - Fasse hier ALLE speziellen Merkmale zusammen, die den Preis beeinflussen (außer Standard-Maßen).
+   - Dazu gehören: Spezielle Oberflächen, Verzahnungen, Sicherungen (Tuflok, Kleber), 100% Prüfung, besondere Toleranzen.
+   - Gib dies als Liste von kurzen Strings zurück.
+7. **Toleranzen** (ISO, DIN)
+8. **Stückzahlen** (falls Stückliste vorhanden)
+9. **Zeichnungsnummer**, **Revision**, **Datum**
 
 Antworte NUR als kompaktes JSON:
 {
@@ -703,6 +707,7 @@ Antworte NUR als kompaktes JSON:
       "surface_treatment": "Geomet 500A",
       "has_serration": true,
       "serration_type": "Sperrverzahnung unter Kopf",
+      "extras": ["Vergütet 10.9", "Geomet 500A", "Sperrverzahnung"],
       "tolerances": "ISO 4017",
       "weight_g": 15.3
     },
@@ -714,7 +719,8 @@ Antworte NUR als kompaktes JSON:
       "is_tempered": false,
       "diameter_mm": 10.5,
       "surface_treatment": "galv. verzinkt",
-      "has_serration": false
+      "has_serration": false,
+      "extras": ["galv. verzinkt"]
     }
   ],
   "total_items": 2,
