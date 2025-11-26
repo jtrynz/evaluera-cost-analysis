@@ -117,7 +117,11 @@ def render_drawing_analysis_page():
                         st.write("") # Spacer
                         st.write("") # Spacer
                         if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
+                            st.session_state.show_cost_loading = True
+                            st.rerun()
+
+                if st.session_state.get("show_cost_loading", False):
+                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
                                         try:
                                             if is_total_package:
                                                 total_mat = 0.0
@@ -143,7 +147,8 @@ def render_drawing_analysis_page():
                                                     # Call Cost Estimation
                                                     res = cached_gpt_complete_cost_estimate(
                                                         description=full_desc,
-                                                        lot_size=item_lot_size
+                                                        lot_size=item_lot_size,
+                                                        technical_drawing_context_json=json.dumps(result)
                                                     )
                                                     
                                                     if res and not res.get("_error"):
@@ -179,7 +184,8 @@ def render_drawing_analysis_page():
                                                 # Call Cost Estimation
                                                 cost_res = cached_gpt_complete_cost_estimate(
                                                     description=full_desc,
-                                                    lot_size=lot_size
+                                                    lot_size=lot_size,
+                                                    technical_drawing_context_json=json.dumps(result)
                                                 )
                                             
                                             if cost_res and not cost_res.get("_error"):
@@ -191,6 +197,8 @@ def render_drawing_analysis_page():
                                                 
                                         except Exception as e:
                                             st.error(f"❌ Fehler bei Kalkulation: {e}")
+                                        finally:
+                                            st.session_state.show_cost_loading = False
 
         else:
             st.info("Keine Bauteile in der Zeichnung erkannt.")

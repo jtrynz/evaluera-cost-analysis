@@ -35,7 +35,8 @@ except ImportError:
 def gpt_complete_cost_estimate(
     description: str,
     lot_size: int = 1000,
-    supplier_competencies: Optional[Dict[str, Any]] = None
+    supplier_competencies: Optional[Dict[str, Any]] = None,
+    technical_drawing_context: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     ALL-IN-ONE Kostenschätzung mit einem GPT-Call.
@@ -111,6 +112,12 @@ def gpt_complete_cost_estimate(
             processes = [c.get('process') for c in comps[:3]]
             supplier_context = f"\n**LIEFERANTEN-EXPERTISE:** {', '.join(sanitize_input(p or '') for p in processes)}"
 
+    # Technische Zeichnung Kontext (falls vorhanden)
+    drawing_context_str = ""
+    if technical_drawing_context:
+        # Extrahiere relevante Infos (Oberfläche, Toleranzen, etc.)
+        drawing_context_str = f"\n**TECHNISCHE ZEICHNUNG INFOS:** {json.dumps(technical_drawing_context, ensure_ascii=False)}"
+
     # KOMBINIERTER PROMPT - Material + Prozess + Kosten (EXTREM GÜNSTIG - WORST CASE)
     prompt = f"""Du bist ein SENIOR COST ENGINEER mit 25+ Jahren Erfahrung in globaler Low-Cost-Beschaffung.
 
@@ -143,7 +150,7 @@ Berechne mit folgenden EXTREM günstigen Parametern:
 **AUFGABE:** Analysiere den Artikel und berechne KOMPLETTE Kosten (Material + Fertigung) in EINEM Durchgang!
 
 **ARTIKEL:** {description}
-**LOSGRÖSSE:** {lot_size:,} Stück ({scale_hint}){supplier_context}
+**LOSGRÖSSE:** {lot_size:,} Stück ({scale_hint}){supplier_context}{drawing_context_str}
 
 **WAS DU BERECHNEN MUSST:**
 

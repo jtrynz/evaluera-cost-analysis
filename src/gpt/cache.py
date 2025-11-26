@@ -46,7 +46,8 @@ def cached_gpt_estimate_material(description: str) -> Dict[str, Any]:
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
-                                      supplier_competencies_json: Optional[str] = None) -> Dict[str, Any]:
+                                      supplier_competencies_json: Optional[str] = None,
+                                      technical_drawing_context_json: Optional[str] = None) -> Dict[str, Any]:
     """
     ALL-IN-ONE Kostenschätzung mit Caching.
     Kombiniert Material + Fertigungskosten in EINEM GPT-Call!
@@ -58,6 +59,7 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
         description: Artikel-Bezeichnung
         lot_size: Losgröße
         supplier_competencies_json: JSON-String (für Hashability)
+        technical_drawing_context_json: JSON-String (für Hashability)
 
     Returns:
         Komplette Kostenschätzung (Material + Fertigung)
@@ -70,11 +72,18 @@ def cached_gpt_complete_cost_estimate(description: str, lot_size: int,
         clean = sanitize_input(supplier_competencies_json)
         supplier_competencies = json.loads(clean)
 
+    # Deserialize technical_drawing_context
+    technical_drawing_context = None
+    if technical_drawing_context_json:
+        clean_drawing = sanitize_input(technical_drawing_context_json)
+        technical_drawing_context = json.loads(clean_drawing)
+
     desc_clean = sanitize_input(description or "")
     payload_competencies = sanitize_payload_recursive(supplier_competencies) if supplier_competencies else None
+    payload_drawing = sanitize_payload_recursive(technical_drawing_context) if technical_drawing_context else None
 
     try:
-        return gpt_complete_cost_estimate(desc_clean, lot_size, payload_competencies)
+        return gpt_complete_cost_estimate(desc_clean, lot_size, payload_competencies, payload_drawing)
     except Exception as e:
         import traceback
         # Rückgabe eines Debug-Dicts statt harter Exception, damit UI weiterläuft
