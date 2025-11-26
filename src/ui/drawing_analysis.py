@@ -13,6 +13,11 @@ from src.gpt.cache import cached_gpt_complete_cost_estimate
 from src.ui.wizard import create_compact_kpi_row
 import json
 
+def clear_cost_result():
+    """Clears the cost estimation result to show the button again"""
+    if "drawing_cost_result" in st.session_state:
+        del st.session_state.drawing_cost_result
+
 def render_drawing_analysis_page():
     """Renders the Technical Drawing Analysis page"""
     section_header(
@@ -87,7 +92,12 @@ def render_drawing_analysis_page():
                  item_options = [f"Pos {i.get('position', idx+1)}" for idx, i in enumerate(items)]
 
             if item_options:
-                selected_item_str = st.selectbox("Bauteil für Kalkulation wählen", options=item_options)
+                selected_item_str = st.selectbox(
+                    "Bauteil für Kalkulation wählen", 
+                    options=item_options,
+                    on_change=clear_cost_result,
+                    key="drawing_item_select"
+                )
                 
                 # Find selected item data
                 selected_item = None
@@ -103,37 +113,48 @@ def render_drawing_analysis_page():
                 if selected_item:
                     col_lot, col_btn = st.columns([1, 2])
                     with col_lot:
-                        lot_size = st.number_input("Losgröße", min_value=1, value=1000, step=100)
+                        lot_size = st.number_input(
+                            "Losgröße", 
+                            min_value=1, 
+                            value=1000, 
+                            step=100,
+                            on_change=clear_cost_result,
+                            key="drawing_lot_size"
+                        )
                     
                     with col_btn:
                         st.write("") # Spacer
                         st.write("") # Spacer
-                        if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                            # Center animation using columns
-                            col_anim_1, col_anim_2, col_anim_3 = st.columns([1, 2, 1])
-                            with col_anim_2:
-                                with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
-                                    try:
-                                        # Prepare description from analysis
-                                        desc = selected_item.get('description', '')
-                                        mat = selected_item.get('material', '')
-                                        dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
-                                        full_desc = f"{desc} {mat} {dims}".strip()
-                                        
-                                        # Call Cost Estimation
-                                        cost_res = cached_gpt_complete_cost_estimate(
-                                            description=full_desc,
-                                            lot_size=lot_size
-                                        )
-                                        
-                                        if cost_res and not cost_res.get("_error"):
-                                            st.session_state.drawing_cost_result = cost_res
-                                            st.success("✅ Kalkulation abgeschlossen!")
-                                        else:
-                                            st.error("❌ Kalkulation fehlgeschlagen.")
+                        
+                        # Only show button if no result yet
+                        if "drawing_cost_result" not in st.session_state:
+                            if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
+                                # Center animation using columns (Wider ratio)
+                                col_anim_1, col_anim_2, col_anim_3 = st.columns([1, 4, 1])
+                                with col_anim_2:
+                                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
+                                        try:
+                                            # Prepare description from analysis
+                                            desc = selected_item.get('description', '')
+                                            mat = selected_item.get('material', '')
+                                            dims = f"{selected_item.get('diameter_mm', '')}x{selected_item.get('length_mm', '')}"
+                                            full_desc = f"{desc} {mat} {dims}".strip()
                                             
-                                    except Exception as e:
-                                        st.error(f"❌ Fehler bei Kalkulation: {e}")
+                                            # Call Cost Estimation
+                                            cost_res = cached_gpt_complete_cost_estimate(
+                                                description=full_desc,
+                                                lot_size=lot_size
+                                            )
+                                            
+                                            if cost_res and not cost_res.get("_error"):
+                                                st.session_state.drawing_cost_result = cost_res
+                                                st.success("✅ Kalkulation abgeschlossen!")
+                                                st.rerun()
+                                            else:
+                                                st.error("❌ Kalkulation fehlgeschlagen.")
+                                                
+                                        except Exception as e:
+                                            st.error(f"❌ Fehler bei Kalkulation: {e}")
 
         else:
             st.info("Keine Bauteile in der Zeichnung erkannt.")
