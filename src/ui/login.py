@@ -83,9 +83,6 @@ def render_login_screen():
     if "login_error" not in st.session_state:
         st.session_state.login_error = False
 
-    # Inject Lottie Background
-    inject_lottie_background()
-
     # Get logo
     logo_base64 = get_logo_base64()
 
@@ -323,9 +320,11 @@ def render_login_screen():
             }}
 
             /* Remove any visible iframe dot from Lottie component */
-            iframe[title="st.components.v1.html"] {{
+            /* Force ALL iframes (Lottie) to be fullscreen background */
+            iframe {
                 position: fixed !important;
-                inset: 0 !important;
+                top: 0 !important;
+                left: 0 !important;
                 width: 100vw !important;
                 height: 100vh !important;
                 border: 0 !important;
@@ -391,6 +390,13 @@ def render_login_screen():
             """,
             unsafe_allow_html=True,
         )
+
+            """,
+            unsafe_allow_html=True,
+        )
+
+    # Inject Lottie Background (after styles are defined)
+    inject_lottie_background()
 
     # Error Message
     if st.session_state.login_error:
