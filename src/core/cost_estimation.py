@@ -177,6 +177,7 @@ Berechne mit folgenden EXTREM günstigen Parametern:
 **WICHTIGE REGELN:**
 
 **Material-Erkennung:**
+- **WENN TECHNISCHE ZEICHNUNG VORHANDEN:** Verwende das EXAKTE Material aus der Zeichnung (z.B. "FeZnNi", "CuZn39Pb3", etc.) - KEINE Vereinfachung!
 - DIN/ISO-Normen beachten
 - (Klammern) = Beschichtung, NICHT Material!
 - A2/A4 ohne Klammern = Edelstahl
