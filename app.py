@@ -437,8 +437,8 @@ def step2_article_search():
                 num_suppliers = idf[supplier_col].nunique() if supplier_col else 1
                 create_compact_kpi_row([
                     {"label": "Einträge", "value": str(len(idf)), "icon": "📦"},
-                    {"label": "Artikel-Varianten", "value": str(idf[item_col].nunique()), "icon": get_icon_path("search") or "🔍"},
-                    {"label": "Lieferanten", "value": str(num_suppliers), "icon": get_icon_path("factory") or "🏭"},
+                    {"label": "Artikel-Varianten", "value": str(idf[item_col].nunique()), "icon": "🔍"},
+                    {"label": "Lieferanten", "value": str(num_suppliers), "icon": "🏭"},
                 ])
 
                 # Auswahl nur per Nutzerklick (kein Default)
@@ -496,7 +496,7 @@ def step3_price_overview():
         price_range = ((mx - mn) / mn * 100) if (mn and mx and mn > 0) else None
 
         create_compact_kpi_row([
-            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": get_icon_path("money") or "💰"},
+            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": "💰"},
             {"label": "Min", "value": f"{mn:,.4f} €" if mn else "N/A", "icon": "📉"},
             {"label": "Max", "value": f"{mx:,.4f} €" if mx else "N/A", "icon": "📈"},
             {"label": "Range", "value": f"{price_range:,.1f}%" if price_range else "N/A", "icon": "📊"},

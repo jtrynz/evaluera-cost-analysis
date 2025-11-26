@@ -6,9 +6,7 @@ and Apple Human Interface Guidelines compliance
 """
 
 import streamlit as st
-import streamlit.components.v1 as components
 import os
-import json
 import base64
 from src.ui.theme import COLORS, RADIUS, SHADOWS
 
@@ -100,7 +98,7 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: #0f172a !important; /* Dark fallback */
+                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
             }}
 
             header[data-testid="stHeader"],
@@ -320,11 +318,9 @@ def render_login_screen():
             }}
 
             /* Remove any visible iframe dot from Lottie component */
-            /* Force ALL iframes (Lottie) to be fullscreen background */
-            iframe {
+            iframe[title="st.components.v1.html"] {{
                 position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
+                inset: 0 !important;
                 width: 100vw !important;
                 height: 100vh !important;
                 border: 0 !important;
@@ -333,7 +329,6 @@ def render_login_screen():
                 opacity: 1 !important;
                 pointer-events: none !important;
                 background: transparent !important;
-                z-index: 0 !important;
             }}
 
             .forgot-link {{
@@ -390,13 +385,6 @@ def render_login_screen():
             """,
             unsafe_allow_html=True,
         )
-
-            """,
-            unsafe_allow_html=True,
-        )
-
-    # Inject Lottie Background (after styles are defined)
-    inject_lottie_background()
 
     # Error Message
     if st.session_state.login_error:
@@ -517,57 +505,8 @@ def render_logout_button():
 
 def inject_lottie_background():
     """
-    Renders the dark_gradient.json Lottie animation as a fullscreen background.
-    Uses the pre-defined CSS in render_login_screen to position the iframe.
+    Previously rendered animated Lottie background.
+    Disabled to keep the mint gradient clean (liquid glass header removed).
     """
-    try:
-        lottie_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'dark_gradient.json')
-        
-        with open(lottie_path, "r") as f:
-            lottie_json = json.load(f)
-            
-        components.html(
-            f"""
-            <!DOCTYPE html>
-            <html>
-                <head>
-                    <style>
-                        body, html {{
-                            margin: 0;
-                            padding: 0;
-                            width: 100vw;
-                            height: 100vh;
-                            overflow: hidden;
-                            background-color: #0f172a; /* Match app background */
-                        }}
-                        lottie-player {{
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100vw;
-                            height: 100vh;
-                            display: block;
-                        }}
-                    </style>
-                    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-                </head>
-                <body>
-                    <lottie-player
-                        src='{json.dumps(lottie_json)}'
-                        background="transparent"
-                        speed="1"
-                        loop
-                        autoplay
-                        preserveAspectRatio="xMidYMid slice"
-                    ></lottie-player>
-                </body>
-            </html>
-            """,
-            height=800, # Increased height to ensure initial render space
-            scrolling=False
-        )
-    except Exception as e:
-        # Fail silently if file not found or error, to not break login
-        print(f"Lottie background error: {e}")
-        pass
+    return
 
