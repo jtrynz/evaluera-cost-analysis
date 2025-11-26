@@ -7,7 +7,7 @@ Standalone-Modul für die Analyse von technischen Zeichnungen (PDF/Bild)
 import streamlit as st
 import pandas as pd
 from src.ui.theme import section_header, card, COLORS
-from src.ui.cards import GPTLoadingAnimation
+from src.ui.cards import ExcelLoadingAnimation
 from src.core.cbam import gpt_analyze_technical_drawing, gpt_analyze_pdf_drawing, gpt_estimate_material
 from src.gpt.cache import cached_gpt_complete_cost_estimate
 from src.ui.wizard import create_compact_kpi_row
@@ -37,7 +37,7 @@ def render_drawing_analysis_page():
         
         # Button to start analysis
         if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
-            with GPTLoadingAnimation("🤖 Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
+            with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
                 try:
                     file_bytes = uploaded_file.getvalue()
                     
@@ -107,7 +107,7 @@ def render_drawing_analysis_page():
                         st.write("") # Spacer
                         st.write("") # Spacer
                         if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                            with GPTLoadingAnimation("💰 Kalkuliere Kosten...", icon="🧮"):
+                            with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
                                 try:
                                     # Prepare description from analysis
                                     desc = selected_item.get('description', '')
