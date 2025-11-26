@@ -4,10 +4,7 @@
 Apple-ähnliche Navigation mit Accordion-Struktur
 """
 
-import streamlit as st
 from src.ui.theme import COLORS, SPACING, RADIUS, SHADOWS
-from src.ui.cards import get_icon_path, load_image_as_base64
-import os
 
 
 class NavigationSidebar:
@@ -17,37 +14,31 @@ class NavigationSidebar:
         "upload": {
             "title": "Upload",
             "icon": "📤",
-            "icon_name": "upload",
             "subsections": []
         },
         "artikel": {
             "title": "Artikel-Erkennung",
             "icon": "🔍",
-            "icon_name": "search",
             "subsections": []
         },
         "preis": {
             "title": "Preisübersicht",
             "icon": "💰",
-            "icon_name": "money",
             "subsections": []
         },
         "lieferanten": {
             "title": "Lieferantenanalyse",
             "icon": "🏭",
-            "icon_name": "factory",
             "subsections": []
         },
         "kosten": {
             "title": "Kosten-Schätzung",
             "icon": "🚀",
-            "icon_name": "rocket",
             "subsections": []
         },
         "nachhaltigkeit": {
             "title": "Nachhaltigkeit & Verhandlung",
             "icon": "♻️",
-            "icon_name": "recycle",
             "subsections": []
         }
     }
@@ -198,38 +189,16 @@ class NavigationSidebar:
         # Main item
         active_class = "active" if is_active else ""
 
-        # Use columns to display icon and button
-        col_icon, col_text = st.columns([0.2, 0.8])
-        
-        with col_icon:
-            icon_path = get_icon_path(section.get("icon_name", ""))
-            if icon_path:
-                # Use custom icon
-                b64_img = load_image_as_base64(icon_path)
-                if b64_img:
-                    st.markdown(
-                        f'<div style="display: flex; align-items: center; justify-content: center; height: 42px;">'
-                        f'<img src="data:image/png;base64,{b64_img}" style="width: 28px; height: 28px; object-fit: contain;">'
-                        f'</div>',
-                        unsafe_allow_html=True
-                    )
-                else:
-                    st.markdown(f'<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">{section["icon"]}</div>', unsafe_allow_html=True)
-            else:
-                # Fallback to emoji
-                st.markdown(f'<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">{section["icon"]}</div>', unsafe_allow_html=True)
-
-        with col_text:
-            if st.button(
-                f"{section['title']}",
-                key=f"nav_{section_id}",
-                use_container_width=True,
-                type="primary" if is_active else "secondary"
-            ):
-                self.set_active_section(section_id)
-                if has_subsections:
-                    self.toggle_section(section_id)
-                st.rerun()
+        if st.button(
+            f"{section['icon']}  {section['title']}",
+            key=f"nav_{section_id}",
+            use_container_width=True,
+            type="primary" if is_active else "secondary"
+        ):
+            self.set_active_section(section_id)
+            if has_subsections:
+                self.toggle_section(section_id)
+            st.rerun()
 
         # Render subsections if expanded
         if has_subsections and is_expanded:

@@ -167,7 +167,7 @@ from src.ui.wizard import (
     create_data_table,
     create_compact_kpi_row,
 )
-from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation, get_icon_path, load_image_as_base64
+from src.ui.cards import GPTLoadingAnimation, ExcelLoadingAnimation
 from src.ui.navigation import NavigationSidebar, create_section_anchor, create_scroll_behavior
 from src.ui.login import check_login, render_login_screen, render_logout_button, inject_lottie_background, get_logo_base64
 from src.ui.liquid_glass import apply_liquid_glass_styles, liquid_header, glass_card
@@ -312,33 +312,14 @@ with st.sidebar:
     
     # Technical Drawing Button (Standalone)
     is_drawing_active = st.session_state.nav_active_section == "drawing_analysis"
-    
-    col_draw_icon, col_draw_text = st.columns([0.2, 0.8])
-    with col_draw_icon:
-        icon_path = get_icon_path("eye")
-        if icon_path:
-            b64_img = load_image_as_base64(icon_path)
-            if b64_img:
-                st.markdown(
-                    f'<div style="display: flex; align-items: center; justify-content: center; height: 42px;">'
-                    f'<img src="data:image/png;base64,{b64_img}" style="width: 28px; height: 28px; object-fit: contain;">'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-            else:
-                st.markdown('<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">📐</div>', unsafe_allow_html=True)
-        else:
-            st.markdown('<div style="font-size: 1.5rem; text-align: center; line-height: 42px;">📐</div>', unsafe_allow_html=True)
-
-    with col_draw_text:
-        if st.button(
-            "Technische Zeichnung",
-            key="nav_drawing_analysis",
-            use_container_width=True,
-            type="primary" if is_drawing_active else "secondary"
-        ):
-            st.session_state.nav_active_section = "drawing_analysis"
-            st.rerun()
+    if st.button(
+        "📐  Technische Zeichnung",
+        key="nav_drawing_analysis",
+        use_container_width=True,
+        type="primary" if is_drawing_active else "secondary"
+    ):
+        st.session_state.nav_active_section = "drawing_analysis"
+        st.rerun()
         
     st.write("") # Spacer
 

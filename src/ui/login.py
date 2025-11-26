@@ -6,7 +6,9 @@ and Apple Human Interface Guidelines compliance
 """
 
 import streamlit as st
+import streamlit.components.v1 as components
 import os
+import json
 import base64
 from src.ui.theme import COLORS, RADIUS, SHADOWS
 
@@ -80,6 +82,9 @@ def render_login_screen():
     # Initialize session state
     if "login_error" not in st.session_state:
         st.session_state.login_error = False
+
+    # Inject Lottie Background
+    inject_lottie_background()
 
     # Get logo
     logo_base64 = get_logo_base64()
@@ -505,8 +510,31 @@ def render_logout_button():
 
 def inject_lottie_background():
     """
-    Previously rendered animated Lottie background.
-    Disabled to keep the mint gradient clean (liquid glass header removed).
+    Renders the dark_gradient.json Lottie animation as a fullscreen background.
+    Uses the pre-defined CSS in render_login_screen to position the iframe.
     """
-    return
+    try:
+        lottie_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'dark_gradient.json')
+        
+        with open(lottie_path, "r") as f:
+            lottie_json = json.load(f)
+            
+        components.html(
+            f"""
+            <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+            <lottie-player
+                src='{json.dumps(lottie_json)}'
+                background="transparent"
+                speed="1"
+                style="width: 100vw; height: 100vh; overflow: hidden;"
+                loop
+                autoplay
+            ></lottie-player>
+            """,
+            height=100, # Height doesn't matter due to fixed CSS, but needs to be non-zero to render
+        )
+    except Exception as e:
+        # Fail silently if file not found or error, to not break login
+        print(f"Lottie background error: {e}")
+        pass
 
