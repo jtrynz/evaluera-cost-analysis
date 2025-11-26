@@ -222,8 +222,9 @@ def render_drawing_analysis_page():
             }
         ])
         
-        with st.expander("📋 Details zur Kalkulation"):
-            if is_package and "details" in res:
-                st.dataframe(pd.DataFrame(res["details"]), use_container_width=True)
-            else:
-                st.json(res)
+        if is_package and "details" in res:
+            st.markdown("##### 🧾 Einzelkosten-Aufstellung")
+            st.dataframe(pd.DataFrame(res["details"]), use_container_width=True)
+        
+        with st.expander("📋 JSON-Details"):
+            st.json(res)
