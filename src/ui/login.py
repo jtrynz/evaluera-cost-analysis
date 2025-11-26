@@ -161,22 +161,22 @@ def render_login_screen():
 
             /* Force the block container to be centered and remove Streamlit's default top padding */
             .block-container {{
-                padding: 48px 40px !important;
+                padding: 40px 32px !important; /* Reduced padding for compactness */
                 width: 100%;
-                max-width: 460px;
-                margin: auto !important; /* Key for centering in some Streamlit layouts */
+                max-width: 440px; /* Slightly narrower */
+                margin: auto !important;
                 flex: 0 0 auto !important;
                 
-                /* PREMIUM GLASSMORPHISM */
-                background: rgba(255, 255, 255, 0.65);
+                /* PREMIUM GLASSMORPHISM - MORE TRANSPARENT */
+                background: rgba(255, 255, 255, 0.45);
                 backdrop-filter: blur(24px) saturate(180%);
                 -webkit-backdrop-filter: blur(24px) saturate(180%);
-                border: 1px solid rgba(255, 255, 255, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.4);
                 
-                border-radius: 28px;
+                border-radius: 24px; /* Slightly smaller radius */
                 box-shadow:
                     0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+                    0 0 0 1px rgba(255, 255, 255, 0.2) inset;
                 
                 position: relative;
                 overflow: hidden;
@@ -190,14 +190,14 @@ def render_login_screen():
 
             .login-header {{
                 text-align: center;
-                margin-bottom: 32px;
+                margin-bottom: 24px; /* Reduced margin */
             }}
 
             .login-logo {{
-                width: 190px;
+                width: 260px; /* Increased from 190px */
                 height: auto;
                 filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-                margin-bottom: 12px;
+                margin-bottom: 16px;
             }}
 
             .login-title {{
@@ -209,14 +209,14 @@ def render_login_screen():
             }}
 
             .login-tagline {{
-                color: rgba(30, 46, 50, 0.75);
+                color: rgba(30, 46, 50, 0.85);
                 font-size: 14px;
-                font-weight: 500;
+                font-weight: 600;
             }}
 
             .stTextInput > label {{
-                color: #2A4F57 !important;
-                font-weight: 600 !important;
+                color: #1E2E32 !important;
+                font-weight: 700 !important;
                 font-size: 13px !important;
                 letter-spacing: 0.03em !important;
                 margin-bottom: 6px !important;
@@ -224,8 +224,8 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input {{
-                background: rgba(255, 255, 255, 0.5) !important;
-                border: 1px solid rgba(42, 79, 87, 0.2) !important;
+                background: rgba(255, 255, 255, 0.4) !important;
+                border: 1px solid rgba(42, 79, 87, 0.3) !important;
                 border-radius: 12px !important;
                 color: #1E2E32 !important;
                 padding: 12px 16px !important;
@@ -235,7 +235,7 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input::placeholder {{
-                color: rgba(30, 46, 50, 0.45) !important;
+                color: rgba(30, 46, 50, 0.55) !important;
             }}
 
             .stTextInput > div > div > input:focus {{
@@ -245,25 +245,26 @@ def render_login_screen():
                 transform: translateY(-1px);
             }}
 
-            /* Button Styling */
+            /* Button Styling - EVALUERA MINT THEME */
             .stButton > button {{
                 width: 100% !important;
-                background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
-                color: #FFFFFF !important;
-                border: none !important;
+                background: linear-gradient(135deg, #B8D4D1 0%, #9cbdb9 100%) !important;
+                color: #1E2E32 !important;
+                border: 1px solid rgba(255,255,255,0.4) !important;
                 border-radius: 12px !important;
                 padding: 14px !important;
                 font-size: 16px !important;
-                font-weight: 600 !important;
+                font-weight: 700 !important;
                 letter-spacing: 0.01em !important;
-                box-shadow: 0 4px 12px rgba(42, 79, 87, 0.2) !important;
+                box-shadow: 0 4px 12px rgba(184, 212, 209, 0.4) !important;
                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 margin-top: 12px !important;
             }}
 
             .stButton > button:hover {{
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 20px rgba(42, 79, 87, 0.3) !important;
+                box-shadow: 0 8px 20px rgba(184, 212, 209, 0.6) !important;
+                background: linear-gradient(135deg, #C5E0DD 0%, #A9C9C6 100%) !important;
             }}
 
             .stButton > button:active {{
