@@ -7,7 +7,7 @@ Standalone-Modul für die Analyse von technischen Zeichnungen (PDF/Bild)
 import streamlit as st
 import pandas as pd
 from src.ui.theme import section_header, card, COLORS
-from src.ui.cards import ExcelLoadingAnimation
+from src.ui.cards import ExcelLoadingAnimation, get_icon_path, show_gpt_success, show_gpt_error
 from src.core.cbam import gpt_analyze_technical_drawing, gpt_analyze_pdf_drawing, gpt_estimate_material
 from src.gpt.cache import cached_gpt_complete_cost_estimate
 from src.ui.wizard import create_compact_kpi_row
@@ -37,7 +37,7 @@ def render_drawing_analysis_page():
         
         # Button to start analysis
         if st.button("🔍 Zeichnung analysieren", type="primary", use_container_width=True):
-            with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon="👁️"):
+            with ExcelLoadingAnimation("Analysiere Zeichnung mit GPT Vision...", icon=get_icon_path("eye") or "👁️"):
                 try:
                     file_bytes = uploaded_file.getvalue()
                     
@@ -48,12 +48,12 @@ def render_drawing_analysis_page():
                     
                     if result.get("ok", False) or result.get("items"): # Check for success (API might return items directly or wrapped)
                          st.session_state.drawing_analysis_result = result
-                         st.success("✅ Analyse erfolgreich!")
+                         show_gpt_success("Analyse erfolgreich!", icon=get_icon_path("check") or "✅")
                     else:
-                        st.error(f"❌ Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}")
+                        show_gpt_error(f"Analyse fehlgeschlagen: {result.get('error', 'Unbekannter Fehler')}", icon=get_icon_path("error") or "❌")
                 
                 except Exception as e:
-                    st.error(f"❌ Ein Fehler ist aufgetreten: {str(e)}")
+                    show_gpt_error(f"Ein Fehler ist aufgetreten: {str(e)}", icon=get_icon_path("error") or "❌")
 
     # 3. Results Display
     if "drawing_analysis_result" in st.session_state:
@@ -117,7 +117,7 @@ def render_drawing_analysis_page():
                         st.write("") # Spacer
                         st.write("") # Spacer
                         if st.button("🚀 Kosten für dieses Bauteil schätzen", type="primary", use_container_width=True):
-                                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon="🧮"):
+                                    with ExcelLoadingAnimation("Kalkuliere Kosten...", icon=get_icon_path("rocket") or "🧮"):
                                         try:
                                             if is_total_package:
                                                 total_mat = 0.0
@@ -184,13 +184,13 @@ def render_drawing_analysis_page():
                                             
                                             if cost_res and not cost_res.get("_error"):
                                                 st.session_state.drawing_cost_result = cost_res
-                                                st.success("✅ Kalkulation abgeschlossen!")
+                                                show_gpt_success("Kalkulation abgeschlossen!", icon=get_icon_path("check") or "✅")
                                                 st.rerun()
                                             else:
-                                                st.error("❌ Kalkulation fehlgeschlagen.")
+                                                show_gpt_error("Kalkulation fehlgeschlagen.", icon=get_icon_path("error") or "❌")
                                                 
                                         except Exception as e:
-                                            st.error(f"❌ Fehler bei Kalkulation: {e}")
+                                            show_gpt_error(f"Fehler bei Kalkulation: {e}", icon=get_icon_path("error") or "❌")
 
         else:
             st.info("Keine Bauteile in der Zeichnung erkannt.")

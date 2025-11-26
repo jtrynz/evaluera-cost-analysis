@@ -21,6 +21,14 @@ def get_icon_path(icon_name):
         return icon_path
     return None
 
+def load_image_as_base64(image_path):
+    """Loads an image and returns a base64 string for HTML embedding"""
+    import base64
+    if not image_path or not os.path.exists(image_path):
+        return None
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
+
 
 def render_evaluera_logo(align="center", width=230):
     """
@@ -277,6 +285,13 @@ def show_info_card(icon, title, description, color="#0071e3"):
         description: Beschreibung
         color: Akzentfarbe (Hex)
     """
+    # Icon handling
+    icon_html = f'<div style="font-size: 2rem; line-height: 1;">{icon}</div>'
+    if icon and (icon.endswith('.png') or icon.endswith('.jpg')) and os.path.exists(icon):
+        b64_img = load_image_as_base64(icon)
+        if b64_img:
+            icon_html = f'<img src="data:image/png;base64,{b64_img}" style="width: 40px; height: 40px; object-fit: contain;">'
+
     st.markdown(f"""
     <div class="fade-in" style="
         background: var(--apple-surface);
@@ -288,10 +303,7 @@ def show_info_card(icon, title, description, color="#0071e3"):
         margin: 1rem 0;
     ">
         <div style="display: flex; align-items: start; gap: 1rem;">
-            <div style="
-                font-size: 2rem;
-                line-height: 1;
-            ">{icon}</div>
+            {icon_html}
             <div style="flex: 1;">
                 <h4 style="
                     margin: 0 0 0.5rem 0;
@@ -584,9 +596,16 @@ class GPTLoadingAnimation:
     def __enter__(self):
         """Startet die Ladeanimation"""
         self.container = st.empty()
+        
+        # Icon handling (Emoji vs Image)
+        icon_html = f'<div style="font-size: 2.2rem; animation: pulse 2s ease-in-out infinite;">{self.icon}</div>'
+        if self.icon and (self.icon.endswith('.png') or self.icon.endswith('.jpg')) and os.path.exists(self.icon):
+            b64_img = load_image_as_base64(self.icon)
+            if b64_img:
+                icon_html = f'<img src="data:image/png;base64,{b64_img}" style="width: 50px; height: 50px; object-fit: contain; animation: pulse 2s ease-in-out infinite;">'
 
         # EVALUERA-gebrandete Ladeanimation mit Mint/Türkis Gradient
-        self.container.markdown(f"""<div style="background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%); border-radius: 20px; padding: 2.5rem; margin: 2rem 0; box-shadow: 0 20px 60px rgba(123, 165, 160, 0.3), 0 8px 16px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); position: relative; overflow: hidden;"><div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%); animation: moveGradient 3s ease-in-out infinite;"></div><div style="position: relative; z-index: 1;"><div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;"><div style="position: relative;"><div style="width: 60px; height: 60px; background: rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);"><div style="font-size: 2.2rem; animation: pulse 2s ease-in-out infinite;">{self.icon}</div></div><div style="position: absolute; top: -5px; left: -5px; width: 70px; height: 70px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 1.5s linear infinite;"></div></div><div style="flex: 1;"><div style="color: white; font-weight: 700; font-size: 1.3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); letter-spacing: 0.02em;">{self.message}</div><div style="color: rgba(255, 255, 255, 0.9); font-size: 0.95rem; font-weight: 500;">EVALUERA KI-Engine arbeitet...</div></div></div><div style="background: rgba(255, 255, 255, 0.15); border-radius: 100px; height: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);"><div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); animation: shimmer 1.8s ease-in-out infinite;"></div></div><div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;"><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out infinite;"></div><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out 0.2s infinite;"></div><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out 0.4s infinite;"></div></div></div></div><style>@keyframes spin {{from {{transform: rotate(0deg);}} to {{transform: rotate(360deg);}}}} @keyframes shimmer {{0% {{transform: translateX(-100%);}} 100% {{transform: translateX(300%);}}}} @keyframes pulse {{0%, 100% {{transform: scale(1);}} 50% {{transform: scale(1.1);}}}} @keyframes bounce {{0%, 100% {{transform: translateY(0);}} 50% {{transform: translateY(-8px);}}}} @keyframes moveGradient {{0%, 100% {{transform: translateX(0) translateY(0);}} 50% {{transform: translateX(20px) translateY(-20px);}}}}</style>""", unsafe_allow_html=True)
+        self.container.markdown(f"""<div style="background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 50%, #B8D4D1 100%); border-radius: 20px; padding: 2.5rem; margin: 2rem 0; box-shadow: 0 20px 60px rgba(123, 165, 160, 0.3), 0 8px 16px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); position: relative; overflow: hidden;"><div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 50%, rgba(184, 212, 209, 0.4) 0%, transparent 50%); animation: moveGradient 3s ease-in-out infinite;"></div><div style="position: relative; z-index: 1;"><div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;"><div style="position: relative;"><div style="width: 60px; height: 60px; background: rgba(255, 255, 255, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">{icon_html}</div><div style="position: absolute; top: -5px; left: -5px; width: 70px; height: 70px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 1.5s linear infinite;"></div></div><div style="flex: 1;"><div style="color: white; font-weight: 700; font-size: 1.3rem; margin-bottom: 0.5rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); letter-spacing: 0.02em;">{self.message}</div><div style="color: rgba(255, 255, 255, 0.9); font-size: 0.95rem; font-weight: 500;">EVALUERA KI-Engine arbeitet...</div></div></div><div style="background: rgba(255, 255, 255, 0.15); border-radius: 100px; height: 6px; overflow: hidden; position: relative; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);"><div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent); animation: shimmer 1.8s ease-in-out infinite;"></div></div><div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;"><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out infinite;"></div><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out 0.2s infinite;"></div><div style="width: 8px; height: 8px; background: white; border-radius: 50%; animation: bounce 1.4s ease-in-out 0.4s infinite;"></div></div></div></div><style>@keyframes spin {{from {{transform: rotate(0deg);}} to {{transform: rotate(360deg);}}}} @keyframes shimmer {{0% {{transform: translateX(-100%);}} 100% {{transform: translateX(300%);}}}} @keyframes pulse {{0%, 100% {{transform: scale(1);}} 50% {{transform: scale(1.1);}}}} @keyframes bounce {{0%, 100% {{transform: translateY(0);}} 50% {{transform: translateY(-8px);}}}} @keyframes moveGradient {{0%, 100% {{transform: translateX(0) translateY(0);}} 50% {{transform: translateX(20px) translateY(-20px);}}}}</style>""", unsafe_allow_html=True)
 
         return self
 
@@ -615,8 +634,15 @@ class ExcelLoadingAnimation:
         """Startet die Ladeanimation"""
         self.container = st.empty()
 
+        # Icon handling (Emoji vs Image)
+        icon_html = f'<div style="font-size: 2rem; animation: float 2s ease-in-out infinite;">{self.icon}</div>'
+        if self.icon and (self.icon.endswith('.png') or self.icon.endswith('.jpg')) and os.path.exists(self.icon):
+            b64_img = load_image_as_base64(self.icon)
+            if b64_img:
+                icon_html = f'<img src="data:image/png;base64,{b64_img}" style="width: 40px; height: 40px; object-fit: contain; animation: float 2s ease-in-out infinite;">'
+
         # EVALUERA Excel-Upload Animation
-        self.container.markdown(f"""<div style="background: linear-gradient(135deg, #B8D4D1 0%, #7BA5A0 100%); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; box-shadow: 0 12px 40px rgba(123, 165, 160, 0.25); border: 1px solid rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;"><div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%); animation: rotate 8s linear infinite;"></div><div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 1.5rem;"><div style="position: relative;"><div style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);"><div style="font-size: 2rem; animation: float 2s ease-in-out infinite;">{self.icon}</div></div></div><div style="flex: 1;"><div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 0.02em;">{self.message}</div><div style="display: flex; gap: 0.4rem; align-items: center;"><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out infinite;"></div><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out 0.2s infinite;"></div><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out 0.4s infinite;"></div><span style="margin-left: 0.5rem; color: rgba(26, 26, 26, 0.7); font-size: 0.9rem; font-weight: 500;">Verarbeite Daten</span></div></div></div></div><style>@keyframes rotate {{from {{transform: rotate(0deg);}} to {{transform: rotate(360deg);}}}} @keyframes float {{0%, 100% {{transform: translateY(0);}} 50% {{transform: translateY(-8px);}}}} @keyframes loadingDot {{0%, 100% {{opacity: 0.3; transform: scale(0.8);}} 50% {{opacity: 1; transform: scale(1.2);}}}}</style>""", unsafe_allow_html=True)
+        self.container.markdown(f"""<div style="background: linear-gradient(135deg, #B8D4D1 0%, #7BA5A0 100%); border-radius: 16px; padding: 2rem; margin: 1.5rem 0; box-shadow: 0 12px 40px rgba(123, 165, 160, 0.25); border: 1px solid rgba(255, 255, 255, 0.3); position: relative; overflow: hidden;"><div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%); animation: rotate 8s linear infinite;"></div><div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 1.5rem;"><div style="position: relative;"><div style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">{icon_html}</div></div><div style="flex: 1;"><div style="color: #1a1a1a; font-weight: 700; font-size: 1.2rem; margin-bottom: 0.5rem; letter-spacing: 0.02em;">{self.message}</div><div style="display: flex; gap: 0.4rem; align-items: center;"><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out infinite;"></div><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out 0.2s infinite;"></div><div style="width: 6px; height: 6px; background: #1a1a1a; border-radius: 50%; animation: loadingDot 1.4s ease-in-out 0.4s infinite;"></div><span style="margin-left: 0.5rem; color: rgba(26, 26, 26, 0.7); font-size: 0.9rem; font-weight: 500;">Verarbeite Daten</span></div></div></div></div><style>@keyframes rotate {{from {{transform: rotate(0deg);}} to {{transform: rotate(360deg);}}}} @keyframes float {{0%, 100% {{transform: translateY(0);}} 50% {{transform: translateY(-8px);}}}} @keyframes loadingDot {{0%, 100% {{opacity: 0.3; transform: scale(0.8);}} 50% {{opacity: 1; transform: scale(1.2);}}}}</style>""", unsafe_allow_html=True)
 
         return self
 
@@ -635,4 +661,29 @@ def show_gpt_success(message, icon="✅"):
         message: Erfolgsnachricht
         icon: Icon (Standard: ✅)
     """
-    st.markdown(f"""<div style="background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 100%); border-radius: 12px; padding: 1.25rem 1.75rem; margin: 1rem 0; box-shadow: 0 8px 24px rgba(123, 165, 160, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 1rem; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);"><div style="font-size: 1.8rem; animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);">{icon}</div><div style="color: white; font-weight: 600; font-size: 1.05rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">{message}</div></div><style>@keyframes slideIn {{from {{opacity: 0; transform: translateY(-10px);}} to {{opacity: 1; transform: translateY(0);}}}} @keyframes scaleIn {{from {{transform: scale(0);}} to {{transform: scale(1);}}}}</style>""", unsafe_allow_html=True)
+    # Icon handling
+    icon_html = f'<div style="font-size: 1.8rem; animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);">{icon}</div>'
+    if icon and (icon.endswith('.png') or icon.endswith('.jpg')) and os.path.exists(icon):
+        b64_img = load_image_as_base64(icon)
+        if b64_img:
+            icon_html = f'<img src="data:image/png;base64,{b64_img}" style="width: 32px; height: 32px; object-fit: contain; animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);">'
+
+    st.markdown(f"""<div style="background: linear-gradient(135deg, #7BA5A0 0%, #5A8680 100%); border-radius: 12px; padding: 1.25rem 1.75rem; margin: 1rem 0; box-shadow: 0 8px 24px rgba(123, 165, 160, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 1rem; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);">{icon_html}<div style="color: white; font-weight: 600; font-size: 1.05rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">{message}</div></div><style>@keyframes slideIn {{from {{opacity: 0; transform: translateY(-10px);}} to {{opacity: 1; transform: translateY(0);}}}} @keyframes scaleIn {{from {{transform: scale(0);}} to {{transform: scale(1);}}}}</style>""", unsafe_allow_html=True)
+
+
+def show_gpt_error(message, icon="❌"):
+    """
+    Zeigt eine EVALUERA-gebrandete Fehlermeldung.
+
+    Args:
+        message: Fehlernachricht
+        icon: Icon (Standard: ❌)
+    """
+    # Icon handling
+    icon_html = f'<div style="font-size: 1.8rem; animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);">{icon}</div>'
+    if icon and (icon.endswith('.png') or icon.endswith('.jpg')) and os.path.exists(icon):
+        b64_img = load_image_as_base64(icon)
+        if b64_img:
+            icon_html = f'<img src="data:image/png;base64,{b64_img}" style="width: 32px; height: 32px; object-fit: contain; animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);">'
+
+    st.markdown(f"""<div style="background: linear-gradient(135deg, #FF6B6B 0%, #EE5253 100%); border-radius: 12px; padding: 1.25rem 1.75rem; margin: 1rem 0; box-shadow: 0 8px 24px rgba(238, 82, 83, 0.3); border: 1px solid rgba(255, 255, 255, 0.2); display: flex; align-items: center; gap: 1rem; animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);">{icon_html}<div style="color: white; font-weight: 600; font-size: 1.05rem; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);">{message}</div></div>""", unsafe_allow_html=True)
