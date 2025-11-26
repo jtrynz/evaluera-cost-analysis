@@ -85,13 +85,32 @@ def render_login_screen():
     logo_base64 = get_logo_base64()
     
     # Load background image
-    bg_image_path = "/Users/johntrynz/.gemini/antigravity/brain/4560d86f-7bb5-460a-ad84-8d4df721496b/login_background_mesh_1764200205503.png"
     bg_base64 = ""
     try:
-        with open(bg_image_path, "rb") as f:
+        # Construct absolute path to assets/login_bg.png
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg.png')
+        with open(bg_path, "rb") as f:
             bg_base64 = base64.b64encode(f.read()).decode()
-    except Exception:
+    except Exception as e:
+        # Fallback if image missing
+        print(f"Error loading background: {e}")
         pass
+
+    # CSS for background
+    if bg_base64:
+        background_css = f"""
+            background-image: url("data:image/png;base64,{bg_base64}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        """
+    else:
+        # Fallback gradient
+        background_css = """
+            background: linear-gradient(-45deg, #2A4F57, #1E2E32, #2A4F57, #477a78);
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease infinite;
+        """
 
     st.markdown(
         f"""
@@ -102,16 +121,13 @@ def render_login_screen():
                 --eval-primary: {COLORS['primary']};
                 --eval-secondary: {COLORS['secondary']};
                 --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(255, 255, 255, 0.15); /* Ultra-modern glass */
+                --eval-glass: rgba(255, 255, 255, 0.15);
                 --eval-soft: #E7F1EF;
             }}
 
             /* DYNAMIC BACKGROUND */
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background-image: url("data:image/png;base64,{bg_base64}");
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
+                {background_css}
                 height: 100vh;
                 overflow: hidden;
             }}
