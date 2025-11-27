@@ -349,147 +349,71 @@ def apply_global_styles():
             transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
-        /* Sidebar secondary buttons (Navigation) */
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"] {{
-            background: rgba(255, 255, 255, 0.82) !important;
-            border: 1px solid rgba(42, 79, 87, 0.22) !important;
-            color: {COLORS['dark_accent']} !important;
-            border-radius: {RADIUS['md']} !important;
-            box-shadow: inset 0 1px 2px rgba(255,255,255,0.35), 0 8px 20px rgba(0,0,0,0.08) !important;
-        }}
-
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover {{
-            background: rgba(231, 241, 239, 0.9) !important;
-            border-color: rgba(42, 79, 87, 0.35) !important;
-            transform: translateY(-1px) !important;
-        }}
-
-        .stButton > button[kind="secondary"],
-        button[kind="secondary"] {{
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(10px) !important;
-            color: {COLORS['primary']} !important;
-            border: 1.5px solid {COLORS['gray_300']} !important;
-            border-radius: {RADIUS['md']} !important;
-            padding: 12px 24px !important;
-            font-weight: 600 !important;
-            box-shadow: {SHADOWS['sm']} !important;
-            transition: all 0.26s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }}
-
-        .stButton > button[kind="secondary"]:hover {{
-            background: rgba(255, 255, 255, 1) !important;
-            border-color: {COLORS['primary']} !important;
-            transform: translateY(-2px) scale(1.01) !important;
-            box-shadow: {SHADOWS['md']} !important;
-        }}
-
-        .stButton > button[kind="secondary"]:active {{
-            transform: translateY(0) scale(0.99) !important;
-            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }}
-
-        /* ========== CHECKBOX & RADIO (APPLE STYLE) ========== */
-        .stCheckbox > label,
-        .stRadio > label {{
-            color: {COLORS['gray_700']} !important;
-            font-size: {TYPOGRAPHY['small']} !important;
-            font-weight: 500 !important;
-        }}
-
-        .stCheckbox input[type="checkbox"],
-        .stRadio input[type="radio"] {{
-            accent-color: {COLORS['primary']} !important;
-            width: 20px !important;
-            height: 20px !important;
-        }}
-
-        /* ========== FILE UPLOADER (APPLE STYLE) ========== */
-        .stFileUploader {{
-            background: {COLORS['surface']} !important;
-            border: 2px dashed {COLORS['gray_300']} !important;
-            border-radius: {RADIUS['lg']} !important;
-            padding: {SPACING['lg']} !important;
-            transition: all 0.2s ease !important;
-        }}
-
-        .stFileUploader:hover {{
-            border-color: {COLORS['primary']} !important;
-            background: {COLORS['light_accent']} !important;
-        }}
-
-        .stFileUploader label {{
-            color: {COLORS['gray_700']} !important;
-            font-weight: 600 !important;
-        }}
-
-        /* ========== EXPANDER (APPLE STYLE) ========== */
-        .streamlit-expanderHeader {{
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(10px) !important;
-            border: 1px solid {COLORS['gray_200']} !important;
-            border-radius: {RADIUS['md']} !important;
-            padding: {SPACING['md']} !important;
-            font-weight: 600 !important;
-            color: {COLORS['primary']} !important;
-            transition: all 0.2s ease !important;
-        }}
-
-        .streamlit-expanderHeader:hover {{
-            background: rgba(255, 255, 255, 1) !important;
-            border-color: {COLORS['primary']} !important;
-        }}
-
-        /* ========== METRICS (APPLE STYLE) ========== */
-        div[data-testid="stMetricValue"] {{
-            font-size: 2rem !important;
-            font-weight: 700 !important;
-            color: {COLORS['primary']} !important;
-            letter-spacing: -0.02em !important;
-        }}
-
-        div[data-testid="stMetricLabel"] {{
-            font-size: {TYPOGRAPHY['small']} !important;
-            font-weight: 600 !important;
-            letter-spacing: 0.05em !important;
-            text-transform: uppercase !important;
-            color: {COLORS['gray_500']} !important;
-        }}
-
-        /* ========== FIX 6: APPLE-STYLE CARDS WITH SMOOTH HOVER ========== */
-        .stAlert, [data-testid="stMetric"], div[data-testid="column"] > div {{
-            border-radius: {RADIUS['lg']} !important;
-            border: 1px solid {COLORS['gray_200']} !important;
-            box-shadow: {SHADOWS['sm']} !important;
-            transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }}
-
-        .stAlert:hover, [data-testid="stMetric"]:hover {{
-            box-shadow: {SHADOWS['md']} !important;
-            transform: translateY(-1px) !important;
-            border-color: {COLORS['gray_300']} !important;
-        }}
-
-        /* Alert variants */
-        .stAlert[data-baseweb="notification"] {{
-            border-left-width: 4px !important;
-        }}
-
-        /* ========== SIDEBAR (APPLE GLASSMORPHISM) ========== */
+        /* ========== SIDEBAR (CALM VISION OS) ========== */
         [data-testid="stSidebar"] {{
-            background: linear-gradient(
-                180deg,
-                rgba(255, 255, 255, 0.95) 0%,
-                rgba(231, 241, 239, 0.95) 100%
-            ) !important;
+            background-color: rgba(255, 255, 255, 0.85) !important;
             backdrop-filter: blur(20px) !important;
             -webkit-backdrop-filter: blur(20px) !important;
-            border-right: 1px solid {COLORS['gray_200']} !important;
-            box-shadow: 4px 0 16px rgba(0, 0, 0, 0.05) !important;
+            border-right: 1px solid rgba(0, 0, 0, 0.05) !important;
+            box-shadow: 20px 0 40px rgba(0, 0, 0, 0.02) !important;
         }}
 
-        [data-testid="stSidebar"] .stButton > button {{
-            border-radius: {RADIUS['md']} !important;
+        /* Sidebar User Profile / Footer Area (if any) */
+        [data-testid="stSidebar"] .block-container {{
+            padding-top: 2rem !important;
+            padding-bottom: 2rem !important;
+        }}
+
+        /* ========== SIDEBAR NAVIGATION ITEMS (Secondary Buttons) ========== */
+        /* Transform standard buttons into Menu Items */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"] {{
+            background: transparent !important;
+            border: 1px solid transparent !important;
+            color: #374151 !important; /* Gray 700 */
+            border-radius: 12px !important;
+            padding: 10px 16px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            text-align: left !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            transition: all 0.2s ease !important;
+            margin-bottom: 4px !important;
+        }}
+
+        /* Hover State for Nav Items */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover {{
+            background: rgba(167, 255, 229, 0.15) !important; /* Very light Mint */
+            color: #2A4F57 !important; /* Deep Teal */
+            transform: translateX(4px) !important;
+        }}
+
+        /* Active/Focus State (Simulated) */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:focus {{
+            background: rgba(167, 255, 229, 0.25) !important;
+            color: #2A4F57 !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }}
+
+        /* ========== SIDEBAR CTA (Primary Button - e.g. Upload) ========== */
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"] {{
+            background: linear-gradient(135deg, #2A4F57 0%, #1C1F1E 100%) !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 12px 20px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 12px rgba(42, 79, 87, 0.2) !important;
+            transition: all 0.2s ease !important;
+            margin-bottom: 24px !important; /* Spacing after main CTA */
+        }}
+
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-primary"]:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(42, 79, 87, 0.3) !important;
         }}
 
         /* ========== DATAFRAME/TABLE (APPLE STYLE) ========== */
