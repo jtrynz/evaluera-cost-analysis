@@ -208,7 +208,7 @@ def render_login_screen():
             }}
 
             .login-title {{
-                color: #1E2E32;
+                color: #2A4F57; /* Primary Brand Color */
                 font-size: 24px;
                 font-weight: 700;
                 letter-spacing: -0.02em;
@@ -216,7 +216,7 @@ def render_login_screen():
             }}
 
             .login-tagline {{
-                color: rgba(30, 46, 50, 0.75);
+                color: rgba(42, 79, 87, 0.8); /* Primary with opacity */
                 font-size: 14px;
                 font-weight: 500;
             }}
@@ -242,7 +242,7 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input::placeholder {{
-                color: rgba(30, 46, 50, 0.45) !important;
+                color: rgba(42, 79, 87, 0.5) !important;
             }}
 
             .stTextInput > div > div > input:focus {{
@@ -252,10 +252,10 @@ def render_login_screen():
                 transform: translateY(-1px);
             }}
 
-            /* Button Styling - HIGH CONTRAST */
+            /* Button Styling - BRAND PRIMARY */
             .stButton > button {{
                 width: 100% !important;
-                background: #1E2E32 !important; /* Dark Charcoal for max contrast */
+                background: #2A4F57 !important; /* Primary Brand Color */
                 color: #FFFFFF !important;
                 border: none !important;
                 border-radius: 12px !important;
@@ -263,15 +263,15 @@ def render_login_screen():
                 font-size: 16px !important;
                 font-weight: 600 !important;
                 letter-spacing: 0.01em !important;
-                box-shadow: 0 4px 12px rgba(30, 46, 50, 0.3) !important;
+                box-shadow: 0 4px 12px rgba(42, 79, 87, 0.3) !important;
                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 margin-top: 12px !important;
             }}
 
             .stButton > button:hover {{
-                background: #2A4F57 !important; /* Deep Teal on hover */
+                background: #1E2E32 !important; /* Darker on hover */
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 20px rgba(30, 46, 50, 0.4) !important;
+                box-shadow: 0 8px 20px rgba(42, 79, 87, 0.4) !important;
             }}
 
             .stButton > button:active {{
