@@ -157,9 +157,9 @@ def render_login_screen():
             }}
 
             .block-container {{
-                padding: 48px 40px !important;
+                padding: 40px 48px !important;
                 width: 100%;
-                max-width: 460px;
+                max-width: 540px;
                 margin-top: 0 !important;
                 
                 /* PREMIUM GLASSMORPHISM */
@@ -168,7 +168,7 @@ def render_login_screen():
                 -webkit-backdrop-filter: blur(24px) saturate(180%);
                 border: 1px solid rgba(255, 255, 255, 0.6);
                 
-                border-radius: 28px;
+                border-radius: 32px;
                 box-shadow:
                     0 25px 50px -12px rgba(0, 0, 0, 0.15),
                     0 0 0 1px rgba(255, 255, 255, 0.4) inset;
@@ -193,10 +193,10 @@ def render_login_screen():
             }}
 
             .login-logo {{
-                width: 190px;
+                width: 260px;
                 height: auto;
                 filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-                margin-bottom: 12px;
+                margin-bottom: 16px;
                 display: block;
                 margin-left: auto;
                 margin-right: auto;
