@@ -268,7 +268,8 @@ def render_login_screen():
             /* ========== 5. BUTTON (ULTRA PREMIUM) ========== */
             .stButton > button {{
                 width: 100% !important;
-                background: linear-gradient(180deg, var(--brand-dark) 0%, var(--brand-dark-soft) 100%) !important;
+                /* Lighter Blue-Green Gradient as requested */
+                background: linear-gradient(135deg, #2A4F57 0%, #487e78 100%) !important;
                 color: #FFFFFF !important;
                 border: none !important;
                 border-radius: 18px !important; /* Soft roundness */
@@ -279,9 +280,9 @@ def render_login_screen():
                 
                 /* Sophisticated Shadow */
                 box-shadow: 
-                    0 4px 6px rgba(0,0,0,0.1),
-                    0 10px 20px rgba(0,0,0,0.1),
-                    inset 0 1px 0 rgba(255,255,255,0.1);
+                    0 4px 6px rgba(42, 79, 87, 0.2),
+                    0 10px 20px rgba(42, 79, 87, 0.15),
+                    inset 0 1px 0 rgba(255,255,255,0.2);
                 
                 transition: all 0.4s var(--ease-spring) !important;
                 margin-top: 16px !important;
@@ -293,8 +294,9 @@ def render_login_screen():
             .stButton > button:hover {{
                 transform: translateY(-2px) !important;
                 box-shadow: 
-                    0 0 20px rgba(167, 255, 229, 0.3), /* Mint Glow */
-                    0 12px 24px rgba(0,0,0,0.15) !important;
+                    0 0 20px rgba(72, 126, 120, 0.4), /* Teal Glow */
+                    0 12px 24px rgba(42, 79, 87, 0.25) !important;
+                filter: brightness(1.1);
             }}
 
             /* Active / Pressed */
@@ -337,10 +339,10 @@ def render_login_screen():
 
             .login-footnote {{
                 text-align: center;
-                color: rgba(255, 255, 255, 0.5);
+                color: rgba(17, 24, 39, 0.6); /* Dark text as requested */
                 font-size: 11px;
                 margin-top: 32px;
-                font-weight: 500;
+                font-weight: 600;
                 letter-spacing: 0.05em;
                 text-transform: uppercase;
             }}
