@@ -43,8 +43,8 @@ def apply_liquid_glass_styles():
             z-index: -1;
             overflow: hidden;
             background: radial-gradient(circle at top left,
-                        {COLORS['secondary']} 0%,
-                        {COLORS['light_accent']} 40%,
+                        {COLORS.get('accent_soft', '#B8D4D1')} 0%,
+                        {COLORS.get('bg_app', '#F5F7F8')} 40%,
                         #FFFFFF 100%);
         }}
 
