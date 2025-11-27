@@ -160,7 +160,13 @@ def render_login_screen():
                 padding: 40px 48px !important;
                 width: 100%;
                 max-width: 540px;
-                margin-top: 0 !important;
+                margin: 0 !important;
+                
+                /* ABSOLUTE CENTERING */
+                position: absolute !important;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
                 
                 /* PREMIUM GLASSMORPHISM */
                 background: rgba(255, 255, 255, 0.60);
@@ -173,9 +179,8 @@ def render_login_screen():
                     0 25px 50px -12px rgba(0, 0, 0, 0.15),
                     0 0 0 1px rgba(255, 255, 255, 0.4) inset;
                 
-                position: relative;
                 overflow: hidden;
-                animation: float 8s ease-in-out infinite;
+                /* Animation removed to prevent conflict with transform centering */
             }}
 
             /* Entfernt evtl. leere Streifen-Container */
