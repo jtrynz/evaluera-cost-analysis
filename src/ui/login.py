@@ -231,25 +231,31 @@ def render_login_screen():
             }}
 
             .stTextInput > div > div > input {{
+                background: transparent !important;
+                color: #1E2E32 !important;
+                padding: 10px 12px !important;
+                font-size: 15px !important;
+                line-height: 1.5 !important;
+            }}
+
+            /* Target the container for the border/background to avoid clipping */
+            .stTextInput > div[data-baseweb="input"] {{
                 background: rgba(255, 255, 255, 0.5) !important;
                 border: 1px solid rgba(42, 79, 87, 0.2) !important;
                 border-radius: 12px !important;
-                color: #1E2E32 !important;
-                padding: 12px 16px !important;
-                font-size: 15px !important;
-                min-height: 46px !important;
+                min-height: 48px !important;
                 transition: all 0.2s ease !important;
             }}
 
-            .stTextInput > div > div > input::placeholder {{
-                color: rgba(42, 79, 87, 0.5) !important;
-            }}
-
-            .stTextInput > div > div > input:focus {{
+            .stTextInput > div[data-baseweb="input"]:focus-within {{
                 background: #FFFFFF !important;
                 border-color: #2A4F57 !important;
                 box-shadow: 0 0 0 3px rgba(42, 79, 87, 0.1) !important;
                 transform: translateY(-1px);
+            }}
+
+            .stTextInput > div > div > input::placeholder {{
+                color: rgba(42, 79, 87, 0.5) !important;
             }}
 
             /* Button Styling - BRAND PRIMARY */
