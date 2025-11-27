@@ -87,8 +87,8 @@ def render_login_screen():
     # Load background image
     bg_base64 = ""
     try:
-        # Construct absolute path to assets/login_bg_mint.png
-        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg_mint.png')
+        # Construct absolute path to assets/login_bg_final.jpg
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg_final.jpg')
         with open(bg_path, "rb") as f:
             bg_base64 = base64.b64encode(f.read()).decode()
     except Exception as e:
@@ -99,7 +99,7 @@ def render_login_screen():
     # CSS for background
     if bg_base64:
         background_css = f"""
-            background-image: url("data:image/png;base64,{bg_base64}");
+            background-image: url("data:image/jpeg;base64,{bg_base64}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
