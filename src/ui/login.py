@@ -84,7 +84,7 @@ def render_login_screen():
     # Get logo
     logo_base64 = get_logo_base64()
     
-    # Load background image
+    # Load background image (High Res)
     bg_base64 = ""
     try:
         # Construct absolute path to assets/login_bg_high_res.png
@@ -92,7 +92,6 @@ def render_login_screen():
         with open(bg_path, "rb") as f:
             bg_base64 = base64.b64encode(f.read()).decode()
     except Exception as e:
-        # Fallback if image missing
         print(f"Error loading background: {e}")
         pass
 
@@ -105,11 +104,8 @@ def render_login_screen():
             background-repeat: no-repeat;
         """
     else:
-        # Fallback gradient (Minty)
         background_css = """
-            background: linear-gradient(-45deg, #B8D4D1, #E7F1EF, #B8D4D1, #8FAEAB);
-            background-size: 400% 400%;
-            animation: gradient-animation 15s ease infinite;
+            background: linear-gradient(135deg, #E0F2F1 0%, #B2DFDB 100%);
         """
 
     st.markdown(
@@ -117,187 +113,212 @@ def render_login_screen():
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+            /* ========== 0. RESET & VARS ========== */
             :root {{
-                --eval-primary: {COLORS['primary']};
-                --eval-secondary: {COLORS['secondary']};
-                --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(255, 255, 255, 0.25); /* Slightly more opaque for mint bg */
-                --eval-soft: #E7F1EF;
+                --brand-mint: #A7FFE5;
+                --brand-dark: #0E1111;
+                --brand-dark-soft: #1C1F1E;
+                --glass-border: rgba(255, 255, 255, 0.4);
+                --glass-surface: rgba(255, 255, 255, 0.15);
+                --shadow-ambient: 0 20px 40px rgba(0,0,0,0.05);
+                --shadow-key: 0 4px 8px rgba(0,0,0,0.08);
+                --ease-spring: cubic-bezier(0.4, 0, 0.2, 1);
             }}
 
-            /* DYNAMIC BACKGROUND */
+            /* ========== 1. BACKGROUND & LAYOUT ========== */
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
                 {background_css}
                 height: 100vh;
-                overflow: hidden;
+                overflow: hidden !important; /* No scroll */
             }}
 
-            @keyframes float {{
-                0% {{ transform: translateY(0px); }}
-                50% {{ transform: translateY(-8px); }}
-                100% {{ transform: translateY(0px); }}
+            /* Vignette Overlay */
+            .stApp::before {{
+                content: "";
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.03) 100%);
+                pointer-events: none;
+                z-index: 0;
             }}
 
-            header[data-testid="stHeader"],
-            #MainMenu,
-            footer,
-            [data-testid="stSidebar"],
-            [data-testid="stToolbar"] {{
-                display: none !important;
-            }}
+            /* Hide Streamlit Elements */
+            header[data-testid="stHeader"], footer, #MainMenu {{ display: none !important; }}
 
-            section.main, .main {{
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 0 18px 0 !important;
-                position: relative;
-                z-index: 2;
-            }}
-
+            /* Absolute Centering Container */
             .block-container {{
-                padding: 40px 48px !important;
-                width: 100%;
-                max-width: 540px;
-                margin: 0 !important;
-                
-                /* ABSOLUTE CENTERING */
                 position: absolute !important;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                
-                /* PREMIUM GLASSMORPHISM */
-                background: rgba(255, 255, 255, 0.60);
-                backdrop-filter: blur(24px) saturate(180%);
-                -webkit-backdrop-filter: blur(24px) saturate(180%);
-                border: 1px solid rgba(255, 255, 255, 0.6);
-                
-                border-radius: 32px;
-                box-shadow:
-                    0 25px 50px -12px rgba(0, 0, 0, 0.15),
-                    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
-                
-                overflow: hidden;
-                /* Animation removed to prevent conflict with transform centering */
+                width: 100%;
+                max-width: 500px; /* Optimal width for premium feel */
+                padding: 0 !important;
+                margin: 0 !important;
+                overflow: visible !important;
             }}
 
-            /* Entfernt evtl. leere Streifen-Container */
-            .block-container > div:empty {{
-                display: none !important;
+            /* ========== 2. GLASS CARD (VISION OS STYLE) ========== */
+            /* We target the first child div of block-container which usually holds the content */
+            .block-container > div:first-child {{
+                background: var(--glass-surface);
+                backdrop-filter: blur(30px) saturate(120%);
+                -webkit-backdrop-filter: blur(30px) saturate(120%);
+                border: 1px solid var(--glass-border);
+                border-radius: 32px;
+                padding: 48px 40px;
+                box-shadow: 
+                    var(--shadow-ambient),
+                    var(--shadow-key),
+                    inset 0 0 0 1px rgba(255,255,255,0.2); /* Inner light edge */
+                
+                animation: cardSlideUp 0.8s var(--ease-spring) forwards;
+                opacity: 0;
+                transform: translateY(20px);
+            }}
+
+            @keyframes cardSlideUp {{
+                to {{ opacity: 1; transform: translateY(0); }}
+            }}
+
+            /* ========== 3. TYPOGRAPHY ========== */
+            h1, h2, h3, p, div, label, input, button {{
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+                -webkit-font-smoothing: antialiased;
             }}
 
             .login-header {{
                 text-align: center;
-                margin-bottom: 32px;
+                margin-bottom: 40px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
             }}
 
             .login-logo {{
-                width: 260px;
+                width: 220px; /* Slightly larger */
                 height: auto;
-                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
-                margin-bottom: 16px;
-                display: block;
-                margin-left: auto;
-                margin-right: auto;
+                margin-bottom: 24px;
+                filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+                transition: transform 0.5s var(--ease-spring);
             }}
+            .login-logo:hover {{ transform: scale(1.02); }}
 
             .login-title {{
-                color: #2A4F57; /* Primary Brand Color */
-                font-size: 24px;
-                font-weight: 700;
+                color: #111827;
+                font-size: 26px;
+                font-weight: 600;
                 letter-spacing: -0.02em;
-                margin-bottom: 4px;
+                margin-bottom: 8px;
             }}
 
             .login-tagline {{
-                color: rgba(42, 79, 87, 0.8); /* Primary with opacity */
+                color: rgba(17, 24, 39, 0.6);
                 font-size: 14px;
                 font-weight: 500;
             }}
 
+            /* ========== 4. INPUT FIELDS (PREMIUM) ========== */
+            /* Label Styling */
             .stTextInput > label {{
-                color: #2A4F57 !important;
+                color: rgba(17, 24, 39, 0.5) !important;
+                font-size: 12px !important;
                 font-weight: 600 !important;
-                font-size: 13px !important;
                 letter-spacing: 0.03em !important;
-                margin-bottom: 6px !important;
-                text-transform: uppercase;
+                text-transform: uppercase !important;
+                margin-bottom: 8px !important;
+                transition: color 0.2s ease;
             }}
 
-            .stTextInput > div > div > input {{
-                background: transparent !important;
-                color: #1E2E32 !important;
-                padding: 10px 12px !important;
-                font-size: 15px !important;
-                line-height: 1.5 !important;
-            }}
-
-            /* Target the container for the border/background to avoid clipping */
+            /* Input Container */
             .stTextInput > div[data-baseweb="input"] {{
-                background: rgba(255, 255, 255, 0.5) !important;
-                border: 1px solid rgba(42, 79, 87, 0.2) !important;
-                border-radius: 12px !important;
-                min-height: 48px !important;
-                transition: all 0.2s ease !important;
+                background: rgba(255, 255, 255, 0.6) !important;
+                border: 1px solid rgba(0, 0, 0, 0.06) !important;
+                border-radius: 16px !important;
+                min-height: 52px !important;
+                box-shadow: 
+                    0 2px 6px rgba(0,0,0,0.02),
+                    inset 0 1px 2px rgba(255,255,255,0.8);
+                transition: all 0.3s var(--ease-spring) !important;
             }}
 
+            /* Focus State */
             .stTextInput > div[data-baseweb="input"]:focus-within {{
                 background: #FFFFFF !important;
-                border-color: #2A4F57 !important;
-                box-shadow: 0 0 0 3px rgba(42, 79, 87, 0.1) !important;
+                border-color: var(--brand-mint) !important;
+                box-shadow: 
+                    0 0 0 4px rgba(167, 255, 229, 0.25), /* Mint Glow */
+                    0 4px 12px rgba(0,0,0,0.05);
                 transform: translateY(-1px);
             }}
 
-            .stTextInput > div > div > input::placeholder {{
-                color: rgba(42, 79, 87, 0.5) !important;
+            /* Input Text */
+            .stTextInput input {{
+                color: #111827 !important;
+                font-size: 16px !important;
+                font-weight: 500 !important;
+                padding: 0 16px !important;
+                background: transparent !important;
             }}
 
-            /* Button Styling - BRAND PRIMARY */
+            .stTextInput input::placeholder {{
+                color: rgba(17, 24, 39, 0.3) !important;
+            }}
+
+            /* ========== 5. BUTTON (ULTRA PREMIUM) ========== */
             .stButton > button {{
                 width: 100% !important;
-                background: #2A4F57 !important; /* Primary Brand Color */
+                background: linear-gradient(180deg, var(--brand-dark) 0%, var(--brand-dark-soft) 100%) !important;
                 color: #FFFFFF !important;
                 border: none !important;
-                border-radius: 12px !important;
-                padding: 14px !important;
+                border-radius: 18px !important; /* Soft roundness */
+                padding: 16px !important;
                 font-size: 16px !important;
                 font-weight: 600 !important;
                 letter-spacing: 0.01em !important;
-                box-shadow: 0 4px 12px rgba(42, 79, 87, 0.3) !important;
-                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-                margin-top: 12px !important;
+                
+                /* Sophisticated Shadow */
+                box-shadow: 
+                    0 4px 6px rgba(0,0,0,0.1),
+                    0 10px 20px rgba(0,0,0,0.1),
+                    inset 0 1px 0 rgba(255,255,255,0.1);
+                
+                transition: all 0.4s var(--ease-spring) !important;
+                margin-top: 16px !important;
+                position: relative;
+                overflow: hidden;
             }}
 
+            /* Hover Glow */
             .stButton > button:hover {{
-                background: #1E2E32 !important; /* Darker on hover */
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 20px rgba(42, 79, 87, 0.4) !important;
+                box-shadow: 
+                    0 0 20px rgba(167, 255, 229, 0.3), /* Mint Glow */
+                    0 12px 24px rgba(0,0,0,0.15) !important;
             }}
 
+            /* Active / Pressed */
             .stButton > button:active {{
-                transform: translateY(0) scale(0.98) !important;
+                transform: scale(0.98) translateY(0) !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
             }}
 
+            /* ========== 6. MICRO-DETAILS ========== */
             .login-divider {{
                 height: 1px;
                 width: 100%;
-                background: linear-gradient(90deg, transparent, rgba(42, 79, 87, 0.15), transparent);
-                margin: 24px 0;
+                background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent);
+                margin: 32px 0;
             }}
 
             .error-alert {{
-                background: rgba(239, 68, 68, 0.08) !important;
+                background: rgba(254, 242, 242, 0.8) !important;
+                backdrop-filter: blur(10px);
                 border: 1px solid rgba(239, 68, 68, 0.2) !important;
                 color: #EF4444 !important;
-                border-radius: 10px !important;
-                padding: 10px !important;
-                margin-bottom: 20px !important;
+                border-radius: 14px !important;
+                padding: 12px !important;
+                margin-bottom: 24px !important;
                 text-align: center;
                 font-size: 13px;
                 font-weight: 500;
@@ -305,13 +326,20 @@ def render_login_screen():
                 align-items: center;
                 justify-content: center;
                 gap: 8px;
+                animation: shake 0.4s var(--ease-spring);
+            }}
+
+            @keyframes shake {{
+                0%, 100% {{ transform: translateX(0); }}
+                25% {{ transform: translateX(-4px); }}
+                75% {{ transform: translateX(4px); }}
             }}
 
             .login-footnote {{
                 text-align: center;
-                color: rgba(255, 255, 255, 0.7);
+                color: rgba(255, 255, 255, 0.5);
                 font-size: 11px;
-                margin-top: 24px;
+                margin-top: 32px;
                 font-weight: 500;
                 letter-spacing: 0.05em;
                 text-transform: uppercase;
@@ -319,31 +347,26 @@ def render_login_screen():
             
             .forgot-link {{
                 text-align: right;
-                margin-top: 8px;
+                margin-top: 12px;
             }}
             
             .forgot-link a {{
-                color: #2A4F57;
-                font-size: 12px;
+                color: rgba(17, 24, 39, 0.5);
+                font-size: 13px;
                 text-decoration: none;
-                font-weight: 600;
-                opacity: 0.8;
-                transition: opacity 0.2s;
+                font-weight: 500;
+                transition: color 0.2s;
             }}
             
             .forgot-link a:hover {{
-                opacity: 1;
-                text-decoration: underline;
+                color: var(--brand-dark);
             }}
 
+            /* Mobile Optimization */
             @media (max-width: 600px) {{
-                .login-card {{
-                    padding: 26px 22px 22px 22px;
-                }}
-
-                .login-logo {{
-                    width: 160px;
-                }}
+                .block-container {{ max-width: 90% !important; }}
+                .block-container > div:first-child {{ padding: 32px 24px; }}
+                .login-logo {{ width: 180px; }}
             }}
         </style>
         """,
