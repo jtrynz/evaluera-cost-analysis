@@ -87,8 +87,8 @@ def render_login_screen():
     # Load background image
     bg_base64 = ""
     try:
-        # Construct absolute path to assets/login_bg.png
-        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg.png')
+        # Construct absolute path to assets/login_bg_mint.png
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg_mint.png')
         with open(bg_path, "rb") as f:
             bg_base64 = base64.b64encode(f.read()).decode()
     except Exception as e:
@@ -105,9 +105,9 @@ def render_login_screen():
             background-repeat: no-repeat;
         """
     else:
-        # Fallback gradient
+        # Fallback gradient (Minty)
         background_css = """
-            background: linear-gradient(-45deg, #2A4F57, #1E2E32, #2A4F57, #477a78);
+            background: linear-gradient(-45deg, #B8D4D1, #E7F1EF, #B8D4D1, #8FAEAB);
             background-size: 400% 400%;
             animation: gradient-animation 15s ease infinite;
         """
@@ -121,7 +121,7 @@ def render_login_screen():
                 --eval-primary: {COLORS['primary']};
                 --eval-secondary: {COLORS['secondary']};
                 --eval-dark: {COLORS['dark_accent']};
-                --eval-glass: rgba(255, 255, 255, 0.15);
+                --eval-glass: rgba(255, 255, 255, 0.25); /* Slightly more opaque for mint bg */
                 --eval-soft: #E7F1EF;
             }}
 
@@ -163,15 +163,15 @@ def render_login_screen():
                 margin-top: 0 !important;
                 
                 /* PREMIUM GLASSMORPHISM */
-                background: rgba(255, 255, 255, 0.65);
+                background: rgba(255, 255, 255, 0.60);
                 backdrop-filter: blur(24px) saturate(180%);
                 -webkit-backdrop-filter: blur(24px) saturate(180%);
-                border: 1px solid rgba(255, 255, 255, 0.5);
+                border: 1px solid rgba(255, 255, 255, 0.6);
                 
                 border-radius: 28px;
                 box-shadow:
-                    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                    0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+                    0 25px 50px -12px rgba(0, 0, 0, 0.15),
+                    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
                 
                 position: relative;
                 overflow: hidden;
@@ -186,6 +186,10 @@ def render_login_screen():
             .login-header {{
                 text-align: center;
                 margin-bottom: 32px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
             }}
 
             .login-logo {{
@@ -193,6 +197,9 @@ def render_login_screen():
                 height: auto;
                 filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
                 margin-bottom: 12px;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
             }}
 
             .login-title {{
@@ -240,10 +247,10 @@ def render_login_screen():
                 transform: translateY(-1px);
             }}
 
-            /* Button Styling */
+            /* Button Styling - HIGH CONTRAST */
             .stButton > button {{
                 width: 100% !important;
-                background: linear-gradient(135deg, #2A4F57 0%, #1E2E32 100%) !important;
+                background: #1E2E32 !important; /* Dark Charcoal for max contrast */
                 color: #FFFFFF !important;
                 border: none !important;
                 border-radius: 12px !important;
@@ -251,14 +258,15 @@ def render_login_screen():
                 font-size: 16px !important;
                 font-weight: 600 !important;
                 letter-spacing: 0.01em !important;
-                box-shadow: 0 4px 12px rgba(42, 79, 87, 0.2) !important;
+                box-shadow: 0 4px 12px rgba(30, 46, 50, 0.3) !important;
                 transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 margin-top: 12px !important;
             }}
 
             .stButton > button:hover {{
+                background: #2A4F57 !important; /* Deep Teal on hover */
                 transform: translateY(-2px) !important;
-                box-shadow: 0 8px 20px rgba(42, 79, 87, 0.3) !important;
+                box-shadow: 0 8px 20px rgba(30, 46, 50, 0.4) !important;
             }}
 
             .stButton > button:active {{
