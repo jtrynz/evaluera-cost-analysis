@@ -268,7 +268,7 @@ with main_container:
             <div style="padding: {SPACING['lg']} 0 {SPACING['md']} 0;">
                 <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
                     {"<img src='data:image/png;base64," + logo_b64 + "' alt='EVALUERA' style='height: 48px; object-fit: contain;' />" if logo_b64 else "<h1 style='margin:0; color:#2A4F57; font-weight:800; font-size: 24px;'>EVALUERA</h1>"}
-                    <div style="height: 24px; width: 1px; background: {COLORS['border_medium']};"></div>
+                    <div style="height: 24px; width: 1px; background: {COLORS.get('border_medium', 'rgba(0,0,0,0.1)')};"></div>
                     <div style="color: {COLORS['text_secondary']}; font-size: 14px; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase;">Intelligent Procurement</div>
                 </div>
                 <h1 style="
