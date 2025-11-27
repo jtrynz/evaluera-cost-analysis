@@ -83,6 +83,31 @@ def render_login_screen():
 
     # Get logo
     logo_base64 = get_logo_base64()
+    
+    # Load background image
+    bg_base64 = ""
+    try:
+        # Construct absolute path to assets/login_bg.png
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg.png')
+        with open(bg_path, "rb") as f:
+            bg_base64 = base64.b64encode(f.read()).decode()
+    except Exception as e:
+        print(f"Error loading background: {e}")
+        pass
+
+    # CSS for background
+    if bg_base64:
+        background_css = f"""
+            background-image: url("data:image/png;base64,{bg_base64}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        """
+    else:
+        # Fallback gradient
+        background_css = """
+            background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%);
+        """
 
     st.markdown(
         f"""
@@ -98,7 +123,9 @@ def render_login_screen():
             }}
 
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
-                background: radial-gradient(120% 120% at 20% 20%, #a9d9d3 0%, #88c2bd 40%, #5c8f8a 80%, #477a78 100%) !important;
+                {background_css}
+                height: 100vh;
+                overflow: hidden;
             }}
 
             header[data-testid="stHeader"],
@@ -110,20 +137,26 @@ def render_login_screen():
             }}
 
             section.main, .main {{
+                height: 100vh;
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 12px 0 18px 0 !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                padding: 0 !important;
+                margin: 0 !important;
                 position: relative;
                 z-index: 2;
             }}
 
+            /* Force the block container to be centered and remove Streamlit's default top padding */
             .block-container {{
                 padding: 32px 26px 28px 26px !important;
                 width: 100%;
                 max-width: 520px;
-                margin-top: 0 !important;
+                margin: auto !important; /* Key for centering */
+                flex: 0 0 auto !important;
+                
                 background: var(--eval-glass);
                 border: 1px solid rgba(42, 79, 87, 0.18);
                 border-radius: {RADIUS['xl']};
