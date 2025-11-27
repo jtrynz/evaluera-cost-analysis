@@ -43,8 +43,8 @@ def apply_liquid_glass_styles():
             z-index: -1;
             overflow: hidden;
             background: radial-gradient(circle at top left,
-                        {COLORS.get('accent_soft', '#B8D4D1')} 0%,
-                        {COLORS.get('bg_app', '#F5F7F8')} 40%,
+                        {COLORS['secondary']} 0%,
+                        {COLORS['light_accent']} 40%,
                         #FFFFFF 100%);
         }}
 
@@ -71,7 +71,7 @@ def apply_liquid_glass_styles():
             width: 380px;
             height: 380px;
             background: radial-gradient(circle at 100% 0%,
-                        {COLORS.get('primary_dark', '#1C353A')} 0%,
+                        {COLORS['dark_accent']} 0%,
                         rgba(255,255,255,0) 70%);
             top: 18%;
             right: 8%;
@@ -83,7 +83,7 @@ def apply_liquid_glass_styles():
             width: 360px;
             height: 360px;
             background: radial-gradient(circle at 50% 100%,
-                        {COLORS.get('accent_soft', '#B8D4D1')} 0%,
+                        {COLORS['secondary']} 0%,
                         rgba(255,255,255,0) 70%);
             bottom: 4%;
             left: 35%;

@@ -467,14 +467,14 @@ def render_logout_button():
             border-radius: {RADIUS['md']};
             text-align: center;
             box-shadow: {SHADOWS['sm']};
-            border: 1.5px solid {COLORS.get('border_medium', 'rgba(0,0,0,0.1)')};
+            border: 1.5px solid {COLORS['gray_200']};
         ">
             <div style="
                 font-size: 11px;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.08em;
-                color: {COLORS.get('text_tertiary', '#9CA3AF')};
+                color: {COLORS['gray_500']};
                 margin-bottom: 10px;
             ">
                 Eingeloggt als
