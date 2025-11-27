@@ -84,11 +84,11 @@ def render_login_screen():
     # Get logo
     logo_base64 = get_logo_base64()
     
-    # Load background image (Final Version)
+    # Load background image (High Res)
     bg_base64 = ""
     try:
-        # Construct absolute path to assets/login_bg_final.jpg
-        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg_final.jpg')
+        # Construct absolute path to assets/login_bg_high_res.png
+        bg_path = os.path.join(os.path.dirname(__file__), '..', '..', 'assets', 'login_bg_high_res.png')
         with open(bg_path, "rb") as f:
             bg_base64 = base64.b64encode(f.read()).decode()
     except Exception as e:
