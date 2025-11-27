@@ -90,18 +90,18 @@ class NavigationSidebar:
                     opacity: 0.85;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     font-size: 0.95rem;
-                    color: {COLORS['gray_700']};
+                    color: {COLORS.get('text_secondary', '#4B5563')};
                     border-left: 3px solid transparent;
                 }}
 
                 .nav-item:hover {{
                     opacity: 1;
-                    background: {COLORS['gray_100']};
+                    background: {COLORS.get('border_medium', 'rgba(0,0,0,0.05)')};
                 }}
 
                 .nav-item.active {{
-                    background: {COLORS['light_accent']};
-                    color: {COLORS['error']};
+                    background: {COLORS.get('accent_soft', '#B8D4D1')}40;
+                    color: {COLORS.get('primary', '#2A4F57')};
                     opacity: 1;
                     border-left-color: {COLORS['primary']};
                     font-weight: 600;
@@ -125,17 +125,17 @@ class NavigationSidebar:
                     transition: all 0.2s ease;
                     opacity: 0.75;
                     font-size: 0.875rem;
-                    color: {COLORS['gray_600']};
+                    color: {COLORS.get('text_secondary', '#4B5563')};
                 }}
 
                 .nav-subitem:hover {{
                     opacity: 1;
-                    background: {COLORS['gray_50']};
+                    background: {COLORS.get('bg_app', '#F5F7F8')};
                 }}
 
                 .nav-subitem.active {{
-                    background: {COLORS['light_accent']};
-                    color: {COLORS['primary']};
+                    background: {COLORS.get('accent_soft', '#B8D4D1')}40;
+                    color: {COLORS.get('primary', '#2A4F57')};
                     opacity: 1;
                     font-weight: 500;
                 }}
@@ -143,7 +143,7 @@ class NavigationSidebar:
                 /* Divider */
                 .nav-divider {{
                     height: 1px;
-                    background: {COLORS['gray_200']};
+                    background: {COLORS.get('border_medium', 'rgba(0,0,0,0.1)')};
                     margin: {SPACING['md']} 0;
                 }}
 
@@ -154,7 +154,7 @@ class NavigationSidebar:
                     font-weight: 700;
                     text-transform: uppercase;
                     letter-spacing: 0.08em;
-                    color: {COLORS['gray_500']};
+                    color: {COLORS.get('text_tertiary', '#9CA3AF')};
                 }}
 
                 /* Badge for extended features */
@@ -230,7 +230,7 @@ def create_section_anchor(section_id: str, title: str, subtitle: str = None):
     if subtitle:
         subtitle_html = f"""
         <p style="
-            color: {COLORS['gray_600']};
+            color: {COLORS.get('text_secondary', '#4B5563')};
             font-size: 1rem;
             margin: {SPACING['sm']} 0 0 0;
             font-weight: 400;
@@ -241,12 +241,12 @@ def create_section_anchor(section_id: str, title: str, subtitle: str = None):
     <div id="{section_id}" style="
         margin: {SPACING['xxl']} 0 {SPACING['xl']} 0;
         padding-top: {SPACING['lg']};
-        border-top: 1px solid {COLORS['gray_200']};
+        border-top: 1px solid {COLORS.get('border_medium', 'rgba(0,0,0,0.1)')};
     ">
         <h2 style="
             font-size: 1.75rem;
             font-weight: 700;
-            color: {COLORS['error']};
+            color: {COLORS.get('primary', '#2A4F57')};
             margin: 0;
             letter-spacing: -0.02em;
         ">{title}</h2>
