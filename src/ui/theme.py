@@ -482,22 +482,85 @@ def apply_global_styles():
             animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }}
 
-        /* ========== GLASS EFFECT UTILITIES ========== */
+        /* ========== PREMIUM GLASS EFFECT UTILITIES ========== */
+        /* Subtle glass card - for main content areas */
+        .glass-card-subtle {{
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(20px) saturate(110%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(110%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: {RADIUS['lg']} !important;
+            box-shadow: 
+                0 8px 32px rgba(42, 79, 87, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }}
+
+        .glass-card-subtle:hover {{
+            transform: translateY(-2px) !important;
+            box-shadow: 
+                0 12px 40px rgba(42, 79, 87, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+        }}
+
+        /* Strong glass card - for important components */
+        .glass-card-strong {{
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(28px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(120%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            border-radius: {RADIUS['xl']} !important;
+            box-shadow: 
+                0 12px 40px rgba(42, 79, 87, 0.10),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }}
+
+        .glass-card-strong:hover {{
+            transform: translateY(-3px) !important;
+            box-shadow: 
+                0 16px 48px rgba(42, 79, 87, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        }}
+
+        /* Legacy glass classes (keep for backward compatibility) */
         .glass {{
-            background: rgba(255, 255, 255, 0.7) !important;
-            backdrop-filter: blur(10px) saturate(150%) !important;
-            -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
-            border: 1px solid rgba(255, 255, 255, 0.5) !important;
-            box-shadow: {SHADOWS['glass']} !important;
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(20px) saturate(110%) !important;
+            -webkit-backdrop-filter: blur(20px) saturate(110%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 8px 32px rgba(42, 79, 87, 0.08) !important;
         }}
 
         .glass-strong {{
-            background: rgba(255, 255, 255, 0.9) !important;
-            backdrop-filter: blur(20px) saturate(180%) !important;
-            -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(28px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(28px) saturate(120%) !important;
             border: 1px solid rgba(255, 255, 255, 0.8) !important;
-            box-shadow: {SHADOWS['md']} !important;
+            box-shadow: 0 12px 40px rgba(42, 79, 87, 0.10) !important;
         }}
+
+        /* Premium content container */
+        .premium-content-container {{
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(24px) saturate(115%);
+            -webkit-backdrop-filter: blur(24px) saturate(115%);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: {RADIUS['xl']};
+            padding: {SPACING['xl']};
+            box-shadow: 
+                0 10px 36px rgba(42, 79, 87, 0.09),
+                inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            margin-bottom: {SPACING['lg']};
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }}
+
+        .premium-content-container:hover {{
+            box-shadow: 
+                0 14px 44px rgba(42, 79, 87, 0.11),
+                inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }}
+
     </style>
     """, unsafe_allow_html=True)
 

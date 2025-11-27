@@ -65,12 +65,16 @@ class NavigationSidebar:
     def render(self):
         """Render the navigation sidebar"""
         with st.sidebar:
-            # Sticky Sidebar CSS
+            # Premium Sidebar CSS with Glassmorphism
             st.markdown(f"""
             <style>
-                /* Sidebar Styling */
+                /* ========== PREMIUM SIDEBAR GLASSMORPHISM ========== */
                 [data-testid="stSidebar"] {{
-                    background: {COLORS['surface']};
+                    background: rgba(255, 255, 255, 0.92) !important;
+                    backdrop-filter: blur(24px) saturate(110%) !important;
+                    -webkit-backdrop-filter: blur(24px) saturate(110%) !important;
+                    border-right: 1px solid rgba(42, 79, 87, 0.08) !important;
+                    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.03) !important;
                 }}
 
                 /* Navigation Container */
@@ -78,42 +82,56 @@ class NavigationSidebar:
                     padding: {SPACING['md']} 0;
                 }}
 
-                /* Navigation Item */
+                /* ========== PREMIUM NAVIGATION ITEMS ========== */
                 .nav-item {{
                     display: flex;
                     align-items: center;
                     padding: {SPACING['sm']} {SPACING['md']};
                     margin: {SPACING['xs']} 0;
-                    border-radius: {RADIUS['sm']};
+                    border-radius: {RADIUS['md']};
                     cursor: pointer;
-                    transition: all 0.2s ease;
-                    opacity: 0.85;
+                    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity: 0.88;
                     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
                     font-size: 0.95rem;
                     color: {COLORS['gray_700']};
                     border-left: 3px solid transparent;
+                    background: transparent;
                 }}
 
                 .nav-item:hover {{
                     opacity: 1;
-                    background: {COLORS['gray_100']};
+                    background: rgba(231, 241, 239, 0.6);
+                    transform: translateX(4px);
+                    border-left-color: rgba(42, 79, 87, 0.2);
+                    box-shadow: 0 2px 8px rgba(42, 79, 87, 0.06);
                 }}
 
                 .nav-item.active {{
-                    background: {COLORS['light_accent']};
-                    color: {COLORS['error']};
+                    background: linear-gradient(90deg, 
+                        rgba(231, 241, 239, 0.9) 0%, 
+                        rgba(231, 241, 239, 0.6) 100%);
+                    color: {COLORS['primary']};
                     opacity: 1;
                     border-left-color: {COLORS['primary']};
                     font-weight: 600;
+                    box-shadow: 
+                        0 0 0 1px rgba(42, 79, 87, 0.08),
+                        0 4px 12px rgba(42, 79, 87, 0.08);
                 }}
 
                 .nav-item-icon {{
                     font-size: 1.25rem;
                     margin-right: {SPACING['sm']};
                     min-width: 24px;
+                    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
                 }}
 
-                /* Sub-Item */
+                .nav-item:hover .nav-item-icon {{
+                    transform: scale(1.1);
+                }}
+
+                /* ========== SUB-ITEMS ========== */
                 .nav-subitem {{
                     display: flex;
                     align-items: center;
@@ -122,32 +140,37 @@ class NavigationSidebar:
                     margin-left: {SPACING['lg']};
                     border-radius: {RADIUS['sm']};
                     cursor: pointer;
-                    transition: all 0.2s ease;
+                    transition: all 0.24s cubic-bezier(0.4, 0, 0.2, 1);
                     opacity: 0.75;
                     font-size: 0.875rem;
                     color: {COLORS['gray_600']};
+                    background: transparent;
                 }}
 
                 .nav-subitem:hover {{
                     opacity: 1;
-                    background: {COLORS['gray_50']};
+                    background: rgba(231, 241, 239, 0.4);
+                    transform: translateX(6px);
                 }}
 
                 .nav-subitem.active {{
-                    background: {COLORS['light_accent']};
+                    background: rgba(231, 241, 239, 0.6);
                     color: {COLORS['primary']};
                     opacity: 1;
                     font-weight: 500;
                 }}
 
-                /* Divider */
+                /* ========== DIVIDER ========== */
                 .nav-divider {{
                     height: 1px;
-                    background: {COLORS['gray_200']};
+                    background: linear-gradient(90deg, 
+                        transparent,
+                        rgba(42, 79, 87, 0.12),
+                        transparent);
                     margin: {SPACING['md']} 0;
                 }}
 
-                /* Header */
+                /* ========== HEADER ========== */
                 .nav-header {{
                     padding: {SPACING['md']} {SPACING['md']} {SPACING['sm']} {SPACING['md']};
                     font-size: 0.75rem;
@@ -157,17 +180,18 @@ class NavigationSidebar:
                     color: {COLORS['gray_500']};
                 }}
 
-                /* Badge for extended features */
+                /* ========== BADGE ========== */
                 .nav-badge {{
                     display: inline-block;
                     padding: 0.125rem 0.5rem;
                     margin-left: {SPACING['xs']};
-                    background: {COLORS['info']};
+                    background: linear-gradient(135deg, {COLORS['info']} 0%, #2563EB 100%);
                     color: white;
                     border-radius: {RADIUS['full']};
                     font-size: 0.7rem;
                     font-weight: 600;
                     letter-spacing: 0.02em;
+                    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
                 }}
             </style>
             """, unsafe_allow_html=True)

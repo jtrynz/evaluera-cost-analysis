@@ -34,7 +34,7 @@ def apply_liquid_glass_styles():
             50%      {{ transform: translateY(-14px); }}
         }}
 
-        /* ========== LIQUID GLASS BACKGROUND (hell, Evaluera) ========== */
+        /* ========== SUBTLE LIQUID GLASS BACKGROUND ========== */
         .liquid-glass-bg {{
             position: fixed;
             inset: 0;
@@ -43,52 +43,62 @@ def apply_liquid_glass_styles():
             z-index: -1;
             overflow: hidden;
             background: radial-gradient(circle at top left,
-                        {COLORS['secondary']} 0%,
-                        {COLORS['light_accent']} 40%,
-                        #FFFFFF 100%);
+                        #FAFCFC 0%,
+                        #F8FAFA 30%,
+                        #FFFFFF 70%);
+        }}
+
+        /* Vignette overlay for subtle depth */
+        .liquid-glass-bg::after {{
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.015) 100%);
+            pointer-events: none;
         }}
 
         .liquid-blob {{
             position: absolute;
             border-radius: 50%;
-            filter: blur(60px);
-            opacity: 0.45;
-            animation: liquidMove 24s ease-in-out infinite;
+            filter: blur(80px);
+            opacity: 0.05;
+            animation: liquidMove 40s ease-in-out infinite;
+            will-change: transform;
         }}
 
         .liquid-blob-1 {{
-            width: 420px;
-            height: 420px;
+            width: 500px;
+            height: 500px;
             background: radial-gradient(circle at 0% 0%,
-                        {COLORS['primary']} 0%,
+                        {COLORS['secondary']} 0%,
                         rgba(255,255,255,0) 70%);
-            top: 8%;
-            left: 6%;
-            animation-duration: 26s;
+            top: -5%;
+            left: -8%;
+            animation-duration: 45s;
         }}
 
         .liquid-blob-2 {{
-            width: 380px;
-            height: 380px;
+            width: 450px;
+            height: 450px;
             background: radial-gradient(circle at 100% 0%,
-                        {COLORS['dark_accent']} 0%,
+                        {COLORS['primary']} 0%,
                         rgba(255,255,255,0) 70%);
-            top: 18%;
-            right: 8%;
-            animation-duration: 32s;
-            animation-delay: -4s;
+            top: 20%;
+            right: -10%;
+            animation-duration: 50s;
+            animation-delay: -8s;
         }}
 
         .liquid-blob-3 {{
-            width: 360px;
-            height: 360px;
+            width: 400px;
+            height: 400px;
             background: radial-gradient(circle at 50% 100%,
-                        {COLORS['secondary']} 0%,
+                        {COLORS['light_accent']} 0%,
                         rgba(255,255,255,0) 70%);
-            bottom: 4%;
-            left: 35%;
-            animation-duration: 38s;
-            animation-delay: -9s;
+            bottom: -8%;
+            left: 30%;
+            animation-duration: 55s;
+            animation-delay: -15s;
         }}
 
         /* ========== GLASSMORPHISM CARD ========== */

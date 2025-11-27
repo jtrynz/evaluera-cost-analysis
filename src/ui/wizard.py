@@ -76,26 +76,96 @@ class WizardManager:
             self.sync_navigation_to_step(st.session_state.wizard_current_step)
             st.rerun()
 
+
     def render_progress(self):
-        """Render wizard progress indicators"""
+        """Render premium wizard progress indicator with glassmorphism"""
         current = self.get_current_step()
         progress_pct = int((current / 6) * 100)
 
-        # Use Streamlit native components instead of HTML
+        # Premium glassmorphism progress card with animated gradient
         st.markdown(f"""
-        <div style="background: {COLORS['surface']}; border-radius: {RADIUS['md']}; padding: {SPACING['md']}; margin-bottom: {SPACING['xl']}; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); border-left: 4px solid {COLORS['primary']};">
+        <style>
+            .wizard-progress-card {{
+                background: rgba(255, 255, 255, 0.90);
+                backdrop-filter: blur(24px) saturate(115%);
+                -webkit-backdrop-filter: blur(24px) saturate(115%);
+                border: 1px solid rgba(255, 255, 255, 0.7);
+                border-radius: {RADIUS['xl']};
+                padding: {SPACING['lg']};
+                margin-bottom: {SPACING['xl']};
+                box-shadow: 
+                    0 10px 36px rgba(42, 79, 87, 0.09),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }}
+
+            .wizard-progress-card:hover {{
+                box-shadow: 
+                    0 14px 44px rgba(42, 79, 87, 0.11),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            }}
+
+            .progress-bar-container {{
+                height: 10px;
+                background: rgba(229, 231, 235, 0.6);
+                border-radius: {RADIUS['full']};
+                overflow: hidden;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+                position: relative;
+            }}
+
+            .progress-bar-fill {{
+                height: 100%;
+                background: linear-gradient(90deg, 
+                    {COLORS['primary']} 0%, 
+                    #5DA59F 50%, 
+                    {COLORS['primary']} 100%);
+                background-size: 200% 100%;
+                animation: shimmer 3s ease-in-out infinite;
+                border-radius: {RADIUS['full']};
+                box-shadow: 
+                    0 0 12px rgba(42, 79, 87, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }}
+
+            @keyframes shimmer {{
+                0% {{ background-position: 200% center; }}
+                100% {{ background-position: -200% center; }}
+            }}
+
+            .progress-percentage {{
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.375rem 0.875rem;
+                background: linear-gradient(135deg, 
+                    rgba(42, 79, 87, 0.12) 0%, 
+                    rgba(93, 165, 159, 0.12) 100%);
+                border-radius: {RADIUS['full']};
+                font-weight: 700;
+                color: {COLORS['primary']};
+                font-size: 0.875rem;
+                letter-spacing: 0.02em;
+                box-shadow: 0 2px 6px rgba(42, 79, 87, 0.1);
+            }}
+        </style>
+        <div class="wizard-progress-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: {SPACING['md']};">
                 <div>
-                    <h3 style="margin: 0; color: {COLORS['error']};">Schritt {current} von 6</h3>
-                    <p style="margin: 0; color: {COLORS['gray_600']}; font-size: 0.875rem;">{self.STEPS[current]['title']}</p>
+                    <h3 style="margin: 0; color: {COLORS['primary']}; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em;">Schritt {current} von 6</h3>
+                    <p style="margin: 0.25rem 0 0 0; color: {COLORS['gray_600']}; font-size: 0.9375rem; font-weight: 500;">{self.STEPS[current]['title']}</p>
                 </div>
-                <div style="color: {COLORS['primary']}; font-weight: 600;">{progress_pct}% abgeschlossen</div>
+                <div class="progress-percentage">
+                    {progress_pct}%
+                </div>
             </div>
-            <div style="height: 8px; background: {COLORS['gray_200']}; border-radius: {RADIUS['full']}; overflow: hidden;">
-                <div style="width: {progress_pct}%; height: 100%; background: {COLORS['primary']}; transition: width 0.3s ease; border-radius: {RADIUS['full']};"></div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: {progress_pct}%;"></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
+
 
     def render_navigation(self, show_next=True, show_previous=True, next_label="Weiter", next_disabled=False):
         """Render navigation buttons with ABSOLUTE FIXED positioning - ULTRA ROBUST VERSION"""
@@ -316,16 +386,16 @@ def create_data_table(df, columns_config=None, max_height=400):
 
 def create_compact_kpi_row(kpis):
     """
-    Create a row of compact KPI cards
-
+    Create a row of premium glassmorphism KPI cards
+    
     Args:
         kpis: List of dicts with keys: label, value, icon, help, trend
     """
     from src.ui.theme import COLORS, SPACING, RADIUS, SHADOWS
-
+    
     num_kpis = len(kpis)
     cols = st.columns(num_kpis)
-
+    
     for i, kpi in enumerate(kpis):
         with cols[i]:
             label = kpi.get('label', '')
@@ -333,14 +403,67 @@ def create_compact_kpi_row(kpis):
             icon = kpi.get('icon', '')
             help_text = kpi.get('help', '')
             trend = kpi.get('trend')
-
-            icon_html = f"<span style='font-size: 1.5rem; margin-right: 0.75rem;'>{icon}</span>" if icon else ""
-            help_html = f"<div style='font-size: 0.75rem; color: {COLORS['gray_400']}; margin-top: 0.25rem;'>{help_text}</div>" if help_text else ""
-
+            
+            # Icon with colored circle background
+            icon_html = f"""
+            <div style="
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, 
+                    rgba(42, 79, 87, 0.10) 0%, 
+                    rgba(93, 165, 159, 0.10) 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+                margin-bottom: 0.75rem;
+                box-shadow: 0 2px 8px rgba(42, 79, 87, 0.08);
+                transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            ">{icon}</div>
+            """ if icon else ""
+            
+            help_html = f"<div style='font-size: 0.75rem; color: {COLORS['gray_500']}; margin-top: 0.375rem; line-height: 1.4;'>{help_text}</div>" if help_text else ""
+            
             trend_html = ""
             if trend == "positive":
-                trend_html = f"<span style='color: {COLORS['success']}; font-size: 0.875rem; margin-left: 0.5rem;'>↑</span>"
+                trend_html = f"<span style='color: {COLORS['success']}; font-size: 1rem; margin-left: 0.5rem;'>↑</span>"
             elif trend == "negative":
-                trend_html = f"<span style='color: {COLORS['error']}; font-size: 0.875rem; margin-left: 0.5rem;'>↓</span>"
-
-            st.markdown(f"""<div style="background: {COLORS['surface']}; border: 1px solid {COLORS['gray_200']}; border-radius: {RADIUS['md']}; padding: {SPACING['md']}; box-shadow: {SHADOWS['sm']};"><div style="display: flex; align-items: center;">{icon_html}<div style="flex: 1;"><div style="font-size: 0.75rem; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">{label}</div><div style="font-size: 1.5rem; font-weight: 700; color: {COLORS['error']};">{value} {trend_html}</div>{help_html}</div></div></div>""", unsafe_allow_html=True)
+                trend_html = f"<span style='color: {COLORS['error']}; font-size: 1rem; margin-left: 0.5rem;'>↓</span>"
+            
+            st.markdown(f"""
+            <style>
+                .kpi-card-{i} {{
+                    background: rgba(255, 255, 255, 0.88);
+                    backdrop-filter: blur(20px) saturate(110%);
+                    -webkit-backdrop-filter: blur(20px) saturate(110%);
+                    border: 1px solid rgba(255, 255, 255, 0.6);
+                    border-radius: {RADIUS['lg']};
+                    padding: {SPACING['lg']};
+                    box-shadow: 
+                        0 6px 24px rgba(42, 79, 87, 0.08),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+                    height: 100%;
+                }}
+                
+                .kpi-card-{i}:hover {{
+                    transform: translateY(-3px);
+                    box-shadow: 
+                        0 10px 32px rgba(42, 79, 87, 0.12),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+                }}
+                
+                .kpi-card-{i}:hover .kpi-icon-circle {{
+                    transform: scale(1.08);
+                }}
+            </style>
+            <div class="kpi-card-{i}">
+                <div class="kpi-icon-circle">{icon_html}</div>
+                <div style="font-size: 0.75rem; color: {COLORS['gray_500']}; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; font-weight: 600;">{label}</div>
+                <div style="font-size: 1.75rem; font-weight: 700; color: {COLORS['primary']}; letter-spacing: -0.02em; line-height: 1.2;">
+                    {value} {trend_html}
+                </div>
+                {help_html}
+            </div>
+            """, unsafe_allow_html=True)
