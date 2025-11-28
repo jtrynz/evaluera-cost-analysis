@@ -129,11 +129,42 @@ def render_login_screen():
                 --ease-spring: cubic-bezier(0.4, 0, 0.2, 1);
             }}
 
-            /* ========== 1. BACKGROUND & LAYOUT ========== */
+            /* ========== 1. BACKGROUND & LAYOUT (5K OPTIMIZED) ========== */
             html, body, .stApp, [data-testid="stAppViewContainer"] {{
                 {background_css}
                 height: 100vh;
                 overflow: hidden !important; /* No scroll */
+            }}
+            
+            /* Image Quality Optimization for 5K (5504x3072) */
+            .stApp {{
+                image-rendering: -webkit-optimize-contrast;
+                image-rendering: high-quality;
+                -ms-interpolation-mode: bicubic;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+            }}
+            
+            /* Responsive Background Scaling for Different Resolutions */
+            @media (min-width: 3840px) {{
+                /* 4K+ Displays: Use full 5K resolution */
+                .stApp {{
+                    background-size: 100% auto;
+                }}
+            }}
+            
+            @media (min-width: 2560px) and (max-width: 3839px) {{
+                /* 1440p-4K Displays: Maintain aspect ratio */
+                .stApp {{
+                    background-size: cover;
+                }}
+            }}
+            
+            @media (max-width: 2559px) {{
+                /* 1080p and below: Cover mode with high quality */
+                .stApp {{
+                    background-size: cover;
+                }}
             }}
 
             /* Vignette Overlay */
