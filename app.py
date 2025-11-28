@@ -288,16 +288,21 @@ def find_col(df, possible_names):
             return df.columns[df_norm_cols.index(name)]
     return None
 
-# ==================== HEADER - nur neu gestalteter Header ====================
+# ==================== HEADER - Nano Banana Design ====================
 logo_b64 = get_logo_base64()
 st.markdown(
     f"""
-    <div style="text-align: center; padding: {SPACING['xl']} 0 {SPACING['md']} 0;">
-        {"<img src='data:image/png;base64," + logo_b64 + "' alt='EVALUERA' style='height: 80px; object-fit: contain; margin-bottom: 18px;' />" if logo_b64 else "<h1 style='margin-bottom:12px; color:#1F3C45; font-weight:800;'>EVALUERA</h1>"}
-        <h1 style="color: {COLORS['primary']}; font-weight: 800; margin: 0 0 10px 0; font-size: 2.6rem;">
-            KI-gestützte Bestellanalyse & Kostenschätzung
+    <div style="padding: {SPACING['lg']} {SPACING['xl']} {SPACING['md']} {SPACING['xl']};">
+        <h1 style="
+            color: {COLORS['gray_900']};
+            font-weight: 700;
+            margin: 0;
+            font-size: 2.25rem;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        ">
+            <span style="font-weight: 800;">EVALUERA:</span> AI-Powered Procurement Intelligence
         </h1>
-        
     </div>
     """,
     unsafe_allow_html=True,
@@ -347,20 +352,13 @@ if st.session_state.nav_active_section != "drawing_analysis":
 
 # ==================== STEP 1: UPLOAD ====================
 def step1_upload():
-    section_header(
-        "Daten hochladen",
-        "Excel- oder CSV-Datei mit Bestelldaten"
-    )
-
-    uploaded_file = st.file_uploader(
-        "Datei auswählen",
-        type=["csv", "xlsx"],
-        key="file_upload",
-    )
+    from src.ui.upload import premium_upload_zone
+    from src.ui.cards import ExcelLoadingAnimation
+    
+    # Premium Upload Zone (Nano Banana Design)
+    uploaded_file = premium_upload_zone()
 
     if uploaded_file:
-        st.success(f"✅ Datei: {uploaded_file.name}")
-
         try:
             # Read file with loading animation
             with ExcelLoadingAnimation(f"📂 Analysiere {uploaded_file.name}", icon="📊"):
@@ -373,15 +371,13 @@ def step1_upload():
                 st.session_state.uploaded_file_name = uploaded_file.name
                 wizard.complete_step(1)
 
-                # Preview
+                # Preview in glassmorphism card
                 with st.expander("📊 Datenvorschau", expanded=False):
                     st.write(f"**{len(df):,} Zeilen × {len(df.columns)} Spalten**")
                     st.dataframe(df.head(10), use_container_width=True)
 
         except Exception as e:
             st.error(f"❌ Fehler: {e}")
-    else:
-        st.info("👆 Bitte Datei hochladen")
 
 
 # ==================== STEP 2: ARTIKEL-SUCHE ====================
