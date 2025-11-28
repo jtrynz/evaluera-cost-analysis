@@ -95,18 +95,22 @@ def render_login_screen():
         print(f"Error loading background: {e}")
         pass
 
-    # CSS for background
+
+    # CSS for background (optimized for maximum quality)
     if bg_base64:
         background_css = f"""
-            background-image: url("data:image/png;base64,{bg_base64}");
+            background-image: url("data:image/jpeg;base64,{bg_base64}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         """
     else:
         background_css = """
             background: linear-gradient(135deg, #E0F2F1 0%, #B2DFDB 100%);
         """
+
 
     st.markdown(
         f"""
