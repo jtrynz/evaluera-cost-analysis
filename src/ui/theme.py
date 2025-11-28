@@ -385,7 +385,7 @@ def apply_global_styles():
             box-shadow: 0 0 0 2px rgba(42, 79, 87, 0.2) !important;
             border-color: {COLORS['primary']} !important;
             outline: none !important;
-        }}}
+        }}
 
         /* ========== SIDEBAR (CALM VISION OS) ========== */
         [data-testid="stSidebar"] {{
@@ -422,18 +422,30 @@ def apply_global_styles():
         }}
 
         /* Hover State for Nav Items */
+        /* Hover State for Nav Items */
         [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:hover {{
             background: rgba(167, 255, 229, 0.15) !important; /* Very light Mint */
             color: #2A4F57 !important; /* Deep Teal */
             transform: translateX(4px) !important;
+            border-color: rgba(42, 79, 87, 0.2) !important; /* Fix red border */
+            box-shadow: 0 2px 8px rgba(42, 79, 87, 0.06) !important;
         }}
 
         /* Active/Focus State (Simulated) */
-        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:focus {{
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:focus,
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:active,
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:focus:not(:active) {{
             background: rgba(167, 255, 229, 0.25) !important;
             color: #2A4F57 !important;
-            border-color: transparent !important;
+            border-color: rgba(42, 79, 87, 0.3) !important; /* Fix red border */
             box-shadow: none !important;
+            outline: none !important;
+        }}
+        
+        [data-testid="stSidebar"] .stButton > button[data-testid="baseButton-secondary"]:focus-visible {{
+             border-color: rgba(42, 79, 87, 0.3) !important;
+             outline: none !important;
+             box-shadow: 0 0 0 2px rgba(42, 79, 87, 0.1) !important;
         }}
 
         /* ========== SIDEBAR CTA (Primary Button - e.g. Upload) ========== */
