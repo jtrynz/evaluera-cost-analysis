@@ -349,8 +349,8 @@ def apply_global_styles():
             transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
-        /* ========== SECONDARY BUTTONS (GLOBAL OVERRIDE) ========== */
-        /* Fixes the red border/text on default Streamlit buttons */
+        /* ========== SECONDARY BUTTONS (GLOBAL OVERRIDE - AGGRESSIVE) ========== */
+        /* Fixes the red border/text on default Streamlit buttons for ALL states */
         .stButton > button[data-testid="baseButton-secondary"] {{
             background: rgba(255, 255, 255, 0.6) !important;
             border: 1px solid rgba(42, 79, 87, 0.2) !important;
@@ -359,6 +359,7 @@ def apply_global_styles():
             padding: 12px 24px !important;
             font-weight: 600 !important;
             transition: all 0.2s ease !important;
+            box-shadow: none !important;
         }}
 
         .stButton > button[data-testid="baseButton-secondary"]:hover {{
@@ -370,13 +371,21 @@ def apply_global_styles():
         }}
 
         .stButton > button[data-testid="baseButton-secondary"]:active,
-        .stButton > button[data-testid="baseButton-secondary"]:focus {{
+        .stButton > button[data-testid="baseButton-secondary"]:focus,
+        .stButton > button[data-testid="baseButton-secondary"]:focus:not(:active) {{
             background: rgba(255, 255, 255, 1.0) !important;
             border-color: {COLORS['primary']} !important;
             color: {COLORS['primary']} !important;
             box-shadow: none !important;
             outline: none !important;
         }}
+        
+        /* Specific override for when button is clicked/focused to prevent red outline */
+        .stButton > button[data-testid="baseButton-secondary"]:focus-visible {{
+            box-shadow: 0 0 0 2px rgba(42, 79, 87, 0.2) !important;
+            border-color: {COLORS['primary']} !important;
+            outline: none !important;
+        }}}
 
         /* ========== SIDEBAR (CALM VISION OS) ========== */
         [data-testid="stSidebar"] {{
