@@ -77,27 +77,15 @@ class WizardManager:
             st.rerun()
 
 
-
     def render_progress(self):
-        """Render hybrid progress indicator - Circular + Horizontal Steps (Nano Banana Style)"""
+        """Render premium wizard progress indicator with glassmorphism"""
         current = self.get_current_step()
         progress_pct = int((current / 6) * 100)
-        
-        # Step labels for horizontal progress
-        step_labels = [
-            "1. Upload Data",
-            "2. AI Processing", 
-            "3. Cost Modeling",
-            "4. Supplier Matching",
-            "5. Savings Forecast",
-            "6. Final Report"
-        ]
 
-        # Hybrid Progress Bar: Circular (left) + Horizontal Steps (right)
+        # Premium glassmorphism progress card with animated gradient
         st.markdown(f"""
         <style>
-            /* Container for hybrid progress */
-            .hybrid-progress-container {{
+            .wizard-progress-card {{
                 background: rgba(255, 255, 255, 0.90);
                 backdrop-filter: blur(24px) saturate(115%);
                 -webkit-backdrop-filter: blur(24px) saturate(115%);
@@ -108,226 +96,75 @@ class WizardManager:
                 box-shadow: 
                     0 10px 36px rgba(42, 79, 87, 0.09),
                     inset 0 1px 0 rgba(255, 255, 255, 0.5);
-                display: flex;
-                align-items: center;
-                gap: {SPACING['xl']};
-            }}
-
-            /* Circular Progress (Left) */
-            .circular-progress {{
-                flex-shrink: 0;
-                width: 120px;
-                height: 120px;
-                position: relative;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }}
-
-            .circular-progress svg {{
-                transform: rotate(-90deg);
-            }}
-
-            .circular-progress-text {{
-                position: absolute;
-                text-align: center;
-            }}
-
-            .circular-progress-percentage {{
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: {COLORS['primary']};
-                line-height: 1;
-            }}
-
-            .circular-progress-label {{
-                font-size: 0.625rem;
-                color: {COLORS['gray_600']};
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.25rem;
-            }}
-
-            /* Horizontal Steps (Right) */
-            .horizontal-steps {{
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: {SPACING['sm']};
-            }}
-
-            .steps-title {{
-                font-size: 0.75rem;
-                color: {COLORS['gray_500']};
-                font-weight: 600;
-                text-transform: uppercase;
-                letter-spacing: 0.06em;
-                margin-bottom: {SPACING['xs']};
-            }}
-
-            .steps-row {{
-                display: flex;
-                align-items: center;
-                gap: {SPACING['xs']};
-            }}
-
-            .step-bubble {{
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: {SPACING['xs']};
-                position: relative;
-            }}
-
-            .step-circle {{
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 0.75rem;
-                font-weight: 700;
                 transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                z-index: 2;
             }}
 
-            .step-circle.completed {{
-                background: linear-gradient(135deg, {COLORS['success']} 0%, #059669 100%);
-                color: white;
-                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-            }}
-
-            .step-circle.active {{
-                background: linear-gradient(135deg, {COLORS['primary']} 0%, #5DA59F 100%);
-                color: white;
+            .wizard-progress-card:hover {{
                 box-shadow: 
-                    0 0 0 4px rgba(42, 79, 87, 0.1),
-                    0 4px 12px rgba(42, 79, 87, 0.3);
-                animation: pulse-glow 2s ease-in-out infinite;
+                    0 14px 44px rgba(42, 79, 87, 0.11),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.7);
             }}
 
-            .step-circle.pending {{
-                background: rgba(229, 231, 235, 0.8);
-                color: {COLORS['gray_400']};
-                border: 2px solid rgba(209, 213, 219, 0.6);
-            }}
-
-            .step-label {{
-                font-size: 0.625rem;
-                color: {COLORS['gray_600']};
-                text-align: center;
-                line-height: 1.2;
-                max-width: 80px;
-            }}
-
-            .step-label.active {{
-                color: {COLORS['primary']};
-                font-weight: 600;
-            }}
-
-            .step-label.completed {{
-                color: {COLORS['success']};
-                font-weight: 600;
-            }}
-
-            /* Connector Line */
-            .step-connector {{
-                flex: 1;
-                height: 3px;
+            .progress-bar-container {{
+                height: 10px;
                 background: rgba(229, 231, 235, 0.6);
                 border-radius: {RADIUS['full']};
-                margin: 0 -4px;
-                position: relative;
                 overflow: hidden;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
+                position: relative;
             }}
 
-            .step-connector.completed {{
-                background: linear-gradient(90deg, 
-                    {COLORS['success']} 0%, 
-                    #10B981 100%);
-            }}
-
-            .step-connector.active {{
+            .progress-bar-fill {{
+                height: 100%;
                 background: linear-gradient(90deg, 
                     {COLORS['primary']} 0%, 
-                    rgba(42, 79, 87, 0.3) 100%);
+                    #5DA59F 50%, 
+                    {COLORS['primary']} 100%);
+                background-size: 200% 100%;
+                animation: shimmer 3s ease-in-out infinite;
+                border-radius: {RADIUS['full']};
+                box-shadow: 
+                    0 0 12px rgba(42, 79, 87, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+                transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             }}
 
-            @keyframes pulse-glow {{
-                0%, 100% {{ box-shadow: 0 0 0 4px rgba(42, 79, 87, 0.1), 0 4px 12px rgba(42, 79, 87, 0.3); }}
-                50% {{ box-shadow: 0 0 0 8px rgba(42, 79, 87, 0.15), 0 6px 18px rgba(42, 79, 87, 0.4); }}
+            @keyframes shimmer {{
+                0% {{ background-position: 200% center; }}
+                100% {{ background-position: -200% center; }}
+            }}
+
+            .progress-percentage {{
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.375rem 0.875rem;
+                background: linear-gradient(135deg, 
+                    rgba(42, 79, 87, 0.12) 0%, 
+                    rgba(93, 165, 159, 0.12) 100%);
+                border-radius: {RADIUS['full']};
+                font-weight: 700;
+                color: {COLORS['primary']};
+                font-size: 0.875rem;
+                letter-spacing: 0.02em;
+                box-shadow: 0 2px 6px rgba(42, 79, 87, 0.1);
             }}
         </style>
-
-        <div class="hybrid-progress-container">
-            <!-- Circular Progress -->
-            <div class="circular-progress">
-                <svg width="120" height="120">
-                    <!-- Background circle -->
-                    <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(229, 231, 235, 0.6)" stroke-width="8"/>
-                    <!-- Progress circle -->
-                    <circle 
-                        cx="60" cy="60" r="54" 
-                        fill="none" 
-                        stroke="url(#progressGradient)" 
-                        stroke-width="8" 
-                        stroke-linecap="round"
-                        stroke-dasharray="{339.29 * progress_pct / 100} 339.29"
-                        style="transition: stroke-dasharray 0.6s cubic-bezier(0.4, 0, 0.2, 1);"
-                    />
-                    <defs>
-                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:{COLORS['primary']};stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#A7FFE5;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <div class="circular-progress-text">
-                    <div class="circular-progress-percentage">{progress_pct}%</div>
-                    <div class="circular-progress-label">Step {current}: Data Upload</div>
+        <div class="wizard-progress-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: {SPACING['md']};">
+                <div>
+                    <h3 style="margin: 0; color: {COLORS['primary']}; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em;">Schritt {current} von 6</h3>
+                    <p style="margin: 0.25rem 0 0 0; color: {COLORS['gray_600']}; font-size: 0.9375rem; font-weight: 500;">{self.STEPS[current]['title']}</p>
+                </div>
+                <div class="progress-percentage">
+                    {progress_pct}%
                 </div>
             </div>
-
-            <!-- Horizontal Steps -->
-            <div class="horizontal-steps">
-                <div class="steps-title">Step 1 Progress Bar</div>
-                <div class="steps-row">
-        """, unsafe_allow_html=True)
-        
-        # Render step bubbles dynamically
-        for i in range(1, 7):
-            is_completed = i < current
-            is_active = i == current
-            is_pending = i > current
-            
-            # State classes
-            circle_class = "completed" if is_completed else ("active" if is_active else "pending")
-            label_class = "completed" if is_completed else ("active" if is_active else "")
-            
-            # Icon/Number
-            icon = "✓" if is_completed else str(i)
-            
-            st.markdown(f"""
-                <div class="step-bubble">
-                    <div class="step-circle {circle_class}">{icon}</div>
-                    <div class="step-label {label_class}">{step_labels[i-1]}</div>
-                </div>
-            """, unsafe_allow_html=True)
-            
-            # Connector (except after last step)
-            if i < 6:
-                connector_class = "completed" if i < current else ("active" if i == current else "")
-                st.markdown(f'<div class="step-connector {connector_class}"></div>', unsafe_allow_html=True)
-        
-        st.markdown("""
-                </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: {progress_pct}%;"></div>
             </div>
         </div>
         """, unsafe_allow_html=True)
-
 
 
     def render_navigation(self, show_next=True, show_previous=True, next_label="Weiter", next_disabled=False):
