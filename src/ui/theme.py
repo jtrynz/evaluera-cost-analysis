@@ -349,6 +349,35 @@ def apply_global_styles():
             transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }}
 
+        /* ========== SECONDARY BUTTONS (GLOBAL OVERRIDE) ========== */
+        /* Fixes the red border/text on default Streamlit buttons */
+        .stButton > button[data-testid="baseButton-secondary"] {{
+            background: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(42, 79, 87, 0.2) !important;
+            color: {COLORS['primary']} !important;
+            border-radius: {RADIUS['md']} !important;
+            padding: 12px 24px !important;
+            font-weight: 600 !important;
+            transition: all 0.2s ease !important;
+        }}
+
+        .stButton > button[data-testid="baseButton-secondary"]:hover {{
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-color: {COLORS['primary']} !important;
+            color: {COLORS['primary']} !important;
+            box-shadow: 0 4px 12px rgba(42, 79, 87, 0.1) !important;
+            transform: translateY(-1px) !important;
+        }}
+
+        .stButton > button[data-testid="baseButton-secondary"]:active,
+        .stButton > button[data-testid="baseButton-secondary"]:focus {{
+            background: rgba(255, 255, 255, 1.0) !important;
+            border-color: {COLORS['primary']} !important;
+            color: {COLORS['primary']} !important;
+            box-shadow: none !important;
+            outline: none !important;
+        }}
+
         /* ========== SIDEBAR (CALM VISION OS) ========== */
         [data-testid="stSidebar"] {{
             background-color: rgba(255, 255, 255, 0.85) !important;
