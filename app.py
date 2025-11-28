@@ -12,6 +12,7 @@ import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 from src.gpt.utils import sanitize_input
+from src.ui.cards import ExcelLoadingAnimation
 
 # Sicherstellen, dass das Projekt-Root und das src-Paket im Python-Pfad liegen
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
