@@ -10,6 +10,7 @@ import traceback
 import sys
 import pandas as pd
 import streamlit as st
+import altair as alt
 from dotenv import load_dotenv
 from src.gpt.utils import sanitize_input
 from src.ui.cards import ExcelLoadingAnimation
@@ -613,6 +614,52 @@ def step4_suppliers():
         for i in range(1, len(supplier_stats) - 1):
             supplier_stats[i]["Kategorie"] = "🟡 Mittelfeld"
 
+    # --- TOP 3 CARDS (New Request) ---
+    if len(supplier_stats) > 0:
+        st.markdown("###### 🏆 Top Empfehlungen")
+        top_cols = st.columns(3)
+        
+        # 1. Place (Gold)
+        with top_cols[0]:
+            s = supplier_stats[0]
+            st.markdown(f"""
+            <div style="background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); border: 1px solid #FCD34D; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <div style="font-size: 2rem; margin-bottom: 8px;">🏆</div>
+                <div style="font-weight: 700; color: #92400E; margin-bottom: 4px;">{s['Lieferant']}</div>
+                <div style="font-size: 0.9rem; color: #B45309;">{format_currency(s['avg_price_raw'])}</div>
+                <div style="font-size: 0.8rem; color: #D97706; margin-top: 4px;">Günstigster Anbieter</div>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        # 2. Place (Silver) - if available
+        if len(supplier_stats) > 1:
+            with top_cols[1]:
+                s = supplier_stats[1]
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%); border: 1px solid #E5E7EB; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🥈</div>
+                    <div style="font-weight: 700; color: #374151; margin-bottom: 4px;">{s['Lieferant']}</div>
+                    <div style="font-size: 0.9rem; color: #6B7280;">{format_currency(s['avg_price_raw'])}</div>
+                    <div style="font-size: 0.8rem; color: #9CA3AF; margin-top: 4px;">Alternative</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # 3. Place (Bronze) - if available
+        if len(supplier_stats) > 2:
+            with top_cols[2]:
+                s = supplier_stats[2]
+                st.markdown(f"""
+                <div style="background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%); border: 1px solid #FED7AA; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🥉</div>
+                    <div style="font-weight: 700; color: #9A3412; margin-bottom: 4px;">{s['Lieferant']}</div>
+                    <div style="font-size: 0.9rem; color: #C2410C;">{format_currency(s['avg_price_raw'])}</div>
+                    <div style="font-size: 0.8rem; color: #EA580C; margin-top: 4px;">Dritte Wahl</div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.caption("Alle Lieferanten im Vergleich:")
+        st.write("") # Spacer
+
     # Create display dataframe
     display_data = []
     for stat in supplier_stats:
@@ -627,7 +674,7 @@ def step4_suppliers():
     df_suppliers = pd.DataFrame(display_data)
     
     st.dataframe(
-        df_suppliers.style.apply(lambda x: ['background-color: #d1fae5' if 'Günstigster' in str(x['Ranking']) else ('background-color: #fee2e2' if 'Teuerster' in str(x['Ranking']) else '') for i in x], axis=1),
+        df_suppliers,
         use_container_width=True,
         hide_index=True
     )
@@ -699,7 +746,42 @@ def step5_cost_estimation():
                     # Sort by saving potential
                     potential_savings = potential_savings.sort_values("Saving Potential (€)", ascending=False)
                     
-                    st.info(f"💡 **{len(potential_savings)} Artikel** liegen über dem Durchschnittspreis ({format_currency(avg_price)}).")
+                    # --- SUMMARY METRICS ---
+                    total_savings = potential_savings["Saving Potential (€)"].sum()
+                    count_articles = len(potential_savings)
+                    
+                    create_compact_kpi_row([
+                        {"label": "Gesamt-Potenzial", "value": format_currency(total_savings), "icon": "💎"},
+                        {"label": "Betroffene Artikel", "value": str(count_articles), "icon": "📦"},
+                        {"label": "Ø Einsparung", "value": f"{potential_savings['Saving Potential (%)'].mean():.1f}%".replace(".", ","), "icon": "📉"}
+                    ])
+                    
+                    # --- CHART (New Request) ---
+                    st.markdown("###### 📊 Top 5 Einsparpotenziale")
+                    
+                    top_5 = potential_savings.head(5).copy()
+                    
+                    # Prepare data for Altair (Long format)
+                    chart_data = []
+                    for _, row in top_5.iterrows():
+                        chart_data.append({"Artikel": row[item_col], "Typ": "Aktueller Preis", "Preis": row["_unit_price"]})
+                        chart_data.append({"Artikel": row[item_col], "Typ": "Durchschnitt", "Preis": avg_price})
+                    
+                    df_chart = pd.DataFrame(chart_data)
+                    
+                    # Altair Chart
+                    chart = alt.Chart(df_chart).mark_bar().encode(
+                        x=alt.X('Artikel:N', sort='-y', axis=alt.Axis(labelAngle=-45)),
+                        y=alt.Y('Preis:Q', title='Preis (€)'),
+                        color=alt.Color('Typ:N', scale=alt.Scale(domain=['Aktueller Preis', 'Durchschnitt'], range=['#EF4444', '#10B981'])),
+                        tooltip=['Artikel', 'Typ', alt.Tooltip('Preis', format=',.4f')]
+                    ).properties(
+                        height=300
+                    ).interactive()
+                    
+                    st.altair_chart(chart, use_container_width=True)
+
+                    st.markdown("###### Detail-Liste (Artikel über Durchschnitt)")
                     
                     # Prepare display dataframe
                     cols_to_show = [item_col, "_unit_price", "Saving Potential (€)", "Saving Potential (%)"]
@@ -719,17 +801,20 @@ def step5_cost_estimation():
                     display_df["Potenzial (€)"] = display_df["Potenzial (€)"].apply(lambda x: format_currency(x).replace(" €", ""))
                     display_df["Potenzial (%)"] = display_df["Potenzial (%)"].apply(lambda x: f"{x:,.1f}%".replace(".", ","))
                     
-                    st.dataframe(display_df, use_container_width=True)
+                    st.dataframe(display_df, use_container_width=True, height=200)
                     
-                    # Export Button
+                    # Export Button (Secondary)
                     csv = display_df.to_csv(index=False).encode('utf-8')
-                    st.download_button(
-                        "📥 Liste für Anfrage exportieren",
-                        csv,
-                        "potenzial_analyse.csv",
-                        "text/csv",
-                        key='download-csv-savings'
-                    )
+                    col1, col2 = st.columns([1, 2])
+                    with col1:
+                        st.download_button(
+                            "📥 CSV Exportieren",
+                            csv,
+                            "potenzial_analyse.csv",
+                            "text/csv",
+                            key='download-csv-savings',
+                            use_container_width=True
+                        )
                 else:
                     st.success("✅ Keine Artikel über dem Durchschnittspreis gefunden.")
             else:
