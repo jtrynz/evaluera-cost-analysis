@@ -475,6 +475,18 @@ def step2_article_search():
         st.info("💡 Suchbegriff eingeben")
 
 
+
+def format_currency(value):
+    """Format currency in German format: 1.234,56 €"""
+    if value is None or pd.isna(value):
+        return "N/A"
+    try:
+        # Format as X,XXX.XX then swap separators
+        s = f"{value:,.4f}"
+        return s.replace(",", "X").replace(".", ",").replace("X", ".") + " €"
+    except:
+        return "N/A"
+
 # ==================== STEP 3: PREISÜBERSICHT ====================
 def step3_price_overview():
     section_header(
@@ -497,10 +509,10 @@ def step3_price_overview():
         price_range = ((mx - mn) / mn * 100) if (mn and mx and mn > 0) else None
 
         create_compact_kpi_row([
-            {"label": "Ø Preis", "value": f"{avg:,.4f} €" if avg else "N/A", "icon": "💰"},
-            {"label": "Min", "value": f"{mn:,.4f} €" if mn else "N/A", "icon": "📉"},
-            {"label": "Max", "value": f"{mx:,.4f} €" if mx else "N/A", "icon": "📈"},
-            {"label": "Range", "value": f"{price_range:,.1f}%" if price_range else "N/A", "icon": "📊"},
+            {"label": "Ø Preis", "value": format_currency(avg), "icon": "💰"},
+            {"label": "Min", "value": format_currency(mn), "icon": "📉"},
+            {"label": "Max", "value": format_currency(mx), "icon": "📈"},
+            {"label": "Range", "value": f"{price_range:,.1f}%".replace(".", ",") if price_range else "N/A", "icon": "📊"},
         ])
 
         st.session_state.avg_price = avg
@@ -509,7 +521,7 @@ def step3_price_overview():
 
         # Breakdown by supplier
         if supplier_col and supplier_col in idf.columns:
-            with st.expander("📋 Breakdown nach Lieferant"):
+            with st.expander("📋 Breakdown nach Lieferant", expanded=True):
                 price_series = get_price_series_per_unit(idf, qty_col)
                 if price_series is not None:
                     temp = idf.copy()
@@ -521,9 +533,14 @@ def step3_price_overview():
 
                     breakdown.columns = ['Ø Preis', 'Min', 'Max', 'Anzahl']
                     breakdown = breakdown.sort_values('Ø Preis')
+                    
+                    # Format columns for display
+                    display_df = breakdown.copy()
+                    for col in ['Ø Preis', 'Min', 'Max']:
+                        display_df[col] = display_df[col].apply(lambda x: format_currency(x).replace(" €", ""))
 
                     st.dataframe(
-                        breakdown.style.highlight_min(subset=['Ø Preis'], color='lightgreen'),
+                        display_df.style.highlight_min(subset=['Ø Preis'], color='#d1fae5'), # Light mint green
                         use_container_width=True
                     )
 
@@ -559,8 +576,8 @@ def step4_suppliers():
 
     st.info(f"📦 **{len(suppliers)} Lieferanten** verfügbar")
 
-    # Build supplier table
-    supplier_data = []
+    # Build supplier table with ranking
+    supplier_stats = []
     price_series = get_price_series_per_unit(idf, qty_col) if qty_col else None
 
     for sup in suppliers:
@@ -574,14 +591,46 @@ def step4_suppliers():
             except:
                 avg_price = None
 
-        supplier_data.append({
+        supplier_stats.append({
             "Lieferant": sup,
-            "Einträge": len(sup_df),
-            "Ø Preis (€)": f"{avg_price:,.4f}" if avg_price else "N/A",
+            "avg_price_raw": avg_price if avg_price is not None else float('inf'),
+            "Einträge": len(sup_df)
         })
 
-    df_suppliers = pd.DataFrame(supplier_data)
-    st.dataframe(df_suppliers, use_container_width=True, hide_index=True)
+    # Sort by price to determine ranking
+    supplier_stats.sort(key=lambda x: x["avg_price_raw"])
+
+    # Assign categories
+    if supplier_stats:
+        # Cheapest
+        supplier_stats[0]["Kategorie"] = "🏆 Günstigster"
+        
+        # Most Expensive (if more than 1)
+        if len(supplier_stats) > 1:
+            supplier_stats[-1]["Kategorie"] = "🔴 Teuerster"
+            
+        # Middle Field
+        for i in range(1, len(supplier_stats) - 1):
+            supplier_stats[i]["Kategorie"] = "🟡 Mittelfeld"
+
+    # Create display dataframe
+    display_data = []
+    for stat in supplier_stats:
+        price_val = stat["avg_price_raw"]
+        display_data.append({
+            "Ranking": stat.get("Kategorie", "N/A"),
+            "Lieferant": stat["Lieferant"],
+            "Einträge": stat["Einträge"],
+            "Ø Preis": format_currency(price_val) if price_val != float('inf') else "N/A",
+        })
+
+    df_suppliers = pd.DataFrame(display_data)
+    
+    st.dataframe(
+        df_suppliers.style.apply(lambda x: ['background-color: #d1fae5' if 'Günstigster' in str(x['Ranking']) else ('background-color: #fee2e2' if 'Teuerster' in str(x['Ranking']) else '') for i in x], axis=1),
+        use_container_width=True,
+        hide_index=True
+    )
 
     # Selection
     if "selected_supplier_name" not in st.session_state:
@@ -625,6 +674,69 @@ def step5_cost_estimation():
     article = st.session_state.selected_article
     avg_price = st.session_state.get("avg_price")
     supplier = st.session_state.get("selected_supplier_name")
+
+    # --- PORTFOLIO ANALYSIS (New Request) ---
+    if "idf" in st.session_state and avg_price:
+        idf = st.session_state.idf
+        qty_col = st.session_state.get("qty_col")
+        item_col = st.session_state.item_col
+        supplier_col = st.session_state.get("supplier_col")
+
+        with st.expander("💰 Einsparpotenzial-Analyse (Portfolio)", expanded=True):
+            price_series = get_price_series_per_unit(idf, qty_col)
+            
+            if price_series is not None:
+                df_analysis = idf.copy()
+                df_analysis["_unit_price"] = price_series
+                
+                # Filter articles > avg_price
+                potential_savings = df_analysis[df_analysis["_unit_price"] > avg_price].copy()
+                
+                if not potential_savings.empty:
+                    potential_savings["Saving Potential (%)"] = ((potential_savings["_unit_price"] - avg_price) / potential_savings["_unit_price"]) * 100
+                    potential_savings["Saving Potential (€)"] = potential_savings["_unit_price"] - avg_price
+                    
+                    # Sort by saving potential
+                    potential_savings = potential_savings.sort_values("Saving Potential (€)", ascending=False)
+                    
+                    st.info(f"💡 **{len(potential_savings)} Artikel** liegen über dem Durchschnittspreis ({format_currency(avg_price)}).")
+                    
+                    # Prepare display dataframe
+                    cols_to_show = [item_col, "_unit_price", "Saving Potential (€)", "Saving Potential (%)"]
+                    if supplier_col and supplier_col in potential_savings.columns:
+                        cols_to_show.insert(1, supplier_col)
+                        
+                    display_df = potential_savings[cols_to_show].copy()
+                    
+                    # Rename columns
+                    new_cols = ["Artikel", "Preis", "Potenzial (€)", "Potenzial (%)"]
+                    if supplier_col and supplier_col in potential_savings.columns:
+                        new_cols.insert(1, "Lieferant")
+                    display_df.columns = new_cols
+                    
+                    # Format for display
+                    display_df["Preis"] = display_df["Preis"].apply(lambda x: format_currency(x).replace(" €", ""))
+                    display_df["Potenzial (€)"] = display_df["Potenzial (€)"].apply(lambda x: format_currency(x).replace(" €", ""))
+                    display_df["Potenzial (%)"] = display_df["Potenzial (%)"].apply(lambda x: f"{x:,.1f}%".replace(".", ","))
+                    
+                    st.dataframe(display_df, use_container_width=True)
+                    
+                    # Export Button
+                    csv = display_df.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        "📥 Liste für Anfrage exportieren",
+                        csv,
+                        "potenzial_analyse.csv",
+                        "text/csv",
+                        key='download-csv-savings'
+                    )
+                else:
+                    st.success("✅ Keine Artikel über dem Durchschnittspreis gefunden.")
+            else:
+                st.warning("⚠️ Keine Preisdaten für Analyse verfügbar.")
+
+    st.divider()
+    st.markdown("### Einzel-Kalkulation")
 
     lot_size = st.number_input(
         "Losgröße",
@@ -726,23 +838,23 @@ def step5_cost_estimation():
         create_compact_kpi_row([
             {
                 "label": "Material €/Stk",
-                "value": f"{res['material_eur']:,.4f} €" if res['material_eur'] else "N/A",
+                "value": format_currency(res['material_eur']),
                 "icon": "💎"
             },
             {
                 "label": "Fertigung €/Stk",
-                "value": f"{res['fab_eur']:,.4f} €" if res['fab_eur'] else "N/A",
+                "value": format_currency(res['fab_eur']),
                 "icon": "⚙️"
             },
             {
                 "label": "Zielkosten (KI-Optimiert)",
-                "value": f"{res['target']:,.4f} €" if res['target'] else "N/A",
+                "value": format_currency(res['target']),
                 "icon": "🎯",
                 "help": "Minimal realistisch mögliche Kosten"
             },
             {
                 "label": "Delta (Aktuell - Ziel)",
-                "value": f"{res['delta']:+,.4f} €" if res['delta'] else "N/A",
+                "value": f"{res['delta']:+,.4f} €".replace(",", "X").replace(".", ",").replace("X", ".") if res['delta'] else "N/A",
                 "icon": "📊",
                 "trend": delta_trend,
                 "help": "Positiv = Einsparungspotenzial, Negativ = unter Zielkosten"

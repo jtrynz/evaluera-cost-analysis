@@ -18,8 +18,21 @@ def _norm_num(x):
     if not s: return np.nan
     s = re.sub(r'(€|EUR|eur|\$|USD|usd)', '', s)
     s = s.replace(' ', '')
-    if s.count(',')==1 and s.count('.')>=1: s = s.replace('.','')
-    if s.count(',')==1 and s.count('.')==0: s = s.replace(',', '.')
+    
+    # Robust handling for 1.234,56 (DE) vs 1,234.56 (US)
+    if ',' in s and '.' in s:
+        if s.rfind(',') > s.rfind('.'): # 1.234,56 -> DE (Decimal is comma)
+            s = s.replace('.', '').replace(',', '.')
+        else: # 1,234.56 -> US (Decimal is dot)
+            s = s.replace(',', '')
+    elif ',' in s:
+        # Assume comma is decimal separator in German context if no dot is present
+        # Exception: if it looks like a thousands separator (e.g. 1,000,000) - but rare in this context
+        if s.count(',') > 1:
+            s = s.replace(',', '') # 1,000,000 -> 1000000
+        else:
+            s = s.replace(',', '.') # 12,34 -> 12.34
+            
     try:
         return float(s)
     except:
